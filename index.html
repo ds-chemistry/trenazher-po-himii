@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Химия · Тренажёры</title>
+
+    <style>
+        /* ====================================================================
+           ОБЩИЕ СТИЛИ
+           ==================================================================== */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: #f5faff;
+            color: #0a1a2a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(10, 74, 138, 0.10);
+            padding: 30px 35px 35px;
+            min-height: 80vh;
+        }
+
+        /* ====================================================================
+           ЗАГОЛОВОК
+           ==================================================================== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #e0f0fa;
+            padding-bottom: 14px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            font-size: 22pt;
+            font-weight: 800;
+            color: #0a4a8a;
+        }
+        .header h1 .emoji {
+            font-size: 24pt;
+        }
+        .header .back-btn {
+            font-family: 'Manrope', sans-serif;
+            font-size: 10pt;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: 2px solid #b0cfe0;
+            border-radius: 30px;
+            background: transparent;
+            color: #0a4a8a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header .back-btn:hover {
+            background: #e0f0fa;
+            border-color: #1a8ad4;
+        }
+
+        /* ====================================================================
+           ГЛАВНАЯ СТРАНИЦА (содержание)
+           ==================================================================== */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        .page-title {
+            font-size: 18pt;
+            font-weight: 800;
+            color: #0a4a8a;
+            margin-bottom: 6px;
+        }
+        .page-sub {
+            font-size: 11pt;
+            color: #5a7a8a;
+            margin-bottom: 20px;
+        }
+
+        .topic-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .topic-card {
+            background: #f8fbff;
+            border: 1.5px solid #d4e8f5;
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topic-card:hover {
+            border-color: #1a8ad4;
+            background: #eef6fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(10, 74, 138, 0.08);
+        }
+        .topic-card .icon {
+            font-size: 26pt;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .topic-card h3 {
+            font-size: 12.5pt;
+            font-weight: 700;
+            color: #0a4a8a;
+            margin-bottom: 3px;
+        }
+        .topic-card p {
+            font-size: 9.5pt;
+            color: #5a6a7a;
+        }
+        .topic-card .badge {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 8pt;
+            font-weight: 600;
+            color: #0a4a8a;
+            background: #d4e8f5;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        /* ====================================================================
+           ТРЕНАЖЁРЫ
+           ==================================================================== */
+        .task-card {
+            background: #f8fbff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid #1a8ad4;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .task-card .q {
+            flex: 1;
+            font-weight: 600;
+            font-size: 10.5pt;
+            min-width: 160px;
+        }
+        .task-card input {
+            font-family: 'Manrope', sans-serif;
+            font-size: 10pt;
+            padding: 7px 14px;
+            border: 2px solid #b0cfe0;
+            border-radius: 8px;
+            width: 150px;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+        .task-card input:focus {
+            outline: none;
+            border-color: #1a8ad4;
+        }
+        .task-card input.correct {
+            border-color: #2a9a5a;
+            background: #e8f5ee;
+        }
+        .task-card input.wrong {
+            border-color: #c96a6a;
+            background: #fdeeee;
+        }
+
+        .task-card .btn {
+            font-family: 'Manrope', sans-serif;
+            font-size: 9.5pt;
+            font-weight: 700;
+            padding: 7px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #1a8ad4;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .task-card .btn:hover {
+            background: #0a4a8a;
+        }
+        .task-card .btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .task-card .result {
+            font-size: 10pt;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: center;
+        }
+        .task-card .result.correct {
+            color: #2a9a5a;
+        }
+        .task-card .result.wrong {
+            color: #c96a6a;
+        }
+        .task-card .result .hint {
+            font-weight: 400;
+            font-size: 8.5pt;
+            color: #5a6a7a;
+            display: block;
+        }
+
+        .stats {
+            background: #e0f0fa;
+            border-radius: 12px;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 10.5pt;
+            color: #0a4a8a;
+            margin: 12px 0 10px;
+        }
+        .stats span {
+            color: #1a8ad4;
+        }
+
+        .reset-btn {
+            font-family: 'Manrope', sans-serif;
+            font-size: 9.5pt;
+            font-weight: 600;
+            padding: 7px 24px;
+            border: 2px solid #b0cfe0;
+            border-radius: 30px;
+            background: transparent;
+            color: #0a4a8a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .reset-btn:hover {
+            background: #e0f0fa;
+            border-color: #1a8ad4;
+        }
+
+        /* ====================================================================
+           АДАПТИВНОСТЬ
+           ==================================================================== */
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 16px;
+            }
+            .topic-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 17pt;
+            }
+            .task-card {
+                padding: 12px 14px;
+            }
+            .task-card input {
+                width: 100%;
+            }
+            .task-card .q {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ==============================================================
+             ЗАГОЛОВОК (общий для всех страниц)
+             ============================================================== -->
+        <div class="header">
+            <h1><span class="emoji">🧪</span> Химия · Тренажёры</h1>
+            <button class="back-btn" id="backBtn" style="display:none;" onclick="goHome()">← Назад</button>
+        </div>
+
+        <!-- ==============================================================
+             ГЛАВНАЯ СТРАНИЦА
+             ============================================================== -->
+        <div class="page active" id="page-home">
+            <div class="page-title">📚 Содержание</div>
+            <div class="page-sub">Выбери тему для тренировки:</div>
+
+            <div class="topic-grid">
+                <div class="topic-card" onclick="openTopic('oxides')">
+                    <span class="icon">🔬</span>
+                    <h3>Оксиды</h3>
+                    <p>Реакции оксидов с водой, кислотами, основаниями</p>
+                    <span class="badge">30 заданий</span>
+                </div>
+                <div class="topic-card" onclick="openTopic('hydroxides')">
+                    <span class="icon">🧪</span>
+                    <h3>Гидроксиды</h3>
+                    <p>Основания, амфотерные гидроксиды, реакции</p>
+                    <span class="badge">25 заданий</span>
+                </div>
+                <div class="topic-card" onclick="openTopic('acids')">
+                    <span class="icon">⚗️</span>
+                    <h3>Кислоты</h3>
+                    <p>Химические свойства кислот</p>
+                    <span class="badge">20 заданий</span>
+                </div>
+                <div class="topic-card" onclick="openTopic('salts')">
+                    <span class="icon">🧂</span>
+                    <h3>Соли</h3>
+                    <p>Средние, кислые, основные соли</p>
+                    <span class="badge">20 заданий</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             ТРЕНАЖЁР — ОКСИДЫ
+             ============================================================== -->
+        <div class="page" id="page-oxides">
+            <div class="page-title">🔬 Оксиды</div>
+            <div class="page-sub">Впиши продукт реакции → нажми «Проверить»</div>
+
+            <div id="oxides-tasks"></div>
+
+            <div class="stats" id="oxides-stats">
+                ✅ Верно: <span id="oxides-correct">0</span> &nbsp;|&nbsp; ❌ Неверно: <span id="oxides-wrong">0</span>
+            </div>
+
+            <button class="reset-btn" onclick="resetOxides()">🔄 Начать заново</button>
+        </div>
+
+        <!-- ==============================================================
+             ТРЕНАЖЁР — ГИДРОКСИДЫ
+             ============================================================== -->
+        <div class="page" id="page-hydroxides">
+            <div class="page-title">🧪 Гидроксиды</div>
+            <div class="page-sub">Впиши продукт реакции → нажми «Проверить»</div>
+
+            <div id="hydroxides-tasks"></div>
+
+            <div class="stats" id="hydroxides-stats">
+                ✅ Верно: <span id="hydroxides-correct">0</span> &nbsp;|&nbsp; ❌ Неверно: <span id="hydroxides-wrong">0</span>
+            </div>
+
+            <button class="reset-btn" onclick="resetHydroxides()">🔄 Начать заново</button>
+        </div>
+
+        <!-- ==============================================================
+             ТРЕНАЖЁР — КИСЛОТЫ
+             ============================================================== -->
+        <div class="page" id="page-acids">
+            <div class="page-title">⚗️ Кислоты</div>
+            <div class="page-sub">Впиши продукт реакции → нажми «Проверить»</div>
+
+            <div id="acids-tasks"></div>
+
+            <div class="stats" id="acids-stats">
+                ✅ Верно: <span id="acids-correct">0</span> &nbsp;|&nbsp; ❌ Неверно: <span id="acids-wrong">0</span>
+            </div>
+
+            <button class="reset-btn" onclick="resetAcids()">🔄 Начать заново</button>
+        </div>
+
+        <!-- ==============================================================
+             ТРЕНАЖЁР — СОЛИ
+             ============================================================== -->
+        <div class="page" id="page-salts">
+            <div class="page-title">🧂 Соли</div>
+            <div class="page-sub">Впиши продукт реакции → нажми «Проверить»</div>
+
+            <div id="salts-tasks"></div>
+
+            <div class="stats" id="salts-stats">
+                ✅ Верно: <span id="salts-correct">0</span> &nbsp;|&nbsp; ❌ Неверно: <span id="salts-wrong">0</span>
+            </div>
+
+            <button class="reset-btn" onclick="resetSalts()">🔄 Начать заново</button>
+        </div>
+
+    </div>
+
+    <script>
+        // ==============================================================
+        // НАВИГАЦИЯ
+        // ==============================================================
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.getElementById('backBtn').style.display = (pageId === 'page-home') ? 'none' : 'inline-block';
+        }
+
+        function goHome() {
+            showPage('page-home');
+        }
+
+        function openTopic(topic) {
+            const map = {
+                'oxides': 'page-oxides',
+                'hydroxides': 'page-hydroxides',
+                'acids': 'page-acids',
+                'salts': 'page-salts'
+            };
+            showPage(map[topic]);
+            if (topic === 'oxides') renderOxides();
+            if (topic === 'hydroxides') renderHydroxides();
+            if (topic === 'acids') renderAcids();
+            if (topic === 'salts') renderSalts();
+        }
+
+        // ==============================================================
+        // ОБЩИЕ ФУНКЦИИ ДЛЯ ТРЕНАЖЁРОВ
+        // ==============================================================
+        function normalize(s) {
+            return s.replace(/\s+/g, '').toLowerCase();
+        }
+
+        function checkTask(containerId, data, state, index) {
+            const input = document.getElementById(`${containerId}-input-${index}`);
+            const result = document.getElementById(`${containerId}-result-${index}`);
+            const btn = document.getElementById(`${containerId}-btn-${index}`);
+
+            if (state.answered[index] !== undefined) return;
+
+            const userAnswer = input.value.trim();
+            const correctAnswer = data[index].answer;
+
+            const isCorrect = normalize(userAnswer) === normalize(correctAnswer);
+
+            state.answered[index] = {
+                userAnswer: userAnswer,
+                correctAnswer: correctAnswer,
+                isCorrect: isCorrect
+            };
+
+            if (isCorrect) {
+                state.correct++;
+                input.className = 'correct';
+                result.className = 'result correct';
+                result.textContent = '✅ Верно!';
+            } else {
+                state.wrong++;
+                input.className = 'wrong';
+                result.className = 'result wrong';
+                result.innerHTML = `❌ Неверно<br><span class="hint">→ ${correctAnswer}</span>`;
+            }
+
+            input.disabled = true;
+            btn.disabled = true;
+            updateStats(containerId, state);
+        }
+
+        function updateStats(containerId, state) {
+            document.getElementById(`${containerId}-correct`).textContent = state.correct;
+            document.getElementById(`${containerId}-wrong`).textContent = state.wrong;
+        }
+
+        function resetTasks(containerId, data, state, renderFn) {
+            state.correct = 0;
+            state.wrong = 0;
+            state.answered = {};
+            renderFn(containerId, data, state);
+        }
+
+        // ==============================================================
+        // ОКСИДЫ
+        // ==============================================================
+        const oxidesData = [
+            { left: 'SO₂ + H₂O →', answer: 'H₂SO₃' },
+            { left: 'SO₃ + H₂O →', answer: 'H₂SO₄' },
+            { left: 'CO₂ + H₂O →', answer: 'H₂CO₃' },
+            { left: 'N₂O₅ + H₂O →', answer: '2HNO₃' },
+            { left: 'CaO + H₂O →', answer: 'Ca(OH)₂' },
+            { left: 'Na₂O + H₂O →', answer: '2NaOH' },
+            { left: 'K₂O + N₂O₅ →', answer: '2KNO₃' },
+            { left: 'CaO + CO₂ →', answer: 'CaCO₃' },
+            { left: 'CuO + SO₃ →', answer: 'CuSO₄' },
+            { left: 'Li₂O + H₂O →', answer: '2LiOH' },
+            { left: 'P₂O₅ + 3H₂O →', answer: '2H₃PO₄' },
+            { left: '2NO₂ + H₂O →', answer: 'HNO₂ + HNO₃' },
+            { left: 'ZnO + 2HCl →', answer: 'ZnCl₂ + H₂O' },
+            { left: 'Al₂O₃ + 3H₂SO₄ →', answer: 'Al₂(SO₄)₃ + 3H₂O' },
+            { left: 'Fe₂O₃ + 6HI →', answer: '2FeI₂ + I₂ + 3H₂O' },
+            { left: 'Fe₃O₄ + 8HCl →', answer: 'FeCl₂ + 2FeCl₃ + 4H₂O' },
+            { left: 'SiO₂ + 4HF (газ) →', answer: 'SiF₄↑ + 2H₂O' },
+            { left: 'SO₂ + 2H₂S →', answer: '3S↓ + 2H₂O' },
+            { left: '2KOH + CO₂ →', answer: 'K₂CO₃ + H₂O' },
+            { left: '6KOH + P₂O₅ →', answer: '2K₃PO₄ + 3H₂O' },
+            { left: '2HgO →', answer: '2Hg + O₂↑' },
+            { left: '2SO₃ →', answer: '2SO₂↑ + O₂↑' },
+            { left: '4MnO₂ →', answer: '2Mn₂O₃ + O₂↑' },
+            { left: 'Fe₂O₃ + 2Al →', answer: '2Fe + Al₂O₃' },
+            { left: '3CuO + 2Al →', answer: 'Al₂O₃ + 3Cu' },
+            { left: 'CO₂ + C →', answer: '2CO' },
+            { left: 'SiO₂ + 2C (нед) →', answer: 'Si + 2CO↑' },
+            { left: 'CuO + H₂ →', answer: 'Cu + H₂O' },
+            { left: 'ZnO + CO →', answer: 'Zn + CO₂↑' },
+            { left: '3CuO + 2NH₃ →', answer: 'N₂ + 3Cu + 3H₂O' },
+        ];
+
+        const oxidesState = { correct: 0, wrong: 0, answered: {} };
+
+        function renderOxides() {
+            const container = document.getElementById('oxides-tasks');
+            container.innerHTML = '';
+            oxidesData.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = 'task-card';
+
+                const q = document.createElement('div');
+                q.className = 'q';
+                q.textContent = task.left;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `oxides-input-${index}`;
+                input.placeholder = 'продукт...';
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') checkTask('oxides', oxidesData, oxidesState, index);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.id = `oxides-btn-${index}`;
+                btn.textContent = 'Проверить';
+                btn.onclick = () => checkTask('oxides', oxidesData, oxidesState, index);
+
+                const result = document.createElement('div');
+                result.className = 'result';
+                result.id = `oxides-result-${index}`;
+
+                if (oxidesState.answered[index] !== undefined) {
+                    const a = oxidesState.answered[index];
+                    input.value = a.userAnswer;
+                    input.disabled = true;
+                    btn.disabled = true;
+                    if (a.isCorrect) {
+                        input.className = 'correct';
+                        result.className = 'result correct';
+                        result.textContent = '✅ Верно!';
+                    } else {
+                        input.className = 'wrong';
+                        result.className = 'result wrong';
+                        result.innerHTML = `❌ Неверно<br><span class="hint">→ ${a.correctAnswer}</span>`;
+                    }
+                }
+
+                div.appendChild(q);
+                div.appendChild(input);
+                div.appendChild(btn);
+                div.appendChild(result);
+                container.appendChild(div);
+            });
+            updateStats('oxides', oxidesState);
+        }
+
+        function resetOxides() {
+            resetTasks('oxides', oxidesData, oxidesState, renderOxides);
+        }
+
+        // ==============================================================
+        // ГИДРОКСИДЫ
+        // ==============================================================
+        const hydroxidesData = [
+            { left: 'NaOH + HCl →', answer: 'NaCl + H₂O' },
+            { left: 'KOH + HNO₃ →', answer: 'KNO₃ + H₂O' },
+            { left: 'Ca(OH)₂ + CO₂ →', answer: 'CaCO₃ + H₂O' },
+            { left: 'NaOH + SO₂ →', answer: 'Na₂SO₃ + H₂O' },
+            { left: 'KOH + SO₃ →', answer: 'K₂SO₄ + H₂O' },
+            { left: 'Ca(OH)₂ + N₂O₅ →', answer: 'Ca(NO₃)₂ + H₂O' },
+            { left: 'NaOH + Al(OH)₃ →', answer: 'NaAlO₂ + 2H₂O' },
+            { left: 'KOH + ZnO →', answer: 'K₂ZnO₂ + H₂O' },
+            { left: 'NaOH + Zn(OH)₂ →', answer: 'Na₂ZnO₂ + 2H₂O' },
+            { left: 'Ca(OH)₂ + 2HCl →', answer: 'CaCl₂ + 2H₂O' },
+            { left: '2KOH + H₂SO₄ →', answer: 'K₂SO₄ + 2H₂O' },
+            { left: 'Ba(OH)₂ + 2HNO₃ →', answer: 'Ba(NO₃)₂ + 2H₂O' },
+            { left: 'NaOH + H₃PO₄ →', answer: 'Na₃PO₄ + 3H₂O' },
+            { left: 'LiOH + H₂SiO₃ →', answer: 'Li₂SiO₃ + 2H₂O' },
+            { left: 'KOH + HBr →', answer: 'KBr + H₂O' },
+        ];
+
+        const hydroxidesState = { correct: 0, wrong: 0, answered: {} };
+
+        function renderHydroxides() {
+            const container = document.getElementById('hydroxides-tasks');
+            container.innerHTML = '';
+            hydroxidesData.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = 'task-card';
+
+                const q = document.createElement('div');
+                q.className = 'q';
+                q.textContent = task.left;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `hydroxides-input-${index}`;
+                input.placeholder = 'продукт...';
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') checkTask('hydroxides', hydroxidesData, hydroxidesState, index);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.id = `hydroxides-btn-${index}`;
+                btn.textContent = 'Проверить';
+                btn.onclick = () => checkTask('hydroxides', hydroxidesData, hydroxidesState, index);
+
+                const result = document.createElement('div');
+                result.className = 'result';
+                result.id = `hydroxides-result-${index}`;
+
+                if (hydroxidesState.answered[index] !== undefined) {
+                    const a = hydroxidesState.answered[index];
+                    input.value = a.userAnswer;
+                    input.disabled = true;
+                    btn.disabled = true;
+                    if (a.isCorrect) {
+                        input.className = 'correct';
+                        result.className = 'result correct';
+                        result.textContent = '✅ Верно!';
+                    } else {
+                        input.className = 'wrong';
+                        result.className = 'result wrong';
+                        result.innerHTML = `❌ Неверно<br><span class="hint">→ ${a.correctAnswer}</span>`;
+                    }
+                }
+
+                div.appendChild(q);
+                div.appendChild(input);
+                div.appendChild(btn);
+                div.appendChild(result);
+                container.appendChild(div);
+            });
+            updateStats('hydroxides', hydroxidesState);
+        }
+
+        function resetHydroxides() {
+            resetTasks('hydroxides', hydroxidesData, hydroxidesState, renderHydroxides);
+        }
+
+        // ==============================================================
+        // КИСЛОТЫ
+        // ==============================================================
+        const acidsData = [
+            { left: 'HCl + NaOH →', answer: 'NaCl + H₂O' },
+            { left: 'H₂SO₄ + 2KOH →', answer: 'K₂SO₄ + 2H₂O' },
+            { left: 'HNO₃ + KOH →', answer: 'KNO₃ + H₂O' },
+            { left: 'H₂SO₄ + CaO →', answer: 'CaSO₄ + H₂O' },
+            { left: '2HCl + CaO →', answer: 'CaCl₂ + H₂O' },
+            { left: 'H₃PO₄ + 3NaOH →', answer: 'Na₃PO₄ + 3H₂O' },
+            { left: 'H₂SO₄ + CuO →', answer: 'CuSO₄ + H₂O' },
+            { left: '2HCl + MgO →', answer: 'MgCl₂ + H₂O' },
+            { left: 'HNO₃ + KOH →', answer: 'KNO₃ + H₂O' },
+            { left: 'H₂SO₄ + BaO →', answer: 'BaSO₄ + H₂O' },
+            { left: '2HNO₃ + Ca(OH)₂ →', answer: 'Ca(NO₃)₂ + 2H₂O' },
+        ];
+
+        const acidsState = { correct: 0, wrong: 0, answered: {} };
+
+        function renderAcids() {
+            const container = document.getElementById('acids-tasks');
+            container.innerHTML = '';
+            acidsData.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = 'task-card';
+
+                const q = document.createElement('div');
+                q.className = 'q';
+                q.textContent = task.left;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `acids-input-${index}`;
+                input.placeholder = 'продукт...';
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') checkTask('acids', acidsData, acidsState, index);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.id = `acids-btn-${index}`;
+                btn.textContent = 'Проверить';
+                btn.onclick = () => checkTask('acids', acidsData, acidsState, index);
+
+                const result = document.createElement('div');
+                result.className = 'result';
+                result.id = `acids-result-${index}`;
+
+                if (acidsState.answered[index] !== undefined) {
+                    const a = acidsState.answered[index];
+                    input.value = a.userAnswer;
+                    input.disabled = true;
+                    btn.disabled = true;
+                    if (a.isCorrect) {
+                        input.className = 'correct';
+                        result.className = 'result correct';
+                        result.textContent = '✅ Верно!';
+                    } else {
+                        input.className = 'wrong';
+                        result.className = 'result wrong';
+                        result.innerHTML = `❌ Неверно<br><span class="hint">→ ${a.correctAnswer}</span>`;
+                    }
+                }
+
+                div.appendChild(q);
+                div.appendChild(input);
+                div.appendChild(btn);
+                div.appendChild(result);
+                container.appendChild(div);
+            });
+            updateStats('acids', acidsState);
+        }
+
+        function resetAcids() {
+            resetTasks('acids', acidsData, acidsState, renderAcids);
+        }
+
+        // ==============================================================
+        // СОЛИ
+        // ==============================================================
+        const saltsData = [
+            { left: 'NaCl + AgNO₃ →', answer: 'AgCl↓ + NaNO₃' },
+            { left: 'BaCl₂ + H₂SO₄ →', answer: 'BaSO₄↓ + 2HCl' },
+            { left: 'Na₂CO₃ + 2HCl →', answer: '2NaCl + CO₂↑ + H₂O' },
+            { left: 'AgNO₃ + NaCl →', answer: 'AgCl↓ + NaNO₃' },
+            { left: 'Na₂SO₄ + BaCl₂ →', answer: 'BaSO₄↓ + 2NaCl' },
+            { left: 'CaCO₃ + 2HCl →', answer: 'CaCl₂ + CO₂↑ + H₂O' },
+            { left: 'NaHCO₃ + HCl →', answer: 'NaCl + CO₂↑ + H₂O' },
+            { left: 'K₂SO₄ + Ba(NO₃)₂ →', answer: 'BaSO₄↓ + 2KNO₃' },
+            { left: 'Na₂S + 2HCl →', answer: '2NaCl + H₂S↑' },
+            { left: 'CaCl₂ + 2AgNO₃ →', answer: '2AgCl↓ + Ca(NO₃)₂' },
+        ];
+
+        const saltsState = { correct: 0, wrong: 0, answered: {} };
+
+        function renderSalts() {
+            const container = document.getElementById('salts-tasks');
+            container.innerHTML = '';
+            saltsData.forEach((task, index) => {
+                const div = document.createElement('div');
+                div.className = 'task-card';
+
+                const q = document.createElement('div');
+                q.className = 'q';
+                q.textContent = task.left;
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `salts-input-${index}`;
+                input.placeholder = 'продукт...';
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') checkTask('salts', saltsData, saltsState, index);
+                });
+
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.id = `salts-btn-${index}`;
+                btn.textContent = 'Проверить';
+                btn.onclick = () => checkTask('salts', saltsData, saltsState, index);
+
+                const result = document.createElement('div');
+                result.className = 'result';
+                result.id = `salts-result-${index}`;
+
+                if (saltsState.answered[index] !== undefined) {
+                    const a = saltsState.answered[index];
+                    input.value = a.userAnswer;
+                    input.disabled = true;
+                    btn.disabled = true;
+                    if (a.isCorrect) {
+                        input.className = 'correct';
+                        result.className = 'result correct';
+                        result.textContent = '✅ Верно!';
+                    } else {
+                        input.className = 'wrong';
+                        result.className = 'result wrong';
+                        result.innerHTML = `❌ Неверно<br><span class="hint">→ ${a.correctAnswer}</span>`;
+                    }
+                }
+
+                div.appendChild(q);
+                div.appendChild(input);
+                div.appendChild(btn);
+                div.appendChild(result);
+                container.appendChild(div);
+            });
+            updateStats('salts', saltsState);
+        }
+
+        function resetSalts() {
+            resetTasks('salts', saltsData, saltsState, renderSalts);
+        }
+
+        // ==============================================================
+        // ПЕРВОНАЧАЛЬНАЯ ЗАГРУЗКА
+        // ==============================================================
+        // Показываем главную страницу, тренажёры рендерятся при открытии
+        showPage('page-home');
+    </script>
+
+</body>
+</html>
