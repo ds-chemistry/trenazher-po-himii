@@ -418,6 +418,7 @@
 
     const TEACHER_LOGIN = 'admin';
     const TEACHER_PASS = 'admin123';
+    const SESSION_KEY = 'chem_session_v1';
 
     let CURRENT_USER = null;
     let TEACH_MODE = false;
@@ -429,7 +430,30 @@
     let isLoading = true;
 
     // ============================================================
-    // 3. РАБОТА С FIREBASE
+    // 3. РАБОТА С СЕССИЕЙ (ХРАНИМ В localStorage, А НЕ В FIREBASE!)
+    // ============================================================
+
+    function loadSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveSession(s) {
+      try {
+        if (s === null) {
+          localStorage.removeItem(SESSION_KEY);
+        } else {
+          localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+        }
+      } catch (e) {}
+    }
+
+    // ============================================================
+    // 4. РАБОТА С FIREBASE (контент, ученики, прогресс)
     // ============================================================
 
     async function loadFromFirebase(path, defaultValue) {
@@ -469,18 +493,6 @@
       return await saveToFirebase('registry', reg);
     }
 
-    async function loadSession() {
-      return await loadFromFirebase('session', null);
-    }
-
-    async function saveSession(s) {
-      if (s === null) {
-        await remove(ref(db, 'session'));
-      } else {
-        await saveToFirebase('session', s);
-      }
-    }
-
     async function getProgress(studentKey) {
       return await loadFromFirebase(`progress/${studentKey}`, {});
     }
@@ -513,7 +525,7 @@
     async function persistHomeworks() { await saveToFirebase('content/homeworks', HOMEWORKS); }
 
     // ============================================================
-    // 4. ДЕФОЛТНЫЙ КОНТЕНТ
+    // 5. ДЕФОЛТНЫЙ КОНТЕНТ
     // ============================================================
 
     function defaultTopics() {
@@ -559,7 +571,7 @@
     }
 
     // ============================================================
-    // 5. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // 6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
     // ============================================================
 
     function escapeHtml(s) {
@@ -629,7 +641,7 @@
     }
 
     // ============================================================
-    // 6. АВТОРИЗАЦИЯ
+    // 7. АВТОРИЗАЦИЯ (СЕССИЯ В localStorage)
     // ============================================================
 
     window.handleLogin = async function() {
@@ -643,7 +655,7 @@
       if (nameInput.toLowerCase() === TEACHER_LOGIN && passInput === TEACHER_PASS) {
         CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true };
         TEACH_MODE = false;
-        await saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель' });
+        saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель' });
         await startApp();
         return;
       }
@@ -660,12 +672,12 @@
         return;
       }
       CURRENT_USER = { name: reg[key].name, key, isTeacher: false };
-      await saveSession({ key, isTeacher: false, name: CURRENT_USER.name });
+      saveSession({ key, isTeacher: false, name: CURRENT_USER.name });
       await startApp();
     };
 
-    window.handleLogout = async function() {
-      await saveSession(null);
+    window.handleLogout = function() {
+      saveSession(null);
       CURRENT_USER = null;
       TEACH_MODE = false;
       document.getElementById('app').classList.add('hidden');
@@ -674,17 +686,17 @@
       document.getElementById('loginPass').value = '';
     };
 
-    async function tryRestoreSession() {
-      const s = await loadSession();
+    function tryRestoreSession() {
+      const s = loadSession();
       if (!s) return false;
       if (s.isTeacher) {
         CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true };
       } else {
-        const reg = await loadRegistry();
-        if (!reg[s.key]) return false;
-        CURRENT_USER = { name: reg[s.key].name, key: s.key, isTeacher: false };
+        // Проверяем, что ученик всё ещё существует в Firebase
+        // Но делаем это асинхронно, а пока возвращаем true
+        // В startApp мы перепроверим
+        CURRENT_USER = { name: s.name || 'Ученик', key: s.key, isTeacher: false };
       }
-      await startApp();
       return true;
     }
 
@@ -719,6 +731,18 @@
     }
 
     async function startApp() {
+      // Если ученик — проверяем, что он всё ещё существует в Firebase
+      if (CURRENT_USER && !CURRENT_USER.isTeacher) {
+        const reg = await loadRegistry();
+        if (!reg[CURRENT_USER.key]) {
+          // Ученик был удалён — выходим
+          handleLogout();
+          return;
+        }
+        // Обновляем имя из реестра
+        CURRENT_USER.name = reg[CURRENT_USER.key].name;
+      }
+
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       document.getElementById('whoLabel').textContent = CURRENT_USER.name + (CURRENT_USER.isTeacher ? ' · учитель' : '');
@@ -735,7 +759,7 @@
     };
 
     // ============================================================
-    // 7. МОДАЛЬНЫЕ ОКНА
+    // 8. МОДАЛЬНЫЕ ОКНА
     // ============================================================
 
     window.showConfirmModal = function(title, text, onConfirm) {
@@ -786,7 +810,7 @@
     };
 
     // ============================================================
-    // 8. РЕНДЕРИНГ
+    // 9. РЕНДЕРИНГ
     // ============================================================
 
     function render() {
@@ -802,7 +826,7 @@
     }
 
     // ============================================================
-    // 9. RENDER HOME (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+    // 10. RENDER HOME
     // ============================================================
 
     async function renderHome(container) {
@@ -843,7 +867,6 @@
       }
 
       for (const topic of sortedTopics) {
-        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что TRAINERS, LESSONS, HOMEWORKS существуют
         const topicTrainers = (TRAINERS || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
         const topicLessons = (LESSONS || []).filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
         const topicHomeworks = (HOMEWORKS || []).filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
@@ -888,7 +911,6 @@
           let pct = 0;
           if (!CURRENT_USER.isTeacher) {
             const done = progress[trainer.id] ? Object.keys(progress[trainer.id]).filter(k => k !== '__finished' && progress[trainer.id][k].status === 'correct').length : 0;
-            // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
             const reactionsLength = (trainer.reactions || []).length;
             pct = reactionsLength ? Math.round(done / reactionsLength * 100) : 0;
           }
@@ -985,7 +1007,7 @@
     }
 
     // ============================================================
-    // 10. УПРАВЛЕНИЕ ТЕМАМИ
+    // 11. УПРАВЛЕНИЕ ТЕМАМИ
     // ============================================================
 
     async function moveTopic(topicId, dir) {
@@ -1092,7 +1114,7 @@
     }
 
     // ============================================================
-    // 11. RENDER TRAINER
+    // 12. RENDER TRAINER
     // ============================================================
 
     async function renderTrainer(container, trainerId) {
@@ -1139,7 +1161,6 @@
       }
 
       function computeSummary() {
-        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
         const reactions = trainer.reactions || [];
         const total = reactions.length;
         let correct = 0, answered = 0;
@@ -1152,7 +1173,6 @@
 
       function renderList() {
         list.innerHTML = '';
-        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
         const reactions = trainer.reactions || [];
         reactions.forEach((rxn, idx) => {
           const entry = trainerProgress[idx];
@@ -1277,7 +1297,7 @@
     }
 
     // ============================================================
-    // 12. RENDER HOMEWORK
+    // 13. RENDER HOMEWORK
     // ============================================================
 
     async function renderHomework(container, homeworkId) {
@@ -1461,7 +1481,7 @@
     }
 
     // ============================================================
-    // 13. RENDER LESSON
+    // 14. RENDER LESSON
     // ============================================================
 
     function renderLessonModal(lessonId) {
@@ -1503,7 +1523,7 @@
     }
 
     // ============================================================
-    // 14. RENDER STATS
+    // 15. RENDER STATS
     // ============================================================
 
     async function renderStats(container) {
@@ -1559,7 +1579,6 @@
           let lessonsViewed = 0;
           let homeworksDone = 0;
 
-          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что TRAINERS существует
           for (const trainerId in progress) {
             const trainer = (TRAINERS || []).find(t => t.id === trainerId);
             if (!trainer) continue;
@@ -1571,14 +1590,12 @@
             totalReactions += (trainer.reactions || []).length;
           }
 
-          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что LESSONS существует
           for (const lesson of (LESSONS || [])) {
             if (progress['lesson:' + lesson.id] === true) {
               lessonsViewed++;
             }
           }
 
-          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что HOMEWORKS существует
           for (const homework of (HOMEWORKS || [])) {
             if (progress[homework.id] && progress[homework.id].__finished === true) {
               homeworksDone++;
@@ -1666,7 +1683,7 @@
     }
 
     // ============================================================
-    // 15. RENDER STUDENT DETAIL
+    // 16. RENDER STUDENT DETAIL
     // ============================================================
 
     async function renderStudentDetail(container, studentKey) {
@@ -1831,7 +1848,7 @@
     }
 
     // ============================================================
-    // 16. УПРАВЛЕНИЕ УЧЕНИКАМИ
+    // 17. УПРАВЛЕНИЕ УЧЕНИКАМИ
     // ============================================================
 
     async function showChangePasswordModal(studentKey) {
@@ -1863,7 +1880,7 @@
     }
 
     // ============================================================
-    // 17. КОНСТРУКТОР МАТЕРИАЛОВ
+    // 18. КОНСТРУКТОР МАТЕРИАЛОВ
     // ============================================================
 
     function buildAdminBuilder() {
@@ -2104,7 +2121,7 @@
     }
 
     // ============================================================
-    // 18. КОНСТРУКТОР С ИИ
+    // 19. КОНСТРУКТОР С ИИ
     // ============================================================
 
     function buildAIBuilder() {
@@ -2214,7 +2231,7 @@
     }
 
     // ============================================================
-    // 19. РЕДАКТИРОВАНИЕ
+    // 20. РЕДАКТИРОВАНИЕ
     // ============================================================
 
     function openEditTrainerModal(trainerId) {
@@ -2448,7 +2465,7 @@
     }
 
     // ============================================================
-    // 20. ИНИЦИАЛИЗАЦИЯ
+    // 21. ИНИЦИАЛИЗАЦИЯ
     // ============================================================
 
     document.getElementById('loginPass').addEventListener('keydown', (e) => {
@@ -2459,8 +2476,18 @@
     });
 
     (async function init() {
-      const restored = await tryRestoreSession();
-      if (!restored) {
+      const restored = tryRestoreSession();
+      if (restored) {
+        // Проверяем, что ученик существует в Firebase
+        if (CURRENT_USER && !CURRENT_USER.isTeacher) {
+          const reg = await loadRegistry();
+          if (!reg[CURRENT_USER.key]) {
+            handleLogout();
+            return;
+          }
+        }
+        await startApp();
+      } else {
         document.getElementById('loginScreen').classList.remove('hidden');
       }
     })();
