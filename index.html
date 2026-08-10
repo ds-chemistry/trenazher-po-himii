@@ -382,8 +382,6 @@
     <div class="container" id="mainContainer"></div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- ===== СКРИПТЫ ===== -->
   <script type="module">
     // ============================================================
     // 1. ИНИЦИАЛИЗАЦИЯ FIREBASE
@@ -405,7 +403,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Сохраняем Firebase в window для доступа из onclick
     window.__db = db;
     window.__ref = ref;
     window.__set = set;
@@ -429,6 +426,7 @@
     let LESSONS = [];
     let HOMEWORKS = [];
     let VIEW = { name: 'home' };
+    let isLoading = true;
 
     // ============================================================
     // 3. РАБОТА С FIREBASE
@@ -460,12 +458,11 @@
     }
 
     async function loadRegistry() {
-      const reg = await loadFromFirebase('registry', {
+      return await loadFromFirebase('registry', {
         'anna': { name: 'Анна', password: 'anna123', createdAt: Date.now() },
         'maxim': { name: 'Максим', password: 'maxim123', createdAt: Date.now() + 1 },
         'elena': { name: 'Елена', password: 'elena123', createdAt: Date.now() + 2 }
       });
-      return reg;
     }
 
     async function saveRegistry(reg) {
@@ -473,8 +470,7 @@
     }
 
     async function loadSession() {
-      const session = await loadFromFirebase('session', null);
-      return session;
+      return await loadFromFirebase('session', null);
     }
 
     async function saveSession(s) {
@@ -486,8 +482,7 @@
     }
 
     async function getProgress(studentKey) {
-      const data = await loadFromFirebase(`progress/${studentKey}`, {});
-      return data;
+      return await loadFromFirebase(`progress/${studentKey}`, {});
     }
 
     async function persistFullProgress(studentKey, progress) {
@@ -499,6 +494,12 @@
       TRAINERS = await loadFromFirebase('content/trainers', defaultTrainers());
       LESSONS = await loadFromFirebase('content/lessons', defaultLessons());
       HOMEWORKS = await loadFromFirebase('content/homeworks', defaultHomeworks());
+
+      // Убеждаемся, что данные — это массивы
+      if (!Array.isArray(TOPICS)) TOPICS = defaultTopics();
+      if (!Array.isArray(TRAINERS)) TRAINERS = defaultTrainers();
+      if (!Array.isArray(LESSONS)) LESSONS = defaultLessons();
+      if (!Array.isArray(HOMEWORKS)) HOMEWORKS = defaultHomeworks();
 
       TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
@@ -562,12 +563,14 @@
     // ============================================================
 
     function escapeHtml(s) {
+      if (!s) return '';
       const d = document.createElement('div');
       d.textContent = s;
       return d.innerHTML;
     }
 
     function escapeAttr(s) {
+      if (!s) return '';
       return (s || '').replace(/"/g, '&quot;');
     }
 
@@ -712,7 +715,7 @@
     }
 
     function isManaging() {
-      return CURRENT_USER.isTeacher && !TEACH_MODE;
+      return CURRENT_USER && CURRENT_USER.isTeacher && !TEACH_MODE;
     }
 
     async function startApp() {
@@ -720,6 +723,7 @@
       document.getElementById('app').classList.remove('hidden');
       document.getElementById('whoLabel').textContent = CURRENT_USER.name + (CURRENT_USER.isTeacher ? ' · учитель' : '');
       await loadContent();
+      isLoading = false;
       VIEW = { name: 'home' };
       updateChrome();
       render();
@@ -786,6 +790,7 @@
     // ============================================================
 
     function render() {
+      if (isLoading) return;
       const c = document.getElementById('mainContainer');
       c.innerHTML = '';
       if (VIEW.name === 'home') renderHome(c);
@@ -797,7 +802,7 @@
     }
 
     // ============================================================
-    // 9. RENDER HOME
+    // 9. RENDER HOME (ИСПРАВЛЕННАЯ ВЕРСИЯ)
     // ============================================================
 
     async function renderHome(container) {
@@ -815,10 +820,8 @@
           <div class="maintab" id="tabStats">Статистика учеников</div>
           <div class="maintab" id="tabTeach">Обучаю</div>
         `;
-        tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' };
-          render(); };
-        tabs.querySelector('#tabStats').onclick = () => { VIEW = { name: 'stats' };
-          render(); };
+        tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' }; render(); };
+        tabs.querySelector('#tabStats').onclick = () => { VIEW = { name: 'stats' }; render(); };
         tabs.querySelector('#tabTeach').onclick = () => { window.enterTeachMode(); };
         wrap.appendChild(tabs);
         container.appendChild(wrap);
@@ -840,9 +843,10 @@
       }
 
       for (const topic of sortedTopics) {
-        const topicTrainers = TRAINERS.filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
-        const topicLessons = LESSONS.filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
-        const topicHomeworks = HOMEWORKS.filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
+        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что TRAINERS, LESSONS, HOMEWORKS существуют
+        const topicTrainers = (TRAINERS || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicLessons = (LESSONS || []).filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicHomeworks = (HOMEWORKS || []).filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
         if (topicTrainers.length === 0 && topicLessons.length === 0 && topicHomeworks.length === 0 && !isManaging()) continue;
 
         const block = document.createElement('div');
@@ -884,14 +888,16 @@
           let pct = 0;
           if (!CURRENT_USER.isTeacher) {
             const done = progress[trainer.id] ? Object.keys(progress[trainer.id]).filter(k => k !== '__finished' && progress[trainer.id][k].status === 'correct').length : 0;
-            pct = trainer.reactions.length ? Math.round(done / trainer.reactions.length * 100) : 0;
+            // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
+            const reactionsLength = (trainer.reactions || []).length;
+            pct = reactionsLength ? Math.round(done / reactionsLength * 100) : 0;
           }
           card.innerHTML = `
             <div class="card-top-row">
               <div><span class="kind">Тренажёр</span></div>
             </div>
             <h3>${escapeHtml(trainer.title)}</h3>
-            <div class="meta">${trainer.reactions.length} реакций</div>
+            <div class="meta">${(trainer.reactions || []).length} реакций</div>
             ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
             ${isManaging() ? `<div class="card-edit-row">
               <button class="icon-btn" data-act="up" title="Вверх">↑</button>
@@ -901,19 +907,13 @@
             </div>` : ''}
           `;
           if (isManaging()) {
-            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
-              moveTrainer(trainer.id, -1); };
-            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
-              moveTrainer(trainer.id, 1); };
-            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
-              openEditTrainerModal(trainer.id); };
-            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
-              deleteTrainerConfirm(trainer.id); };
-            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id };
-              render(); };
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation(); moveTrainer(trainer.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation(); moveTrainer(trainer.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation(); openEditTrainerModal(trainer.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation(); deleteTrainerConfirm(trainer.id); };
+            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id }; render(); };
           } else {
-            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id };
-              render(); };
+            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id }; render(); };
           }
           grid.appendChild(card);
         }
@@ -925,7 +925,7 @@
           card.innerHTML = `
             <span class="kind lesson">Урок</span>
             <h3>${escapeHtml(lesson.title)}</h3>
-            <div class="meta">${lesson.links.length} видео</div>
+            <div class="meta">${(lesson.links || []).length} видео</div>
             ${isManaging() ? `<div class="card-edit-row">
               <button class="icon-btn" data-act="up" title="Вверх">↑</button>
               <button class="icon-btn" data-act="down" title="Вниз">↓</button>
@@ -934,19 +934,13 @@
             </div>` : ''}
           `;
           if (isManaging()) {
-            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
-              moveLesson(lesson.id, -1); };
-            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
-              moveLesson(lesson.id, 1); };
-            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
-              openEditLessonModal(lesson.id); };
-            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
-              deleteLessonConfirm(lesson.id); };
-            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id };
-              renderLessonModal(lesson.id); };
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation(); moveLesson(lesson.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation(); moveLesson(lesson.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation(); openEditLessonModal(lesson.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation(); deleteLessonConfirm(lesson.id); };
+            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id }; renderLessonModal(lesson.id); };
           } else {
-            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id };
-              renderLessonModal(lesson.id); };
+            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id }; renderLessonModal(lesson.id); };
           }
           grid.appendChild(card);
         }
@@ -958,7 +952,7 @@
           card.innerHTML = `
             <span class="kind homework">Домашка</span>
             <h3>${escapeHtml(homework.title)}</h3>
-            <div class="meta">${homework.tasks ? homework.tasks.length : 0} заданий</div>
+            <div class="meta">${(homework.tasks || []).length} заданий</div>
             ${isManaging() ? `<div class="card-edit-row">
               <button class="icon-btn" data-act="up" title="Вверх">↑</button>
               <button class="icon-btn" data-act="down" title="Вниз">↓</button>
@@ -967,19 +961,13 @@
             </div>` : ''}
           `;
           if (isManaging()) {
-            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
-              moveHomework(homework.id, -1); };
-            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
-              moveHomework(homework.id, 1); };
-            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
-              openEditHomeworkModal(homework.id); };
-            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
-              deleteHomeworkConfirm(homework.id); };
-            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id };
-              render(); };
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation(); moveHomework(homework.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation(); moveHomework(homework.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation(); openEditHomeworkModal(homework.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation(); deleteHomeworkConfirm(homework.id); };
+            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id }; render(); };
           } else {
-            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id };
-              render(); };
+            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id }; render(); };
           }
           grid.appendChild(card);
         }
@@ -1023,7 +1011,7 @@
     }
 
     async function deleteTopicConfirm(topicId) {
-      const hasContent = TRAINERS.some(t => t.topicId === topicId) || LESSONS.some(l => l.topicId === topicId) || HOMEWORKS.some(h => h.topicId === topicId);
+      const hasContent = (TRAINERS || []).some(t => t.topicId === topicId) || (LESSONS || []).some(l => l.topicId === topicId) || (HOMEWORKS || []).some(h => h.topicId === topicId);
       window.showConfirmModal('Удалить тему?', hasContent ? 'В этой теме есть тренажёры, уроки или домашки — они тоже будут удалены.' : 'Тема будет удалена.', async () => {
         TOPICS = TOPICS.filter(t => t.id !== topicId);
         TRAINERS = TRAINERS.filter(t => t.topicId !== topicId);
@@ -1109,8 +1097,7 @@
 
     async function renderTrainer(container, trainerId) {
       const trainer = TRAINERS.find(t => t.id === trainerId);
-      if (!trainer) { VIEW = { name: 'home' };
-        render(); return; }
+      if (!trainer) { VIEW = { name: 'home' }; render(); return; }
 
       const isRealStudent = !CURRENT_USER.isTeacher;
       let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
@@ -1152,10 +1139,11 @@
       }
 
       function computeSummary() {
-        const total = trainer.reactions.length;
-        let correct = 0,
-          answered = 0;
-        trainer.reactions.forEach((_, i) => {
+        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
+        const reactions = trainer.reactions || [];
+        const total = reactions.length;
+        let correct = 0, answered = 0;
+        reactions.forEach((_, i) => {
           const e = trainerProgress[i];
           if (e) { answered++; if (e.status === 'correct') correct++; }
         });
@@ -1164,7 +1152,9 @@
 
       function renderList() {
         list.innerHTML = '';
-        trainer.reactions.forEach((rxn, idx) => {
+        // ⭐ ИСПРАВЛЕНИЕ: проверяем, что trainer.reactions существует
+        const reactions = trainer.reactions || [];
+        reactions.forEach((rxn, idx) => {
           const entry = trainerProgress[idx];
           const card = document.createElement('div');
           card.className = 'rxn-card' + (entry ? (entry.status === 'correct' ? ' state-correct' : ' state-wrong') : '');
@@ -1208,7 +1198,7 @@
               const idx = parseInt(btn.dataset.idx);
               const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
               const val = input.value;
-              const rxn = trainer.reactions[idx];
+              const rxn = reactions[idx];
               const isCorrect = checkAnswer(rxn, val);
               trainerProgress[idx] = { status: isCorrect ? 'correct' : 'wrong', answer: val };
               await persist();
@@ -1226,8 +1216,7 @@
               renderList();
               renderFooter();
               const newInput = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
-              if (newInput) { newInput.value = keepVal;
-                newInput.focus(); }
+              if (newInput) { newInput.value = keepVal; newInput.focus(); }
             };
           });
         }
@@ -1293,8 +1282,7 @@
 
     async function renderHomework(container, homeworkId) {
       const homework = HOMEWORKS.find(h => h.id === homeworkId);
-      if (!homework) { VIEW = { name: 'home' };
-        render(); return; }
+      if (!homework) { VIEW = { name: 'home' }; render(); return; }
 
       const isRealStudent = !CURRENT_USER.isTeacher;
       let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
@@ -1336,25 +1324,24 @@
       }
 
       function computeSummary() {
-        const total = homework.tasks ? homework.tasks.length : 0;
-        let correct = 0,
-          answered = 0;
-        if (homework.tasks) {
-          homework.tasks.forEach((_, i) => {
-            const e = hwProgress[i];
-            if (e) { answered++; if (e.status === 'correct') correct++; }
-          });
-        }
+        const tasks = homework.tasks || [];
+        const total = tasks.length;
+        let correct = 0, answered = 0;
+        tasks.forEach((_, i) => {
+          const e = hwProgress[i];
+          if (e) { answered++; if (e.status === 'correct') correct++; }
+        });
         return { total, correct, answered };
       }
 
       function renderList() {
         list.innerHTML = '';
-        if (!homework.tasks || homework.tasks.length === 0) {
+        const tasks = homework.tasks || [];
+        if (tasks.length === 0) {
           list.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
           return;
         }
-        homework.tasks.forEach((task, idx) => {
+        tasks.forEach((task, idx) => {
           const entry = hwProgress[idx];
           const card = document.createElement('div');
           card.className = 'rxn-card' + (entry ? (entry.status === 'correct' ? ' state-correct' : ' state-wrong') : '');
@@ -1395,7 +1382,7 @@
               const idx = parseInt(btn.dataset.idx);
               const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
               const val = input.value.trim();
-              const task = homework.tasks[idx];
+              const task = tasks[idx];
               const isCorrect = val.toLowerCase() === task.answer.toLowerCase().trim();
               hwProgress[idx] = { status: isCorrect ? 'correct' : 'wrong', answer: val };
               await persist();
@@ -1413,8 +1400,7 @@
               renderList();
               renderFooter();
               const newInput = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
-              if (newInput) { newInput.value = keepVal;
-                newInput.focus(); }
+              if (newInput) { newInput.value = keepVal; newInput.focus(); }
             };
           });
         }
@@ -1489,11 +1475,12 @@
       modal.className = 'modal';
       modal.style.maxWidth = '480px';
 
+      const links = lesson.links || [];
       let linksHtml = '';
-      if (lesson.links.length === 0) {
+      if (links.length === 0) {
         linksHtml = `<div class="empty-note">Видео пока не добавлено.</div>`;
       } else {
-        linksHtml = `<div class="lesson-video-list">` + lesson.links.map(l => `<a class="lesson-link" href="${escapeAttr(l.url)}" target="_blank" rel="noopener">▶ ${escapeHtml(l.label||'Смотреть видео')}</a>`).join('') + `</div>`;
+        linksHtml = `<div class="lesson-video-list">` + links.map(l => `<a class="lesson-link" href="${escapeAttr(l.url)}" target="_blank" rel="noopener">▶ ${escapeHtml(l.label||'Смотреть видео')}</a>`).join('') + `</div>`;
       }
 
       modal.innerHTML = `
@@ -1535,8 +1522,7 @@
         <div class="maintab active" id="tabStats">Статистика учеников</div>
         <div class="maintab" id="tabTeach">Обучаю</div>
       `;
-      tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' };
-        render(); };
+      tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' }; render(); };
       tabs.querySelector('#tabTeach').onclick = () => { window.enterTeachMode(); };
       wrap.appendChild(tabs);
 
@@ -1573,31 +1559,34 @@
           let lessonsViewed = 0;
           let homeworksDone = 0;
 
+          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что TRAINERS существует
           for (const trainerId in progress) {
-            const trainer = TRAINERS.find(t => t.id === trainerId);
+            const trainer = (TRAINERS || []).find(t => t.id === trainerId);
             if (!trainer) continue;
             const trainerData = progress[trainerId];
             if (trainerData.__finished !== true) continue;
             totalTrainers++;
             const correctCount = Object.keys(trainerData).filter(k => k !== '__finished' && trainerData[k].status === 'correct').length;
             totalCorrect += correctCount;
-            totalReactions += trainer.reactions.length;
+            totalReactions += (trainer.reactions || []).length;
           }
 
-          for (const lesson of LESSONS) {
+          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что LESSONS существует
+          for (const lesson of (LESSONS || [])) {
             if (progress['lesson:' + lesson.id] === true) {
               lessonsViewed++;
             }
           }
 
-          for (const homework of HOMEWORKS) {
+          // ⭐ ИСПРАВЛЕНИЕ: проверяем, что HOMEWORKS существует
+          for (const homework of (HOMEWORKS || [])) {
             if (progress[homework.id] && progress[homework.id].__finished === true) {
               homeworksDone++;
             }
           }
 
-          const totalLessons = LESSONS.length;
-          const totalHomeworks = HOMEWORKS.length;
+          const totalLessons = (LESSONS || []).length;
+          const totalHomeworks = (HOMEWORKS || []).length;
 
           row.innerHTML = `
             <div class="student-row-top">
@@ -1696,8 +1685,7 @@
       const backRow = document.createElement('div');
       backRow.className = 'back-row';
       backRow.innerHTML = `<button class="back-btn">← Назад к списку</button>`;
-      backRow.querySelector('.back-btn').onclick = () => { VIEW = { name: 'stats' };
-        render(); };
+      backRow.querySelector('.back-btn').onclick = () => { VIEW = { name: 'stats' }; render(); };
       wrap.appendChild(backRow);
 
       const title = document.createElement('h1');
@@ -1713,10 +1701,10 @@
 
       const trainerStats = [];
       for (const topic of sortedTopics) {
-        const topicTrainers = TRAINERS.filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicTrainers = (TRAINERS || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
         for (const trainer of topicTrainers) {
           const trainerData = progress[trainer.id] || {};
-          const total = trainer.reactions.length;
+          const total = (trainer.reactions || []).length;
           const correct = Object.keys(trainerData).filter(k => k !== '__finished' && trainerData[k].status === 'correct').length;
           const finished = trainerData.__finished === true;
           const pct = total ? Math.round(correct / total * 100) : 0;
@@ -1735,10 +1723,10 @@
 
       const homeworkStats = [];
       for (const topic of sortedTopics) {
-        const topicHomeworks = HOMEWORKS.filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicHomeworks = (HOMEWORKS || []).filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
         for (const homework of topicHomeworks) {
           const hwData = progress[homework.id] || {};
-          const total = homework.tasks ? homework.tasks.length : 0;
+          const total = (homework.tasks || []).length;
           const correct = Object.keys(hwData).filter(k => k !== '__finished' && hwData[k].status === 'correct').length;
           const finished = hwData.__finished === true;
           const pct = total ? Math.round(correct / total * 100) : 0;
@@ -1756,7 +1744,7 @@
       }
 
       const lessonStats = [];
-      for (const lesson of LESSONS) {
+      for (const lesson of (LESSONS || [])) {
         const viewed = progress['lesson:' + lesson.id] === true;
         const topic = TOPICS.find(t => t.id === lesson.topicId);
         lessonStats.push({
@@ -1870,8 +1858,7 @@
         await saveRegistry(reg);
         await remove(ref(db, `progress/${studentKey}`));
         if (VIEW.name === 'stats') renderStats(document.getElementById('mainContainer'));
-        else { VIEW = { name: 'stats' };
-          render(); }
+        else { VIEW = { name: 'stats' }; render(); }
       });
     }
 
@@ -2029,8 +2016,7 @@
 
         if (type === 'topic') {
           const name = document.getElementById('fTopicName').value.trim();
-          if (!name) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Введите название темы.'; return; }
+          if (!name) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название темы.'; return; }
           const id = 'topic_' + Date.now();
           const maxOrder = TOPICS.length ? Math.max(...TOPICS.map(t => t.order)) : -1;
           TOPICS.push({ id, name, order: maxOrder + 1 });
@@ -2041,8 +2027,7 @@
         } else if (type === 'trainer') {
           const title = document.getElementById('fTrainerTitle').value.trim();
           const topicId = topicSel.value;
-          if (!title) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Введите название тренажёра.'; return; }
+          if (!title) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название тренажёра.'; return; }
 
           const container2 = fieldsBox.querySelector('#rxnRowsContainer');
           const rows = [...container2.querySelectorAll('.rxn-row-builder')];
@@ -2061,8 +2046,7 @@
               reactions.push({ lhs, valid: true, correctSets: [products], explanation: explain, fullEquation: full });
             }
           }
-          if (reactions.length === 0) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Добавьте хотя бы одну заполненную реакцию.'; return; }
+          if (reactions.length === 0) { msg.style.color = 'var(--bad)'; msg.textContent = 'Добавьте хотя бы одну заполненную реакцию.'; return; }
 
           const id = 'trainer_' + Date.now();
           const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
@@ -2073,8 +2057,7 @@
         } else if (type === 'lesson') {
           const title = document.getElementById('fLessonTitle').value.trim();
           const topicId = topicSel.value;
-          if (!title) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Введите название урока.'; return; }
+          if (!title) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название урока.'; return; }
 
           const container2 = fieldsBox.querySelector('#lessonRowsContainer');
           const rows = [...container2.querySelectorAll('.rxn-row-builder')];
@@ -2094,8 +2077,7 @@
         } else if (type === 'homework') {
           const title = document.getElementById('fHomeworkTitle').value.trim();
           const topicId = topicSel.value;
-          if (!title) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Введите название домашки.'; return; }
+          if (!title) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название домашки.'; return; }
 
           const container2 = fieldsBox.querySelector('#homeworkRowsContainer');
           const rows = [...container2.querySelectorAll('.rxn-row-builder')];
@@ -2107,8 +2089,7 @@
             if (!question || !answer) continue;
             tasks.push({ question, answer, explanation: explain || '' });
           }
-          if (tasks.length === 0) { msg.style.color = 'var(--bad)';
-            msg.textContent = 'Добавьте хотя бы одно задание.'; return; }
+          if (tasks.length === 0) { msg.style.color = 'var(--bad)'; msg.textContent = 'Добавьте хотя бы одно задание.'; return; }
 
           const id = 'homework_' + Date.now();
           const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
