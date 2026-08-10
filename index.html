@@ -375,15 +375,16 @@ small.help{color:var(--ink-soft);font-size:12px;display:block;margin:4px 0 12px;
 
 <script>
 /* =========================================================================
-   Основная логика платформы с интегрированной статистикой учеников
-   Использует localStorage для хранения данных
+   ВСЕ ДАННЫЕ ХРАНЯТСЯ В ОБЩЕМ ХРАНИЛИЩЕ (синхронизация через кнопку)
+   Ученики добавляются в общий список → видны всем
    ========================================================================= */
 
 const TEACHER_LOGIN = 'admin';
 const TEACHER_PASS  = 'admin123';
-const REG_KEY = 'chem_registry_v1';
+const REG_KEY = 'chem_registry_shared_v2';
 const SESSION_KEY = 'chem_session_v1';
 const PROGRESS_PREFIX = 'chem_progress_';
+const CONTENT_KEY = 'chem_content_v2';
 
 let CURRENT_USER = null;
 let TEACH_MODE = false;
@@ -392,9 +393,10 @@ let TRAINERS = [];
 let LESSONS = [];
 let HOMEWORKS = [];
 let VIEW = {name:'home'};
+let isTeacher = false;
 
-/* ---------- storage helpers ---------- */
-function loadRegistry(){
+/* ---------- ОБЩЕЕ ХРАНИЛИЩЕ ДЛЯ ВСЕХ ---------- */
+function loadSharedRegistry(){
   try{
     const raw = localStorage.getItem(REG_KEY);
     if(!raw){
@@ -409,7 +411,7 @@ function loadRegistry(){
     return JSON.parse(raw);
   }catch(e){ return {}; }
 }
-function saveRegistry(reg){
+function saveSharedRegistry(reg){
   try{
     localStorage.setItem(REG_KEY, JSON.stringify(reg));
     return true;
@@ -450,6 +452,32 @@ async function getProgress(studentKey){
 }
 async function persistFullProgress(studentKey, progress){
   storeSet(PROGRESS_PREFIX+studentKey, progress);
+}
+
+/* ---------- Синхронизация контента ---------- */
+function loadContentFromTeacher(){
+  const raw = localStorage.getItem(CONTENT_KEY);
+  if(raw){
+    try{
+      const data = JSON.parse(raw);
+      TOPICS = data.topics || [];
+      TRAINERS = data.trainers || [];
+      LESSONS = data.lessons || [];
+      HOMEWORKS = data.homeworks || [];
+      return true;
+    }catch(e){}
+  }
+  return false;
+}
+function saveContentToTeacher(){
+  const data = {
+    topics: TOPICS,
+    trainers: TRAINERS,
+    lessons: LESSONS,
+    homeworks: HOMEWORKS,
+    updatedAt: Date.now()
+  };
+  localStorage.setItem(CONTENT_KEY, JSON.stringify(data));
 }
 
 /* ---------- Default content ---------- */
@@ -554,15 +582,18 @@ async function handleLogin(){
 
   if(!nameInput || !passInput){ errBox.textContent = 'Введите имя и пароль.'; return; }
 
+  // Учитель
   if(nameInput.toLowerCase() === TEACHER_LOGIN && passInput === TEACHER_PASS){
     CURRENT_USER = {name:'Учитель', key:'__teacher__', isTeacher:true};
+    isTeacher = true;
     TEACH_MODE = false;
     saveSession({key:'__teacher__', isTeacher:true, name:'Учитель'});
     await startApp();
     return;
   }
 
-  const reg = loadRegistry();
+  // Ученик — проверяем в ОБЩЕМ реестре
+  const reg = loadSharedRegistry();
   const key = nameInput.toLowerCase();
 
   if(!reg[key]){
@@ -574,6 +605,7 @@ async function handleLogin(){
     return;
   }
   CURRENT_USER = {name:reg[key].name, key, isTeacher:false};
+  isTeacher = false;
   saveSession({key, isTeacher:false, name:CURRENT_USER.name});
   await startApp();
 }
@@ -581,6 +613,7 @@ async function handleLogin(){
 async function handleLogout(){
   clearSession();
   CURRENT_USER = null;
+  isTeacher = false;
   TEACH_MODE = false;
   document.getElementById('app').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
@@ -593,10 +626,12 @@ async function tryRestoreSession(){
   if(!s) return false;
   if(s.isTeacher){
     CURRENT_USER = {name:'Учитель', key:'__teacher__', isTeacher:true};
+    isTeacher = true;
   } else {
-    const reg = loadRegistry();
+    const reg = loadSharedRegistry();
     if(!reg[s.key]) return false;
     CURRENT_USER = {name:reg[s.key].name, key:s.key, isTeacher:false};
+    isTeacher = false;
   }
   await startApp();
   return true;
@@ -634,23 +669,25 @@ function isManaging(){
 }
 
 async function loadContent(){
-  TOPICS = storeGet('content:topics');
-  if(!TOPICS){ TOPICS = defaultTopics(); storeSet('content:topics', TOPICS); }
-  TRAINERS = storeGet('content:trainers');
-  if(!TRAINERS){ TRAINERS = defaultTrainers(); storeSet('content:trainers', TRAINERS); }
-  LESSONS = storeGet('content:lessons');
-  if(!LESSONS){ LESSONS = defaultLessons(); storeSet('content:lessons', LESSONS); }
-  HOMEWORKS = storeGet('content:homeworks');
-  if(!HOMEWORKS){ HOMEWORKS = defaultHomeworks(); storeSet('content:homeworks', HOMEWORKS); }
+  const hasContent = loadContentFromTeacher();
+  if(!hasContent){
+    TOPICS = defaultTopics();
+    TRAINERS = defaultTrainers();
+    LESSONS = defaultLessons();
+    HOMEWORKS = defaultHomeworks();
+    if(CURRENT_USER && CURRENT_USER.isTeacher){
+      saveContentToTeacher();
+    }
+  }
   TOPICS.forEach((t,i)=>{ if(t.order===undefined) t.order=i; });
   TRAINERS.forEach((t,i)=>{ if(t.order===undefined) t.order=i; });
   LESSONS.forEach((t,i)=>{ if(t.order===undefined) t.order=i; });
   HOMEWORKS.forEach((t,i)=>{ if(t.order===undefined) t.order=i; });
 }
-async function persistTopics(){ storeSet('content:topics', TOPICS); }
-async function persistTrainers(){ storeSet('content:trainers', TRAINERS); }
-async function persistLessons(){ storeSet('content:lessons', LESSONS); }
-async function persistHomeworks(){ storeSet('content:homeworks', HOMEWORKS); }
+
+async function persistAllContent(){
+  saveContentToTeacher();
+}
 
 async function startApp(){
   document.getElementById('loginScreen').classList.add('hidden');
@@ -702,10 +739,16 @@ async function renderHome(container){
       <div class="maintab active" id="tabContent">Содержание</div>
       <div class="maintab" id="tabStats">Статистика учеников</div>
       <div class="maintab" id="tabTeach">Обучаю</div>
+      <div class="maintab" id="tabSync">🔄 Синхронизировать</div>
     `;
     tabs.querySelector('#tabContent').onclick = ()=>{ VIEW={name:'home'}; render(); };
     tabs.querySelector('#tabStats').onclick = ()=>{ VIEW={name:'stats'}; render(); };
     tabs.querySelector('#tabTeach').onclick = ()=>{ enterTeachMode(); };
+    tabs.querySelector('#tabSync').onclick = ()=>{
+      persistAllContent();
+      alert('✅ Контент и список учеников сохранены! Ученики увидят изменения при следующем входе или обновлении страницы.');
+      render();
+    };
     wrap.appendChild(tabs);
     container.appendChild(wrap);
 
@@ -876,7 +919,7 @@ async function moveTopic(topicId, dir){
   const tmp = sorted[idx].order;
   sorted[idx].order = sorted[swapIdx].order;
   sorted[swapIdx].order = tmp;
-  await persistTopics();
+  await persistAllContent();
   render();
 }
 async function renameTopicPrompt(topicId){
@@ -884,7 +927,7 @@ async function renameTopicPrompt(topicId){
   showPromptModal('Переименовать тему', topic.name, async (val)=>{
     if(!val.trim()) return;
     topic.name = val.trim();
-    await persistTopics();
+    await persistAllContent();
     render();
   });
 }
@@ -895,7 +938,7 @@ async function deleteTopicConfirm(topicId){
     TRAINERS = TRAINERS.filter(t=>t.topicId!==topicId);
     LESSONS = LESSONS.filter(l=>l.topicId!==topicId);
     HOMEWORKS = HOMEWORKS.filter(h=>h.topicId!==topicId);
-    await persistTopics(); await persistTrainers(); await persistLessons(); await persistHomeworks();
+    await persistAllContent();
     render();
   });
 }
@@ -909,13 +952,13 @@ async function moveTrainer(trainerId, dir){
   const tmp = siblings[idx].order;
   siblings[idx].order = siblings[swapIdx].order;
   siblings[swapIdx].order = tmp;
-  await persistTrainers();
+  await persistAllContent();
   render();
 }
 async function deleteTrainerConfirm(trainerId){
   showConfirmModal('Удалить тренажёр?', 'Это действие нельзя отменить.', async ()=>{
     TRAINERS = TRAINERS.filter(t=>t.id!==trainerId);
-    await persistTrainers();
+    await persistAllContent();
     render();
   });
 }
@@ -929,13 +972,13 @@ async function moveLesson(lessonId, dir){
   const tmp = siblings[idx].order;
   siblings[idx].order = siblings[swapIdx].order;
   siblings[swapIdx].order = tmp;
-  await persistLessons();
+  await persistAllContent();
   render();
 }
 async function deleteLessonConfirm(lessonId){
   showConfirmModal('Удалить урок?', 'Это действие нельзя отменить.', async ()=>{
     LESSONS = LESSONS.filter(l=>l.id!==lessonId);
-    await persistLessons();
+    await persistAllContent();
     render();
   });
 }
@@ -949,13 +992,13 @@ async function moveHomework(homeworkId, dir){
   const tmp = siblings[idx].order;
   siblings[idx].order = siblings[swapIdx].order;
   siblings[swapIdx].order = tmp;
-  await persistHomeworks();
+  await persistAllContent();
   render();
 }
 async function deleteHomeworkConfirm(homeworkId){
   showConfirmModal('Удалить домашку?', 'Это действие нельзя отменить.', async ()=>{
     HOMEWORKS = HOMEWORKS.filter(h=>h.id!==homeworkId);
-    await persistHomeworks();
+    await persistAllContent();
     render();
   });
 }
@@ -1402,11 +1445,11 @@ function closeLessonModal(){
   render();
 }
 
-/* ---------- СТАТИСТИКА УЧЕНИКОВ (НЕ ТРОГАТЬ!) ---------- */
+/* ---------- СТАТИСТИКА УЧЕНИКОВ ---------- */
 async function renderStats(container){
   container.innerHTML = '';
   
-  const reg = loadRegistry();
+  const reg = loadSharedRegistry();
   const sortedKeys = Object.keys(reg).sort((a,b)=>(reg[a].createdAt||0)-(reg[b].createdAt||0));
 
   const wrap = document.createElement('div');
@@ -1418,9 +1461,15 @@ async function renderStats(container){
     <div class="maintab" id="tabContent">Содержание</div>
     <div class="maintab active" id="tabStats">Статистика учеников</div>
     <div class="maintab" id="tabTeach">Обучаю</div>
+    <div class="maintab" id="tabSync">🔄 Синхронизировать</div>
   `;
   tabs.querySelector('#tabContent').onclick = ()=>{ VIEW={name:'home'}; render(); };
   tabs.querySelector('#tabTeach').onclick = ()=>{ enterTeachMode(); };
+  tabs.querySelector('#tabSync').onclick = ()=>{
+    persistAllContent();
+    alert('✅ Контент и список учеников синхронизированы!');
+    render();
+  };
   wrap.appendChild(tabs);
 
   const addBox = document.createElement('div');
@@ -1541,7 +1590,7 @@ async function renderStats(container){
       return;
     }
 
-    const reg = loadRegistry();
+    const reg = loadSharedRegistry();
     const key = name.toLowerCase();
     if(reg[key]){
       msgDiv.textContent = 'Ученик с таким именем уже существует.';
@@ -1550,10 +1599,12 @@ async function renderStats(container){
     }
 
     reg[key] = {name, password, createdAt: Date.now()};
-    saveRegistry(reg);
+    saveSharedRegistry(reg);
+    // Сразу синхронизируем, чтобы ученики увидели
+    await persistAllContent();
     nameInput.value = '';
     passInput.value = '';
-    msgDiv.textContent = '✅ Ученик добавлен!';
+    msgDiv.textContent = '✅ Ученик добавлен и синхронизирован!';
     msgDiv.style.color = 'var(--ok)';
     renderStats(container);
   };
@@ -1561,7 +1612,7 @@ async function renderStats(container){
 
 /* ---------- ДЕТАЛЬНАЯ СТАТИСТИКА УЧЕНИКА ---------- */
 async function renderStudentDetail(container, studentKey){
-  const reg = loadRegistry();
+  const reg = loadSharedRegistry();
   const student = reg[studentKey];
   if(!student){
     VIEW={name:'stats'};
@@ -1723,28 +1774,30 @@ async function renderStudentDetail(container, studentKey){
 
 /* ---------- ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ УЧЕНИКАМИ ---------- */
 async function showChangePasswordModal(studentKey){
-  const reg = loadRegistry();
+  const reg = loadSharedRegistry();
   const student = reg[studentKey];
   if(!student) return;
 
   showPromptModal(`Смена пароля для ${student.name}`, '', async (newPass)=>{
     if(!newPass.trim()) return;
     student.password = newPass.trim();
-    saveRegistry(reg);
+    saveSharedRegistry(reg);
+    await persistAllContent();
     if(VIEW.name==='stats') renderStats(document.getElementById('mainContainer'));
     else if(VIEW.name==='studentDetail') renderStudentDetail(document.getElementById('mainContainer'), studentKey);
   });
 }
 
 async function showDeleteStudentConfirm(studentKey){
-  const reg = loadRegistry();
+  const reg = loadSharedRegistry();
   const student = reg[studentKey];
   if(!student) return;
 
   showConfirmModal(`Удалить ученика ${student.name}?`, 'Все данные прогресса будут удалены без возможности восстановления.', async ()=>{
     delete reg[studentKey];
-    saveRegistry(reg);
+    saveSharedRegistry(reg);
     storeDelete(PROGRESS_PREFIX+studentKey);
+    await persistAllContent();
     if(VIEW.name==='stats') renderStats(document.getElementById('mainContainer'));
     else { VIEW={name:'stats'}; render(); }
   });
@@ -1905,7 +1958,7 @@ function buildAdminBuilder(){
       const id = 'topic_'+Date.now();
       const maxOrder = TOPICS.length ? Math.max(...TOPICS.map(t=>t.order)) : -1;
       TOPICS.push({id, name, order:maxOrder+1});
-      await persistTopics();
+      await persistAllContent();
       msg.textContent = '✅ Тема добавлена!';
       refreshTopicOptions();
       render();
@@ -1937,7 +1990,7 @@ function buildAdminBuilder(){
       const id = 'trainer_'+Date.now();
       const siblingsMax = TRAINERS.filter(t=>t.topicId===topicId).reduce((m,t)=>Math.max(m,t.order),-1);
       TRAINERS.push({id, topicId, title, order:siblingsMax+1, reactions});
-      await persistTrainers();
+      await persistAllContent();
       msg.textContent = '✅ Тренажёр добавлен!';
       render();
     }
@@ -1958,7 +2011,7 @@ function buildAdminBuilder(){
       const id = 'lesson_'+Date.now();
       const siblingsMax = LESSONS.filter(l=>l.topicId===topicId).reduce((m,l)=>Math.max(m,l.order),-1);
       LESSONS.push({id, topicId, title, order:siblingsMax+1, links});
-      await persistLessons();
+      await persistAllContent();
       msg.textContent = '✅ Урок добавлен!';
       render();
     }
@@ -1982,7 +2035,7 @@ function buildAdminBuilder(){
       const id = 'homework_'+Date.now();
       const siblingsMax = HOMEWORKS.filter(h=>h.topicId===topicId).reduce((m,h)=>Math.max(m,h.order),-1);
       HOMEWORKS.push({id, topicId, title, order:siblingsMax+1, tasks});
-      await persistHomeworks();
+      await persistAllContent();
       msg.textContent = '✅ Домашка добавлена!';
       render();
     }
@@ -2048,7 +2101,6 @@ function buildAIBuilder(){
     for(const line of lines){
       const parts = line.split('|').map(p=>p.trim());
       if(type==='trainer'){
-        // Формат: задание | ответ | пояснение | полное уравнение
         const lhs = parts[0] || '';
         const answer = parts[1] || '';
         const explain = parts[2] || '';
@@ -2063,7 +2115,6 @@ function buildAIBuilder(){
           results.push({lhs, valid:true, correctSets:[products], explanation:explain || '', fullEquation: full || ''});
         }
       } else if(type==='homework'){
-        // Формат: вопрос | ответ | пояснение
         const question = parts[0] || '';
         const answer = parts[1] || '';
         const explain = parts[2] || '';
@@ -2084,11 +2135,11 @@ function buildAIBuilder(){
 
     if(type==='trainer'){
       TRAINERS.push({id, topicId, title, order:siblingsMax+1, reactions: results});
-      await persistTrainers();
     } else {
       HOMEWORKS.push({id, topicId, title, order:siblingsMax+1, tasks: results});
-      await persistHomeworks();
     }
+    
+    await persistAllContent();
 
     msgDiv.style.color = 'var(--ok)';
     msgDiv.textContent = `✅ ${type==='trainer' ? 'Тренажёр' : 'Домашка'} "${title}" создан${type==='homework'?'а':''} с ${results.length} задани${results.length===1?'ем':'ями'}!`;
@@ -2184,7 +2235,7 @@ function openEditTrainerModal(trainerId){
 
     trainer.title = title;
     trainer.reactions = newReactions;
-    await persistTrainers();
+    await persistAllContent();
     bg.remove();
     render();
   };
@@ -2254,7 +2305,7 @@ function openEditLessonModal(lessonId){
     }
     lesson.title = title;
     lesson.links = newLinks;
-    await persistLessons();
+    await persistAllContent();
     bg.remove();
     render();
   };
@@ -2327,7 +2378,7 @@ function openEditHomeworkModal(homeworkId){
     if(newTasks.length===0) return;
     homework.title = title;
     homework.tasks = newTasks;
-    await persistHomeworks();
+    await persistAllContent();
     bg.remove();
     render();
   };
@@ -2349,4 +2400,4 @@ document.getElementById('loginName').addEventListener('keydown', (e)=>{
 })();
 </script>
 </body>
-</html>
+  </html>
