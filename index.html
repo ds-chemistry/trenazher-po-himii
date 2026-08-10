@@ -16,7 +16,7 @@
   </script>
 
   <style>
-    /* ===== ТВОЙ ДИЗАЙН ===== */
+    /* ===== ДИЗАЙН ===== */
     :root {
       --bg: #f6f7f9;
       --surface: #ffffff;
@@ -34,166 +34,70 @@
       --radius-sm: 10px;
       font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
       background: var(--bg);
       color: var(--ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
-    .hidden {
-      display: none !important;
-    }
-    .eqx sub {
-      font-size: .64em;
-      position: relative;
-      bottom: -0.15em;
-    }
-    .eqx {
-      white-space: normal;
-      word-break: break-word;
-    }
+    .hidden { display: none !important; }
+    .eqx sub { font-size: .64em; position: relative; bottom: -0.15em; }
+    .eqx { white-space: normal; word-break: break-word; }
 
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      position: sticky; top: 0; z-index: 50;
       background: var(--surface);
       border-bottom: 1px solid var(--line);
       padding: 14px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       gap: 12px;
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: -.01em;
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 16px; letter-spacing: -.01em;
       cursor: pointer;
     }
     .brand .mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
+      width: 30px; height: 30px; border-radius: 9px;
       background: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 14px; font-weight: 800;
     }
     .mode-banner {
-      background: #fff3d6;
-      border-bottom: 1px solid #f0d998;
-      color: #7a5c10;
-      padding: 9px 22px;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
+      background: #fff3d6; border-bottom: 1px solid #f0d998; color: #7a5c10;
+      padding: 9px 22px; font-size: 13px; font-weight: 600; text-align: center;
     }
-    .userbox {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--ink-soft);
-    }
-    .userbox .who {
-      font-weight: 600;
-      color: var(--ink);
-    }
+    .userbox { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-soft); }
+    .userbox .who { font-weight: 600; color: var(--ink); }
     .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 9px 16px;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
+      border: none; border-radius: 10px; padding: 9px 16px;
+      font-size: 13.5px; font-weight: 600; cursor: pointer;
       transition: transform .08s ease, opacity .15s ease, background .15s ease;
       font-family: inherit;
     }
-    .btn:active {
-      transform: scale(.97);
-    }
-    .btn:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-    }
-    .btn-primary {
-      background: var(--ink);
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: #000;
-    }
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-    }
-    .btn-accent:hover {
-      opacity: .92;
-    }
-    .btn-ghost {
-      background: transparent;
-      color: var(--ink-soft);
-      border: 1px solid var(--line);
-    }
-    .btn-ghost:hover {
-      background: var(--bg);
-    }
-    .btn-danger {
-      background: var(--bad-bg);
-      color: var(--bad);
-    }
-    .btn-danger:hover {
-      opacity: .85;
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 12.5px;
-      border-radius: 8px;
-    }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-primary:hover { background: #000; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { opacity: .92; }
+    .btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: var(--bg); }
+    .btn-danger { background: var(--bad-bg); color: var(--bad); }
+    .btn-danger:hover { opacity: .85; }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 8px; }
     .icon-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--ink-soft);
-      flex-shrink: 0;
+      width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px;
+      color: var(--ink-soft); flex-shrink: 0;
     }
-    .icon-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .icon-btn.danger:hover {
-      border-color: var(--bad);
-      color: var(--bad);
-    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-btn.danger:hover { border-color: var(--bad); color: var(--bad); }
 
     .login-wrap {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
       padding: 24px;
     }
     .login-card {
@@ -201,145 +105,51 @@
       border-radius: 20px;
       box-shadow: var(--shadow);
       padding: 40px 36px;
-      width: 100%;
-      max-width: 380px;
+      width: 100%; max-width: 380px;
     }
     .login-card .mark-lg {
-      width: 46px;
-      height: 46px;
-      border-radius: 13px;
-      background: var(--ink);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 20px;
-      margin-bottom: 20px;
+      width: 46px; height: 46px; border-radius: 13px; background: var(--ink);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 20px; margin-bottom: 20px;
     }
-    .login-card h1 {
-      font-size: 21px;
-      margin: 0 0 6px;
-      letter-spacing: -.02em;
-    }
-    .login-card p.sub {
-      margin: 0 0 26px;
-      color: var(--ink-soft);
-      font-size: 13.5px;
-    }
-    .field {
-      margin-bottom: 14px;
-    }
-    .field label {
-      display: block;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--ink-soft);
-      margin-bottom: 6px;
-    }
-    .field input,
-    .field select {
-      width: 100%;
-      padding: 11px 13px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      font-size: 14.5px;
-      font-family: inherit;
-      background: #fbfbfc;
+    .login-card h1 { font-size: 21px; margin: 0 0 6px; letter-spacing: -.02em; }
+    .login-card p.sub { margin: 0 0 26px; color: var(--ink-soft); font-size: 13.5px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--line);
+      font-size: 14.5px; font-family: inherit; background: #fbfbfc;
       transition: border .15s;
     }
-    .field input:focus,
-    .field select:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: #fff;
-    }
-    .login-card .btn {
-      width: 100%;
-      padding: 12px;
-      font-size: 14.5px;
-      margin-top: 6px;
-    }
-    .login-err {
-      color: var(--bad);
-      font-size: 12.5px;
-      margin-top: 10px;
-      min-height: 16px;
-    }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .login-card .btn { width: 100%; padding: 12px; font-size: 14.5px; margin-top: 6px; }
+    .login-err { color: var(--bad); font-size: 12.5px; margin-top: 10px; min-height: 16px; }
 
-    .container {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 32px 22px 80px;
-    }
-    .page-title {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -.02em;
-      margin: 0 0 4px;
-    }
-    .page-sub {
-      color: var(--ink-soft);
-      font-size: 14px;
-      margin: 0 0 28px;
-    }
+    .container { max-width: 1080px; margin: 0 auto; padding: 32px 22px 80px; }
+    .page-title { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 4px; }
+    .page-sub { color: var(--ink-soft); font-size: 14px; margin: 0 0 28px; }
 
-    .maintabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 26px;
-      flex-wrap: wrap;
-    }
+    .maintabs { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
     .maintab {
-      padding: 9px 16px;
-      border-radius: 10px;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--ink-soft);
-      border: 1px solid transparent;
+      padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; color: var(--ink-soft); border: 1px solid transparent;
     }
-    .maintab.active {
-      background: var(--ink);
-      color: #fff;
-    }
-    .maintab:not(.active):hover {
-      background: var(--surface);
-      border-color: var(--line);
-    }
+    .maintab.active { background: var(--ink); color: #fff; }
+    .maintab:not(.active):hover { background: var(--surface); border-color: var(--line); }
 
-    .topic-block {
-      margin-bottom: 8px;
-    }
+    .topic-block { margin-bottom: 8px; }
     .topic-block-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       margin: 26px 0 12px;
     }
-    .topic-block-head .title-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .topic-block-head .title-group { display: flex; align-items: center; gap: 10px; }
     .topic-block-head h2 {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--ink-soft);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      margin: 0;
+      font-size: 13px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase;
+      letter-spacing: .05em; margin: 0;
     }
-    .topic-edit-controls {
-      display: flex;
-      gap: 6px;
-    }
+    .topic-edit-controls { display: flex; gap: 6px; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
     .card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -350,588 +160,189 @@
       position: relative;
       overflow: hidden;
     }
-    .card:hover {
-      box-shadow: var(--shadow);
-      border-color: transparent;
-      transform: translateY(-1px);
-    }
+    .card:hover { box-shadow: var(--shadow); border-color: transparent; transform: translateY(-1px); }
     .card .kind {
-      display: inline-block;
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
+      display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
     }
-    .card .kind.lesson {
-      color: #a06b1f;
-    }
-    .card .kind.homework {
-      color: #b35a9e;
-    }
-    .card h3 {
-      font-size: 16px;
-      margin: 0 0 8px;
-      letter-spacing: -.01em;
-      line-height: 1.3;
-    }
-    .card .meta {
-      font-size: 12.5px;
-      color: var(--ink-soft);
-    }
+    .card .kind.lesson { color: #a06b1f; }
+    .card .kind.homework { color: #b35a9e; }
+    .card h3 { font-size: 16px; margin: 0 0 8px; letter-spacing: -.01em; line-height: 1.3; }
+    .card .meta { font-size: 12.5px; color: var(--ink-soft); }
     .card .progress-bar {
-      height: 5px;
-      border-radius: 3px;
-      background: var(--line);
-      margin-top: 14px;
-      overflow: hidden;
+      height: 5px; border-radius: 3px; background: var(--line); margin-top: 14px; overflow: hidden;
     }
-    .card .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 3px;
-      transition: width .3s;
-    }
-    .card-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .card-edit-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--line);
-    }
-    .card-edit-row .icon-btn {
-      flex: 1;
-      width: auto;
-    }
+    .card .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width .3s; }
+    .card-top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .card-edit-row { display: flex; gap: 6px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .card-edit-row .icon-btn { flex: 1; width: auto; }
 
-    .back-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+    .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
     .back-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--ink-soft);
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-family: inherit;
-      padding: 8px 4px;
+      display: flex; align-items: center; gap: 6px; color: var(--ink-soft);
+      font-size: 13.5px; font-weight: 600; cursor: pointer; background: none; border: none;
+      font-family: inherit; padding: 8px 4px;
     }
-    .back-btn:hover {
-      color: var(--ink);
-    }
-    .trainer-head {
-      margin-bottom: 22px;
-    }
-    .trainer-head h2 {
-      font-size: 23px;
-      margin: 0 0 8px;
-      letter-spacing: -.02em;
-    }
+    .back-btn:hover { color: var(--ink); }
+    .trainer-head { margin-bottom: 22px; }
+    .trainer-head h2 { font-size: 23px; margin: 0 0 8px; letter-spacing: -.02em; }
     .trainer-note {
-      background: #fff8e8;
-      border: 1px solid #f0dfa8;
-      color: #7a5c10;
-      border-radius: 12px;
-      padding: 13px 16px;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 8px;
+      background: #fff8e8; border: 1px solid #f0dfa8; color: #7a5c10;
+      border-radius: 12px; padding: 13px 16px; font-size: 13px; line-height: 1.5; margin-bottom: 8px;
     }
-    .trainer-summary {
-      display: flex;
-      gap: 18px;
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--ink-soft);
-      flex-wrap: wrap;
-    }
-    .trainer-summary b {
-      color: var(--ink);
-    }
+    .trainer-summary { display: flex; gap: 18px; margin-top: 14px; font-size: 13px; color: var(--ink-soft); flex-wrap: wrap; }
+    .trainer-summary b { color: var(--ink); }
 
-    .rxn-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .rxn-list { display: flex; flex-direction: column; gap: 12px; }
     .rxn-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
       padding: 20px 22px;
     }
-    .rxn-card.state-correct {
-      border-color: #bfe8d5;
-    }
-    .rxn-card.state-wrong {
-      border-color: #f3c6c1;
-    }
-    .rxn-num {
-      font-size: 11.5px;
-      color: var(--ink-soft);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .rxn-eq {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -.01em;
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-    .rxn-input-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .rxn-card.state-correct { border-color: #bfe8d5; }
+    .rxn-card.state-wrong { border-color: #f3c6c1; }
+    .rxn-num { font-size: 11.5px; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; }
+    .rxn-eq { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 16px; line-height: 1.6; }
+    .rxn-input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .rxn-input {
-      flex: 1;
-      min-width: 180px;
-      padding: 11px 14px;
-      border-radius: 10px;
-      border: 1.5px solid var(--line);
-      font-size: 15px;
-      font-family: inherit;
-      background: #fbfbfc;
+      flex: 1; min-width: 180px; padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--line);
+      font-size: 15px; font-family: inherit; background: #fbfbfc;
     }
-    .rxn-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: #fff;
-    }
-    .rxn-card.state-correct .rxn-input {
-      border-color: var(--ok);
-      background: var(--ok-bg);
-    }
-    .rxn-card.state-wrong .rxn-input {
-      border-color: var(--bad);
-      background: var(--bad-bg);
-    }
-    .rxn-feedback {
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .rxn-feedback.ok {
-      color: var(--ok);
-    }
-    .rxn-feedback.bad {
-      color: var(--bad);
-    }
+    .rxn-input:focus { outline: none; border-color: var(--accent); background: #fff; }
+    .rxn-card.state-correct .rxn-input { border-color: var(--ok); background: var(--ok-bg); }
+    .rxn-card.state-wrong .rxn-input { border-color: var(--bad); background: var(--bad-bg); }
+    .rxn-feedback { margin-top: 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .rxn-feedback.ok { color: var(--ok); }
+    .rxn-feedback.bad { color: var(--bad); }
     .rxn-explain {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed var(--line);
-      font-size: 13.5px;
-      color: var(--ink-soft);
-      line-height: 1.6;
+      margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+      font-size: 13.5px; color: var(--ink-soft); line-height: 1.6;
     }
-    .rxn-explain b {
-      color: var(--ink);
-      font-weight: 700;
-    }
-    .rxn-explain .full-eq {
-      font-size: 16px;
-      color: var(--ink);
-      font-weight: 600;
-      margin-top: 4px;
-    }
-    .rxn-explain .user-given {
-      font-size: 12.5px;
-      margin-top: 6px;
-      color: var(--ink-soft);
-    }
+    .rxn-explain b { color: var(--ink); font-weight: 700; }
+    .rxn-explain .full-eq { font-size: 16px; color: var(--ink); font-weight: 600; margin-top: 4px; }
+    .rxn-explain .user-given { font-size: 12.5px; margin-top: 6px; color: var(--ink-soft); }
 
-    .trainer-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-      margin-top: 28px;
-    }
-    .finish-hint {
-      font-size: 12.5px;
-      color: var(--ink-soft);
-      text-align: center;
-    }
+    .trainer-footer { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 28px; }
+    .finish-hint { font-size: 12.5px; color: var(--ink-soft); text-align: center; }
 
-    .student-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .student-list { display: flex; flex-direction: column; gap: 10px; }
     .student-row {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px 18px;
-      cursor: pointer;
-      transition: border-color .15s;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+      padding: 16px 18px; cursor: pointer; transition: border-color .15s;
     }
-    .student-row:hover {
-      border-color: var(--accent);
-    }
-    .student-row-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .student-name {
-      font-weight: 700;
-      font-size: 15px;
-    }
-    .student-meta {
-      font-size: 12px;
-      color: var(--ink-soft);
-      margin-top: 3px;
-    }
-    .student-actions {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-      flex-wrap: wrap;
-    }
+    .student-row:hover { border-color: var(--accent); }
+    .student-row-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .student-name { font-weight: 700; font-size: 15px; }
+    .student-meta { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+    .student-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
     .student-detail {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 22px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px;
     }
     .topic-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--line);
-      gap: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--line); gap: 16px;
     }
-    .topic-row:last-child {
-      border-bottom: none;
-    }
-    .topic-name {
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .topic-stats {
-      font-size: 12.5px;
-      color: var(--ink-soft);
-      white-space: nowrap;
-    }
-    .mini-bar {
-      width: 120px;
-      height: 6px;
-      background: var(--line);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .mini-fill {
-      height: 100%;
-      background: var(--accent);
-    }
+    .topic-row:last-child { border-bottom: none; }
+    .topic-name { font-size: 14px; font-weight: 600; }
+    .topic-stats { font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+    .mini-bar { width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+    .mini-fill { height: 100%; background: var(--accent); }
 
     .add-student-box {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 20px 22px;
-      margin-bottom: 20px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 20px;
     }
-    .add-student-box h3 {
-      margin: 0 0 14px;
-      font-size: 15px;
-    }
-    .add-student-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .add-student-box h3 { margin: 0 0 14px; font-size: 15px; }
+    .add-student-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .add-student-row input {
-      flex: 1;
-      min-width: 160px;
-      padding: 10px 13px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 14px;
+      flex: 1; min-width: 160px; padding: 10px 13px; border-radius: 10px; border: 1px solid var(--line);
+      font-family: inherit; font-size: 14px;
     }
-    .add-student-row input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    .add-err {
-      color: var(--bad);
-      font-size: 12.5px;
-      margin-top: 8px;
-    }
+    .add-student-row input:focus { outline: none; border-color: var(--accent); }
+    .add-err { color: var(--bad); font-size: 12.5px; margin-top: 8px; }
 
     .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 24, 31, .45);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(20, 24, 31, .45); z-index: 100;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     .modal {
-      background: #fff;
-      border-radius: 16px;
-      padding: 26px;
-      max-width: 480px;
-      width: 100%;
+      background: #fff; border-radius: 16px; padding: 26px; max-width: 480px; width: 100%;
       box-shadow: var(--shadow);
-      max-height: 88vh;
-      overflow-y: auto;
+      max-height: 88vh; overflow-y: auto;
     }
-    .modal h3 {
-      margin: 0 0 14px;
-      font-size: 17px;
-    }
-    .modal .actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
-    .modal p.warn {
-      color: var(--ink-soft);
-      font-size: 13.5px;
-      line-height: 1.5;
-    }
+    .modal h3 { margin: 0 0 14px; font-size: 17px; }
+    .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+    .modal p.warn { color: var(--ink-soft); font-size: 13.5px; line-height: 1.5; }
 
-    .lesson-video-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .lesson-video-list { display: flex; flex-direction: column; gap: 12px; }
     .lesson-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      text-decoration: none;
-      color: var(--ink);
-      font-weight: 600;
-      font-size: 14px;
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1px solid var(--line);
+      border-radius: 12px; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 14px;
       transition: border-color .15s;
     }
-    .lesson-link:hover {
-      border-color: var(--accent);
-    }
-    .empty-note {
-      color: var(--ink-soft);
-      font-size: 13.5px;
-      padding: 20px 0;
-      text-align: center;
-    }
+    .lesson-link:hover { border-color: var(--accent); }
+    .empty-note { color: var(--ink-soft); font-size: 13.5px; padding: 20px 0; text-align: center; }
 
     .builder-box {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 24px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; margin-bottom: 24px;
     }
-    .builder-box h3 {
-      margin: 0 0 14px;
-      font-size: 15px;
-    }
-    .builder-box .field-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .builder-box .field-row input,
-    .builder-box .field-row select {
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 13.5px;
+    .builder-box h3 { margin: 0 0 14px; font-size: 15px; }
+    .builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .builder-box .field-row input, .builder-box .field-row select {
+      padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line); font-family: inherit; font-size: 13.5px;
     }
     .builder-box .field-row textarea {
-      flex: 1;
-      min-width: 300px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 13.5px;
-      resize: vertical;
-      min-height: 100px;
+      flex: 1; min-width: 300px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+      font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 100px;
     }
-    .builder-box .field-row textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .builder-box .field-row textarea:focus { outline: none; border-color: var(--accent); }
 
     .ai-builder-box {
-      background: var(--surface);
-      border: 2px solid var(--accent);
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 24px;
+      background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: 22px; margin-bottom: 24px;
     }
-    .ai-builder-box h3 {
-      margin: 0 0 14px;
-      font-size: 15px;
-      color: var(--accent);
-    }
-    .ai-builder-box .field-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .ai-builder-box .field-row input,
-    .ai-builder-box .field-row select {
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 13.5px;
+    .ai-builder-box h3 { margin: 0 0 14px; font-size: 15px; color: var(--accent); }
+    .ai-builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .ai-builder-box .field-row input, .ai-builder-box .field-row select {
+      padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line); font-family: inherit; font-size: 13.5px;
     }
     .ai-builder-box .field-row textarea {
-      flex: 1;
-      min-width: 300px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 13.5px;
-      resize: vertical;
-      min-height: 120px;
+      flex: 1; min-width: 300px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+      font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 120px;
     }
-    .ai-builder-box .field-row textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .ai-builder-box .field-row textarea:focus { outline: none; border-color: var(--accent); }
 
-    .builder-line {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
+    .builder-line { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
     .builder-line .ln-label {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--ink-soft);
-      flex-shrink: 0;
+      width: 26px; height: 26px; border-radius: 8px; background: var(--bg);
+      display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+      color: var(--ink-soft); flex-shrink: 0;
     }
     .builder-line input {
-      flex: 1;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 13.5px;
-      min-width: 0;
+      flex: 1; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+      font-family: inherit; font-size: 13.5px; min-width: 0;
     }
-    .builder-line input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .builder-line input:focus { outline: none; border-color: var(--accent); }
     .rxn-row-builder {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
-      background: #fbfbfc;
+      border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; background: #fbfbfc;
     }
-    .rxn-row-builder .rrb-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .rxn-row-builder .rrb-head span {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink-soft);
-    }
-    small.help {
-      color: var(--ink-soft);
-      font-size: 12px;
-      display: block;
-      margin: 4px 0 12px;
-      line-height: 1.5;
-    }
+    .rxn-row-builder .rrb-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .rxn-row-builder .rrb-head span { font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+    small.help { color: var(--ink-soft); font-size: 12px; display: block; margin: 4px 0 12px; line-height: 1.5; }
     .add-line-btn {
-      background: none;
-      border: 1px dashed var(--line);
-      border-radius: 10px;
-      padding: 9px 14px;
-      color: var(--ink-soft);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      width: 100%;
+      background: none; border: 1px dashed var(--line); border-radius: 10px; padding: 9px 14px;
+      color: var(--ink-soft); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; width: 100%;
     }
-    .add-line-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .add-line-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     @media (max-width: 600px) {
-      .container {
-        padding: 20px 14px 60px;
-      }
-      .rxn-eq {
-        font-size: 17px;
-      }
-      .login-card {
-        padding: 30px 24px;
-      }
-      .topic-block-head {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      .student-row-top {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .student-actions {
-        justify-content: flex-end;
-      }
+      .container { padding: 20px 14px 60px; }
+      .rxn-eq { font-size: 17px; }
+      .login-card { padding: 30px 24px; }
+      .topic-block-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .student-row-top { flex-direction: column; align-items: stretch; }
+      .student-actions { justify-content: flex-end; }
     }
   </style>
 </head>
-
 <body>
 
   <!-- ===== ЭКРАН ВХОДА ===== -->
@@ -981,7 +392,6 @@
     import { initializeApp } from "firebase/app";
     import { getDatabase, ref, set, get, update, remove, child, onValue } from "firebase/database";
 
-    // ТВОЙ КОНФИГ (вставь свои данные)
     const firebaseConfig = {
       apiKey: "AIzaSyBi21gU7he9IyG6-Bvnyg4E3zQo_8N0O0Y",
       authDomain: "chemistry-b40b7.firebaseapp.com",
@@ -995,12 +405,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ============================================================
-    // 2. ИМПОРТ ВСЕХ ФУНКЦИЙ ИЗ СТАРОГО КОДА В ГЛОБАЛЬНУЮ ОБЛАСТЬ
-    //    (чтобы они были доступны из onclick)
-    // ============================================================
-
-    // Сохраним ссылку на db в window, чтобы использовать в старых функциях
+    // Сохраняем Firebase в window для доступа из onclick
     window.__db = db;
     window.__ref = ref;
     window.__set = set;
@@ -1010,11 +415,8 @@
     window.__child = child;
     window.__onValue = onValue;
 
-    // Также импортируем все старые функции и данные
-    // Вместо localStorage будем использовать Firebase.
-
     // ============================================================
-    // 3. ОСНОВНЫЕ ПЕРЕМЕННЫЕ
+    // 2. ОСНОВНЫЕ ПЕРЕМЕННЫЕ
     // ============================================================
 
     const TEACHER_LOGIN = 'admin';
@@ -1029,13 +431,8 @@
     let VIEW = { name: 'home' };
 
     // ============================================================
-    // 4. РАБОТА С FIREBASE (ВМЕСТО localStorage)
+    // 3. РАБОТА С FIREBASE
     // ============================================================
-
-    // --- Вспомогательные функции ---
-    function getDataRef(path) {
-      return ref(db, path);
-    }
 
     async function loadFromFirebase(path, defaultValue) {
       try {
@@ -1043,7 +440,6 @@
         if (snapshot.exists()) {
           return snapshot.val();
         } else {
-          // Если данных нет, сохраняем дефолт
           await set(ref(db, path), defaultValue);
           return defaultValue;
         }
@@ -1063,7 +459,6 @@
       }
     }
 
-    // --- Регистрация учеников ---
     async function loadRegistry() {
       const reg = await loadFromFirebase('registry', {
         'anna': { name: 'Анна', password: 'anna123', createdAt: Date.now() },
@@ -1077,7 +472,6 @@
       return await saveToFirebase('registry', reg);
     }
 
-    // --- Сессия ---
     async function loadSession() {
       const session = await loadFromFirebase('session', null);
       return session;
@@ -1091,46 +485,34 @@
       }
     }
 
-    // --- Прогресс ученика ---
-    function getProgressPath(studentKey) {
-      return `progress/${studentKey}`;
-    }
-
     async function getProgress(studentKey) {
-      const data = await loadFromFirebase(getProgressPath(studentKey), {});
+      const data = await loadFromFirebase(`progress/${studentKey}`, {});
       return data;
     }
 
     async function persistFullProgress(studentKey, progress) {
-      await saveToFirebase(getProgressPath(studentKey), progress);
+      await saveToFirebase(`progress/${studentKey}`, progress);
     }
 
-    // --- Контент ---
-    function getContentPath(type) {
-      return `content/${type}`;
-    }
-
-    // Загрузка контента
     async function loadContent() {
-      TOPICS = await loadFromFirebase(getContentPath('topics'), defaultTopics());
-      TRAINERS = await loadFromFirebase(getContentPath('trainers'), defaultTrainers());
-      LESSONS = await loadFromFirebase(getContentPath('lessons'), defaultLessons());
-      HOMEWORKS = await loadFromFirebase(getContentPath('homeworks'), defaultHomeworks());
+      TOPICS = await loadFromFirebase('content/topics', defaultTopics());
+      TRAINERS = await loadFromFirebase('content/trainers', defaultTrainers());
+      LESSONS = await loadFromFirebase('content/lessons', defaultLessons());
+      HOMEWORKS = await loadFromFirebase('content/homeworks', defaultHomeworks());
 
-      // Нормализация order
       TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       LESSONS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       HOMEWORKS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
     }
 
-    async function persistTopics() { await saveToFirebase(getContentPath('topics'), TOPICS); }
-    async function persistTrainers() { await saveToFirebase(getContentPath('trainers'), TRAINERS); }
-    async function persistLessons() { await saveToFirebase(getContentPath('lessons'), LESSONS); }
-    async function persistHomeworks() { await saveToFirebase(getContentPath('homeworks'), HOMEWORKS); }
+    async function persistTopics() { await saveToFirebase('content/topics', TOPICS); }
+    async function persistTrainers() { await saveToFirebase('content/trainers', TRAINERS); }
+    async function persistLessons() { await saveToFirebase('content/lessons', LESSONS); }
+    async function persistHomeworks() { await saveToFirebase('content/homeworks', HOMEWORKS); }
 
     // ============================================================
-    // 5. ДЕФОЛТНЫЙ КОНТЕНТ
+    // 4. ДЕФОЛТНЫЙ КОНТЕНТ
     // ============================================================
 
     function defaultTopics() {
@@ -1147,18 +529,10 @@
         title: 'Тренажёр по оксидам — свойства',
         order: 0,
         reactions: [
-          { lhs: 'N2O5 + H2O →', valid: true, correctSets: [
-              ['HNO3']
-            ], explanation: 'Кислотный оксид реагирует с водой с образованием кислоты.', fullEquation: 'N2O5 + H2O = 2HNO3' },
-          { lhs: 'CaO + CO2 →', valid: true, correctSets: [
-              ['CaCO3']
-            ], explanation: 'Основный оксид реагирует с кислотным оксидом с образованием соли.', fullEquation: 'CaO + CO2 = CaCO3' },
-          { lhs: 'ZnO + C →', valid: true, correctSets: [
-              ['Zn', 'CO'],
-              ['CO', 'Zn']
-            ], explanation: 'Амфотерный оксид восстанавливается углеродом.', fullEquation: '2ZnO + C = 2Zn + CO2' },
-          { lhs: 'SiO2 + H2O →', valid: false, correctSets: [],
-            explanation: 'Оксид кремния (IV) практически не реагирует с водой.', fullEquation: 'Реакция не идёт' }
+          { lhs: 'N2O5 + H2O →', valid: true, correctSets: [['HNO3']], explanation: 'Кислотный оксид реагирует с водой с образованием кислоты.', fullEquation: 'N2O5 + H2O = 2HNO3' },
+          { lhs: 'CaO + CO2 →', valid: true, correctSets: [['CaCO3']], explanation: 'Основный оксид реагирует с кислотным оксидом с образованием соли.', fullEquation: 'CaO + CO2 = CaCO3' },
+          { lhs: 'ZnO + C →', valid: true, correctSets: [['Zn', 'CO'], ['CO', 'Zn']], explanation: 'Амфотерный оксид восстанавливается углеродом.', fullEquation: '2ZnO + C = 2Zn + CO2' },
+          { lhs: 'SiO2 + H2O →', valid: false, correctSets: [], explanation: 'Оксид кремния (IV) практически не реагирует с водой.', fullEquation: 'Реакция не идёт' }
         ]
       }, {
         id: 'trainer_hydroxides_1',
@@ -1166,24 +540,16 @@
         title: 'Тренажёр по гидроксидам — реакции',
         order: 0,
         reactions: [
-          { lhs: 'NaOH + HCl →', valid: true, correctSets: [
-              ['NaCl', 'H2O'],
-              ['H2O', 'NaCl']
-            ], explanation: 'Реакция нейтрализации щёлочи кислотой.', fullEquation: 'NaOH + HCl = NaCl + H2O' },
-          { lhs: 'Cu(OH)2 + t° →', valid: true, correctSets: [
-              ['CuO', 'H2O'],
-              ['H2O', 'CuO']
-            ], explanation: 'Нерастворимые основания разлагаются при нагревании.', fullEquation: 'Cu(OH)2 = CuO + H2O' },
-          { lhs: 'KOH + Ag →', valid: false, correctSets: [],
-            explanation: 'Серебро — малоактивный металл, со щёлочью не реагирует.', fullEquation: 'Реакция не идёт' }
+          { lhs: 'NaOH + HCl →', valid: true, correctSets: [['NaCl', 'H2O'], ['H2O', 'NaCl']], explanation: 'Реакция нейтрализации щёлочи кислотой.', fullEquation: 'NaOH + HCl = NaCl + H2O' },
+          { lhs: 'Cu(OH)2 + t° →', valid: true, correctSets: [['CuO', 'H2O'], ['H2O', 'CuO']], explanation: 'Нерастворимые основания разлагаются при нагревании.', fullEquation: 'Cu(OH)2 = CuO + H2O' },
+          { lhs: 'KOH + Ag →', valid: false, correctSets: [], explanation: 'Серебро — малоактивный металл, со щёлочью не реагирует.', fullEquation: 'Реакция не идёт' }
         ]
       }];
     }
 
     function defaultLessons() {
       return [
-        { id: 'lesson_oxides_1', topicId: 'oxides', title: 'Видеоурок: Оксиды — классификация и свойства', order: 0,
-          links: [] },
+        { id: 'lesson_oxides_1', topicId: 'oxides', title: 'Видеоурок: Оксиды — классификация и свойства', order: 0, links: [] },
       ];
     }
 
@@ -1192,10 +558,9 @@
     }
 
     // ============================================================
-    // 6. ВСЕ ОСТАЛЬНЫЕ ФУНКЦИИ (из твоего кода, но с заменой localStorage на Firebase)
+    // 5. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
     // ============================================================
 
-    // --- Вспомогательные функции ---
     function escapeHtml(s) {
       const d = document.createElement('div');
       d.textContent = s;
@@ -1249,8 +614,7 @@
       const raw = (userInput || '').trim();
       if (!reaction.valid) {
         const norm = raw.replace(/\s+/g, '');
-        return (norm === '0' || norm === '-' || norm.toUpperCase() === 'НЕТ' || norm.toUpperCase() === 'НЕ ИДЕТ' || norm
-          .toUpperCase() === 'НЕ ИДЁТ');
+        return (norm === '0' || norm === '-' || norm.toUpperCase() === 'НЕТ' || norm.toUpperCase() === 'НЕ ИДЕТ' || norm.toUpperCase() === 'НЕ ИДЁТ');
       }
       if (raw.length === 0) return false;
       const userProducts = splitProducts(raw);
@@ -1261,7 +625,10 @@
       return false;
     }
 
-    // --- Auth ---
+    // ============================================================
+    // 6. АВТОРИЗАЦИЯ
+    // ============================================================
+
     window.handleLogin = async function() {
       const nameInput = document.getElementById('loginName').value.trim();
       const passInput = document.getElementById('loginPass').value;
@@ -1344,10 +711,6 @@
       }
     }
 
-    function actingAsStudent() {
-      return !CURRENT_USER.isTeacher || TEACH_MODE;
-    }
-
     function isManaging() {
       return CURRENT_USER.isTeacher && !TEACH_MODE;
     }
@@ -1367,7 +730,61 @@
       render();
     };
 
-    // --- Рендеринг ---
+    // ============================================================
+    // 7. МОДАЛЬНЫЕ ОКНА
+    // ============================================================
+
+    window.showConfirmModal = function(title, text, onConfirm) {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <p class="warn">${escapeHtml(text)}</p>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelC">Отмена</button>
+          <button class="btn btn-danger" id="confirmC">Удалить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelC').onclick = () => bg.remove();
+      modal.querySelector('#confirmC').onclick = async () => {
+        bg.remove();
+        await onConfirm();
+      };
+    };
+
+    window.showPromptModal = function(title, defaultVal, onSave) {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <div class="field"><input type="text" id="promptInput" value="${escapeAttr(defaultVal)}"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelP">Отмена</button>
+          <button class="btn btn-accent" id="saveP">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelP').onclick = () => bg.remove();
+      modal.querySelector('#saveP').onclick = async () => {
+        const val = document.getElementById('promptInput').value;
+        bg.remove();
+        await onSave(val);
+      };
+    };
+
+    // ============================================================
+    // 8. РЕНДЕРИНГ
+    // ============================================================
+
     function render() {
       const c = document.getElementById('mainContainer');
       c.innerHTML = '';
@@ -1379,25 +796,1678 @@
       else if (VIEW.name === 'studentDetail') renderStudentDetail(c, VIEW.studentKey);
     }
 
-    // ----------------------------------------------
-    // ДАЛЕЕ ВСТАВЛЯЕМ ВСЕ ФУНКЦИИ ИЗ ТВОЕГО КОДА
-    // (renderHome, renderTrainer, renderStats, renderStudentDetail,
-    //  renderHomework, renderLessonModal, showConfirmModal, showPromptModal,
-    //  moveTopic, renameTopicPrompt, deleteTopicConfirm, moveTrainer, deleteTrainerConfirm,
-    //  moveLesson, deleteLessonConfirm, moveHomework, deleteHomeworkConfirm,
-    //  buildAdminBuilder, buildAIBuilder, openEditTrainerModal, openEditLessonModal,
-    //  openEditHomeworkModal, showChangePasswordModal, showDeleteStudentConfirm)
-    // 
-    // ВСЕ ЭТИ ФУНКЦИИ НУЖНО ПЕРЕПИСАТЬ С ИСПОЛЬЗОВАНИЕМ АСИНХРОННЫХ ВЫЗОВОВ
-    // И ВЫНЕСТИ ИХ В ГЛОБАЛЬНУЮ ОБЛАСТЬ (window.имя = function)
-    // 
-    // ИЗ-ЗА ОГРАНИЧЕНИЯ НА ДЛИНУ ОТВЕТА, Я ДАМ ПОЛНЫЙ КОД В СЛЕДУЮЩЕМ СООБЩЕНИИ
-    // ----------------------------------------------
+    // ============================================================
+    // 9. RENDER HOME
+    // ============================================================
 
-    // ... (весь остальной код, который ты прислала, но с заменой localStorage на Firebase)
+    async function renderHome(container) {
+      const wrap = document.createElement('div');
+
+      const title = document.createElement('div');
+      title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами. Нажмите на карточку, чтобы посмотреть её как ученик.' : 'Выберите тренажёр или видеоурок по теме'}</p>`;
+      wrap.appendChild(title);
+
+      if (CURRENT_USER.isTeacher && !TEACH_MODE) {
+        const tabs = document.createElement('div');
+        tabs.className = 'maintabs';
+        tabs.innerHTML = `
+          <div class="maintab active" id="tabContent">Содержание</div>
+          <div class="maintab" id="tabStats">Статистика учеников</div>
+          <div class="maintab" id="tabTeach">Обучаю</div>
+        `;
+        tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' };
+          render(); };
+        tabs.querySelector('#tabStats').onclick = () => { VIEW = { name: 'stats' };
+          render(); };
+        tabs.querySelector('#tabTeach').onclick = () => { window.enterTeachMode(); };
+        wrap.appendChild(tabs);
+        container.appendChild(wrap);
+
+        const builder = buildAdminBuilder();
+        wrap.appendChild(builder);
+
+        const aiBuilder = buildAIBuilder();
+        wrap.appendChild(aiBuilder);
+      } else {
+        container.appendChild(wrap);
+      }
+
+      const sortedTopics = [...TOPICS].sort((a, b) => a.order - b.order);
+
+      let progress = {};
+      if (!CURRENT_USER.isTeacher) {
+        progress = await getProgress(CURRENT_USER.key);
+      }
+
+      for (const topic of sortedTopics) {
+        const topicTrainers = TRAINERS.filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicLessons = LESSONS.filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
+        const topicHomeworks = HOMEWORKS.filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
+        if (topicTrainers.length === 0 && topicLessons.length === 0 && topicHomeworks.length === 0 && !isManaging()) continue;
+
+        const block = document.createElement('div');
+        block.className = 'topic-block';
+
+        const head = document.createElement('div');
+        head.className = 'topic-block-head';
+        const titleGroup = document.createElement('div');
+        titleGroup.className = 'title-group';
+        const h2 = document.createElement('h2');
+        h2.textContent = topic.name;
+        titleGroup.appendChild(h2);
+        head.appendChild(titleGroup);
+
+        if (isManaging()) {
+          const editControls = document.createElement('div');
+          editControls.className = 'topic-edit-controls';
+          editControls.innerHTML = `
+            <button class="icon-btn" title="Переместить вверх" data-act="up">↑</button>
+            <button class="icon-btn" title="Переместить вниз" data-act="down">↓</button>
+            <button class="icon-btn" title="Переименовать" data-act="rename">✎</button>
+            <button class="icon-btn danger" title="Удалить тему" data-act="del">✕</button>
+          `;
+          editControls.querySelector('[data-act="up"]').onclick = () => moveTopic(topic.id, -1);
+          editControls.querySelector('[data-act="down"]').onclick = () => moveTopic(topic.id, 1);
+          editControls.querySelector('[data-act="rename"]').onclick = () => renameTopicPrompt(topic.id);
+          editControls.querySelector('[data-act="del"]').onclick = () => deleteTopicConfirm(topic.id);
+          head.appendChild(editControls);
+        }
+        block.appendChild(head);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        for (let ci = 0; ci < topicTrainers.length; ci++) {
+          const trainer = topicTrainers[ci];
+          const card = document.createElement('div');
+          card.className = 'card';
+          let pct = 0;
+          if (!CURRENT_USER.isTeacher) {
+            const done = progress[trainer.id] ? Object.keys(progress[trainer.id]).filter(k => k !== '__finished' && progress[trainer.id][k].status === 'correct').length : 0;
+            pct = trainer.reactions.length ? Math.round(done / trainer.reactions.length * 100) : 0;
+          }
+          card.innerHTML = `
+            <div class="card-top-row">
+              <div><span class="kind">Тренажёр</span></div>
+            </div>
+            <h3>${escapeHtml(trainer.title)}</h3>
+            <div class="meta">${trainer.reactions.length} реакций</div>
+            ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : ''}
+            ${isManaging() ? `<div class="card-edit-row">
+              <button class="icon-btn" data-act="up" title="Вверх">↑</button>
+              <button class="icon-btn" data-act="down" title="Вниз">↓</button>
+              <button class="icon-btn" data-act="edit" title="Редактировать">✎</button>
+              <button class="icon-btn danger" data-act="del" title="Удалить">✕</button>
+            </div>` : ''}
+          `;
+          if (isManaging()) {
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
+              moveTrainer(trainer.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
+              moveTrainer(trainer.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
+              openEditTrainerModal(trainer.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
+              deleteTrainerConfirm(trainer.id); };
+            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id };
+              render(); };
+          } else {
+            card.onclick = () => { VIEW = { name: 'trainer', trainerId: trainer.id };
+              render(); };
+          }
+          grid.appendChild(card);
+        }
+
+        for (let li = 0; li < topicLessons.length; li++) {
+          const lesson = topicLessons[li];
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <span class="kind lesson">Урок</span>
+            <h3>${escapeHtml(lesson.title)}</h3>
+            <div class="meta">${lesson.links.length} видео</div>
+            ${isManaging() ? `<div class="card-edit-row">
+              <button class="icon-btn" data-act="up" title="Вверх">↑</button>
+              <button class="icon-btn" data-act="down" title="Вниз">↓</button>
+              <button class="icon-btn" data-act="edit" title="Редактировать">✎</button>
+              <button class="icon-btn danger" data-act="del" title="Удалить">✕</button>
+            </div>` : ''}
+          `;
+          if (isManaging()) {
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
+              moveLesson(lesson.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
+              moveLesson(lesson.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
+              openEditLessonModal(lesson.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
+              deleteLessonConfirm(lesson.id); };
+            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id };
+              renderLessonModal(lesson.id); };
+          } else {
+            card.onclick = () => { VIEW = { name: 'lesson', lessonId: lesson.id };
+              renderLessonModal(lesson.id); };
+          }
+          grid.appendChild(card);
+        }
+
+        for (let hi = 0; hi < topicHomeworks.length; hi++) {
+          const homework = topicHomeworks[hi];
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <span class="kind homework">Домашка</span>
+            <h3>${escapeHtml(homework.title)}</h3>
+            <div class="meta">${homework.tasks ? homework.tasks.length : 0} заданий</div>
+            ${isManaging() ? `<div class="card-edit-row">
+              <button class="icon-btn" data-act="up" title="Вверх">↑</button>
+              <button class="icon-btn" data-act="down" title="Вниз">↓</button>
+              <button class="icon-btn" data-act="edit" title="Редактировать">✎</button>
+              <button class="icon-btn danger" data-act="del" title="Удалить">✕</button>
+            </div>` : ''}
+          `;
+          if (isManaging()) {
+            card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation();
+              moveHomework(homework.id, -1); };
+            card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation();
+              moveHomework(homework.id, 1); };
+            card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation();
+              openEditHomeworkModal(homework.id); };
+            card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation();
+              deleteHomeworkConfirm(homework.id); };
+            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id };
+              render(); };
+          } else {
+            card.onclick = () => { VIEW = { name: 'homework', homeworkId: homework.id };
+              render(); };
+          }
+          grid.appendChild(card);
+        }
+
+        if (topicTrainers.length === 0 && topicLessons.length === 0 && topicHomeworks.length === 0) {
+          grid.innerHTML = `<div class="empty-note">В этой теме пока нет материалов.</div>`;
+        }
+
+        block.appendChild(grid);
+        wrap.appendChild(block);
+      }
+
+      if (!CURRENT_USER.isTeacher) container.appendChild(wrap);
+      else container.appendChild(wrap);
+    }
 
     // ============================================================
-    // 7. ИНИЦИАЛИЗАЦИЯ
+    // 10. УПРАВЛЕНИЕ ТЕМАМИ
+    // ============================================================
+
+    async function moveTopic(topicId, dir) {
+      const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
+      const idx = sorted.findIndex(t => t.id === topicId);
+      const swapIdx = idx + dir;
+      if (swapIdx < 0 || swapIdx >= sorted.length) return;
+      const tmp = sorted[idx].order;
+      sorted[idx].order = sorted[swapIdx].order;
+      sorted[swapIdx].order = tmp;
+      await persistTopics();
+      render();
+    }
+
+    async function renameTopicPrompt(topicId) {
+      const topic = TOPICS.find(t => t.id === topicId);
+      window.showPromptModal('Переименовать тему', topic.name, async (val) => {
+        if (!val.trim()) return;
+        topic.name = val.trim();
+        await persistTopics();
+        render();
+      });
+    }
+
+    async function deleteTopicConfirm(topicId) {
+      const hasContent = TRAINERS.some(t => t.topicId === topicId) || LESSONS.some(l => l.topicId === topicId) || HOMEWORKS.some(h => h.topicId === topicId);
+      window.showConfirmModal('Удалить тему?', hasContent ? 'В этой теме есть тренажёры, уроки или домашки — они тоже будут удалены.' : 'Тема будет удалена.', async () => {
+        TOPICS = TOPICS.filter(t => t.id !== topicId);
+        TRAINERS = TRAINERS.filter(t => t.topicId !== topicId);
+        LESSONS = LESSONS.filter(l => l.topicId !== topicId);
+        HOMEWORKS = HOMEWORKS.filter(h => h.topicId !== topicId);
+        await persistTopics();
+        await persistTrainers();
+        await persistLessons();
+        await persistHomeworks();
+        render();
+      });
+    }
+
+    async function moveTrainer(trainerId, dir) {
+      const trainer = TRAINERS.find(t => t.id === trainerId);
+      const siblings = TRAINERS.filter(t => t.topicId === trainer.topicId).sort((a, b) => a.order - b.order);
+      siblings.forEach((t, i) => { t.order = i; });
+      const idx = siblings.findIndex(t => t.id === trainerId);
+      const swapIdx = idx + dir;
+      if (swapIdx < 0 || swapIdx >= siblings.length) return;
+      const tmp = siblings[idx].order;
+      siblings[idx].order = siblings[swapIdx].order;
+      siblings[swapIdx].order = tmp;
+      await persistTrainers();
+      render();
+    }
+
+    async function deleteTrainerConfirm(trainerId) {
+      window.showConfirmModal('Удалить тренажёр?', 'Это действие нельзя отменить.', async () => {
+        TRAINERS = TRAINERS.filter(t => t.id !== trainerId);
+        await persistTrainers();
+        render();
+      });
+    }
+
+    async function moveLesson(lessonId, dir) {
+      const lesson = LESSONS.find(l => l.id === lessonId);
+      const siblings = LESSONS.filter(l => l.topicId === lesson.topicId).sort((a, b) => a.order - b.order);
+      siblings.forEach((l, i) => { l.order = i; });
+      const idx = siblings.findIndex(l => l.id === lessonId);
+      const swapIdx = idx + dir;
+      if (swapIdx < 0 || swapIdx >= siblings.length) return;
+      const tmp = siblings[idx].order;
+      siblings[idx].order = siblings[swapIdx].order;
+      siblings[swapIdx].order = tmp;
+      await persistLessons();
+      render();
+    }
+
+    async function deleteLessonConfirm(lessonId) {
+      window.showConfirmModal('Удалить урок?', 'Это действие нельзя отменить.', async () => {
+        LESSONS = LESSONS.filter(l => l.id !== lessonId);
+        await persistLessons();
+        render();
+      });
+    }
+
+    async function moveHomework(homeworkId, dir) {
+      const homework = HOMEWORKS.find(h => h.id === homeworkId);
+      const siblings = HOMEWORKS.filter(h => h.topicId === homework.topicId).sort((a, b) => a.order - b.order);
+      siblings.forEach((h, i) => { h.order = i; });
+      const idx = siblings.findIndex(h => h.id === homeworkId);
+      const swapIdx = idx + dir;
+      if (swapIdx < 0 || swapIdx >= siblings.length) return;
+      const tmp = siblings[idx].order;
+      siblings[idx].order = siblings[swapIdx].order;
+      siblings[swapIdx].order = tmp;
+      await persistHomeworks();
+      render();
+    }
+
+    async function deleteHomeworkConfirm(homeworkId) {
+      window.showConfirmModal('Удалить домашку?', 'Это действие нельзя отменить.', async () => {
+        HOMEWORKS = HOMEWORKS.filter(h => h.id !== homeworkId);
+        await persistHomeworks();
+        render();
+      });
+    }
+
+    // ============================================================
+    // 11. RENDER TRAINER
+    // ============================================================
+
+    async function renderTrainer(container, trainerId) {
+      const trainer = TRAINERS.find(t => t.id === trainerId);
+      if (!trainer) { VIEW = { name: 'home' };
+        render(); return; }
+
+      const isRealStudent = !CURRENT_USER.isTeacher;
+      let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
+      if (!progress[trainerId]) progress[trainerId] = {};
+      const trainerProgress = progress[trainerId];
+
+      const wrap = document.createElement('div');
+
+      const backRow = document.createElement('div');
+      backRow.className = 'back-row';
+      backRow.innerHTML = `<button class="back-btn">← Назад к содержанию</button>`;
+      backRow.querySelector('.back-btn').onclick = window.goHome;
+      wrap.appendChild(backRow);
+
+      const head = document.createElement('div');
+      head.className = 'trainer-head';
+      head.innerHTML = `
+        <h2>${escapeHtml(trainer.title)}</h2>
+        <div class="trainer-note">Если реакция <b>не идёт</b>, введите <b>0</b> или <b>−</b>. Уравнивать не нужно — только продукты через «+». Регистр не важен.${!isRealStudent?' <br><b>Режим просмотра/обучения:</b> ответы не сохраняются в статистику.':''}</div>
+      `;
+      wrap.appendChild(head);
+
+      const list = document.createElement('div');
+      list.className = 'rxn-list';
+      wrap.appendChild(list);
+
+      const footer = document.createElement('div');
+      footer.className = 'trainer-footer';
+      wrap.appendChild(footer);
+
+      container.appendChild(wrap);
+
+      let finished = trainerProgress.__finished === true;
+
+      async function persist() {
+        if (isRealStudent) {
+          await persistFullProgress(CURRENT_USER.key, progress);
+        }
+      }
+
+      function computeSummary() {
+        const total = trainer.reactions.length;
+        let correct = 0,
+          answered = 0;
+        trainer.reactions.forEach((_, i) => {
+          const e = trainerProgress[i];
+          if (e) { answered++; if (e.status === 'correct') correct++; }
+        });
+        return { total, correct, answered };
+      }
+
+      function renderList() {
+        list.innerHTML = '';
+        trainer.reactions.forEach((rxn, idx) => {
+          const entry = trainerProgress[idx];
+          const card = document.createElement('div');
+          card.className = 'rxn-card' + (entry ? (entry.status === 'correct' ? ' state-correct' : ' state-wrong') : '');
+
+          const eqHtml = renderEquation(rxn.lhs);
+
+          card.innerHTML = `
+            <div class="rxn-num">Реакция ${idx+1}</div>
+            <div class="rxn-eq eqx">${eqHtml}</div>
+            <div class="rxn-input-row">
+              <input type="text" class="rxn-input" placeholder="Введите ответ" value="${entry ? escapeHtml(entry.answer||'') : ''}" ${finished ? 'disabled' : ''} data-idx="${idx}">
+              ${!finished ? `<button class="btn btn-ghost btn-sm" data-action="check" data-idx="${idx}">Проверить</button>
+              <button class="btn btn-ghost btn-sm" data-action="retry" data-idx="${idx}">Повторить</button>` : ''}
+            </div>
+            <div class="feedback-slot"></div>
+          `;
+
+          const fbSlot = card.querySelector('.feedback-slot');
+          if (entry && !finished) {
+            const fb = document.createElement('div');
+            fb.className = 'rxn-feedback ' + (entry.status === 'correct' ? 'ok' : 'bad');
+            fb.textContent = entry.status === 'correct' ? '✓ Верно' : '✗ Неверно';
+            fbSlot.appendChild(fb);
+          }
+
+          if (finished) {
+            const ex = document.createElement('div');
+            ex.className = 'rxn-explain';
+            const statusTxt = entry ? (entry.status === 'correct' ? '✓ Отвечено верно' : '✗ Отвечено неверно') : '— Без ответа';
+            const fullEqHtml = rxn.fullEquation ? renderEquation(rxn.fullEquation) : '';
+            ex.innerHTML = `<b>${statusTxt}</b><br>${escapeHtml(rxn.explanation||'')}<div class="full-eq eqx">${fullEqHtml}</div>${entry?`<div class="user-given">Ваш ответ: ${escapeHtml(entry.answer||'')}</div>`:''}`;
+            fbSlot.appendChild(ex);
+          }
+
+          list.appendChild(card);
+        });
+
+        if (!finished) {
+          list.querySelectorAll('[data-action="check"]').forEach(btn => {
+            btn.onclick = async () => {
+              const idx = parseInt(btn.dataset.idx);
+              const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              const val = input.value;
+              const rxn = trainer.reactions[idx];
+              const isCorrect = checkAnswer(rxn, val);
+              trainerProgress[idx] = { status: isCorrect ? 'correct' : 'wrong', answer: val };
+              await persist();
+              renderList();
+              renderFooter();
+            };
+          });
+          list.querySelectorAll('[data-action="retry"]').forEach(btn => {
+            btn.onclick = async () => {
+              const idx = parseInt(btn.dataset.idx);
+              const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              const keepVal = input ? input.value : (trainerProgress[idx] ? trainerProgress[idx].answer : '');
+              delete trainerProgress[idx];
+              await persist();
+              renderList();
+              renderFooter();
+              const newInput = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              if (newInput) { newInput.value = keepVal;
+                newInput.focus(); }
+            };
+          });
+        }
+      }
+
+      function renderFooter() {
+        footer.innerHTML = '';
+        const summary = computeSummary();
+        const sumBox = document.createElement('div');
+        sumBox.className = 'trainer-summary';
+        sumBox.style.justifyContent = 'center';
+        sumBox.innerHTML = `Отвечено: <b>${summary.answered}/${summary.total}</b> &nbsp;·&nbsp; Верно: <b>${summary.correct}/${summary.total}</b>`;
+        footer.appendChild(sumBox);
+
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex;gap:12px;justify-content:center;flex-wrap:wrap;';
+
+        if (!finished) {
+          const allAnswered = summary.answered === summary.total;
+          const finishBtn = document.createElement('button');
+          finishBtn.className = 'btn btn-accent';
+          finishBtn.textContent = 'Закончить тренажёр';
+          finishBtn.disabled = !allAnswered;
+          finishBtn.onclick = async () => {
+            if (!allAnswered) return;
+            finished = true;
+            trainerProgress.__finished = true;
+            await persist();
+            renderList();
+            renderFooter();
+          };
+          btnRow.appendChild(finishBtn);
+          footer.appendChild(btnRow);
+          if (!allAnswered) {
+            const hint = document.createElement('div');
+            hint.className = 'finish-hint';
+            hint.textContent = 'Ответьте на все реакции, чтобы завершить тренажёр.';
+            footer.appendChild(hint);
+          }
+        } else {
+          const restartBtn = document.createElement('button');
+          restartBtn.className = 'btn btn-primary';
+          restartBtn.textContent = 'Повторить весь тренажёр';
+          restartBtn.onclick = async () => {
+            Object.keys(trainerProgress).forEach(k => delete trainerProgress[k]);
+            finished = false;
+            await persist();
+            renderList();
+            renderFooter();
+          };
+          btnRow.appendChild(restartBtn);
+          footer.appendChild(btnRow);
+        }
+      }
+
+      renderList();
+      renderFooter();
+    }
+
+    // ============================================================
+    // 12. RENDER HOMEWORK
+    // ============================================================
+
+    async function renderHomework(container, homeworkId) {
+      const homework = HOMEWORKS.find(h => h.id === homeworkId);
+      if (!homework) { VIEW = { name: 'home' };
+        render(); return; }
+
+      const isRealStudent = !CURRENT_USER.isTeacher;
+      let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
+      if (!progress[homeworkId]) progress[homeworkId] = {};
+      const hwProgress = progress[homeworkId];
+
+      const wrap = document.createElement('div');
+
+      const backRow = document.createElement('div');
+      backRow.className = 'back-row';
+      backRow.innerHTML = `<button class="back-btn">← Назад к содержанию</button>`;
+      backRow.querySelector('.back-btn').onclick = window.goHome;
+      wrap.appendChild(backRow);
+
+      const head = document.createElement('div');
+      head.className = 'trainer-head';
+      head.innerHTML = `
+        <h2>${escapeHtml(homework.title)}</h2>
+        <div class="trainer-note">${!isRealStudent?'<b>Режим просмотра/обучения:</b> ответы не сохраняются в статистику.':''}</div>
+      `;
+      wrap.appendChild(head);
+
+      const list = document.createElement('div');
+      list.className = 'rxn-list';
+      wrap.appendChild(list);
+
+      const footer = document.createElement('div');
+      footer.className = 'trainer-footer';
+      wrap.appendChild(footer);
+
+      container.appendChild(wrap);
+
+      let finished = hwProgress.__finished === true;
+
+      async function persist() {
+        if (isRealStudent) {
+          await persistFullProgress(CURRENT_USER.key, progress);
+        }
+      }
+
+      function computeSummary() {
+        const total = homework.tasks ? homework.tasks.length : 0;
+        let correct = 0,
+          answered = 0;
+        if (homework.tasks) {
+          homework.tasks.forEach((_, i) => {
+            const e = hwProgress[i];
+            if (e) { answered++; if (e.status === 'correct') correct++; }
+          });
+        }
+        return { total, correct, answered };
+      }
+
+      function renderList() {
+        list.innerHTML = '';
+        if (!homework.tasks || homework.tasks.length === 0) {
+          list.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
+          return;
+        }
+        homework.tasks.forEach((task, idx) => {
+          const entry = hwProgress[idx];
+          const card = document.createElement('div');
+          card.className = 'rxn-card' + (entry ? (entry.status === 'correct' ? ' state-correct' : ' state-wrong') : '');
+
+          card.innerHTML = `
+            <div class="rxn-num">Задание ${idx+1}</div>
+            <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+            <div class="rxn-input-row">
+              <input type="text" class="rxn-input" placeholder="Введите ответ" value="${entry ? escapeHtml(entry.answer||'') : ''}" ${finished ? 'disabled' : ''} data-idx="${idx}">
+              ${!finished ? `<button class="btn btn-ghost btn-sm" data-action="check" data-idx="${idx}">Проверить</button>
+              <button class="btn btn-ghost btn-sm" data-action="retry" data-idx="${idx}">Повторить</button>` : ''}
+            </div>
+            <div class="feedback-slot"></div>
+          `;
+
+          const fbSlot = card.querySelector('.feedback-slot');
+          if (entry && !finished) {
+            const fb = document.createElement('div');
+            fb.className = 'rxn-feedback ' + (entry.status === 'correct' ? 'ok' : 'bad');
+            fb.textContent = entry.status === 'correct' ? '✓ Верно' : '✗ Неверно';
+            fbSlot.appendChild(fb);
+          }
+
+          if (finished) {
+            const ex = document.createElement('div');
+            ex.className = 'rxn-explain';
+            const statusTxt = entry ? (entry.status === 'correct' ? '✓ Отвечено верно' : '✗ Отвечено неверно') : '— Без ответа';
+            ex.innerHTML = `<b>${statusTxt}</b><br>${escapeHtml(task.explanation||'')}<div class="full-eq">✅ Правильный ответ: ${escapeHtml(task.answer)}</div>${entry?`<div class="user-given">Ваш ответ: ${escapeHtml(entry.answer||'')}</div>`:''}`;
+            fbSlot.appendChild(ex);
+          }
+
+          list.appendChild(card);
+        });
+
+        if (!finished) {
+          list.querySelectorAll('[data-action="check"]').forEach(btn => {
+            btn.onclick = async () => {
+              const idx = parseInt(btn.dataset.idx);
+              const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              const val = input.value.trim();
+              const task = homework.tasks[idx];
+              const isCorrect = val.toLowerCase() === task.answer.toLowerCase().trim();
+              hwProgress[idx] = { status: isCorrect ? 'correct' : 'wrong', answer: val };
+              await persist();
+              renderList();
+              renderFooter();
+            };
+          });
+          list.querySelectorAll('[data-action="retry"]').forEach(btn => {
+            btn.onclick = async () => {
+              const idx = parseInt(btn.dataset.idx);
+              const input = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              const keepVal = input ? input.value : (hwProgress[idx] ? hwProgress[idx].answer : '');
+              delete hwProgress[idx];
+              await persist();
+              renderList();
+              renderFooter();
+              const newInput = list.querySelector(`.rxn-input[data-idx="${idx}"]`);
+              if (newInput) { newInput.value = keepVal;
+                newInput.focus(); }
+            };
+          });
+        }
+      }
+
+      function renderFooter() {
+        footer.innerHTML = '';
+        const summary = computeSummary();
+        const sumBox = document.createElement('div');
+        sumBox.className = 'trainer-summary';
+        sumBox.style.justifyContent = 'center';
+        sumBox.innerHTML = `Отвечено: <b>${summary.answered}/${summary.total}</b> &nbsp;·&nbsp; Верно: <b>${summary.correct}/${summary.total}</b>`;
+        footer.appendChild(sumBox);
+
+        const btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex;gap:12px;justify-content:center;flex-wrap:wrap;';
+
+        if (!finished) {
+          const allAnswered = summary.answered === summary.total;
+          const finishBtn = document.createElement('button');
+          finishBtn.className = 'btn btn-accent';
+          finishBtn.textContent = 'Закончить домашку';
+          finishBtn.disabled = !allAnswered;
+          finishBtn.onclick = async () => {
+            if (!allAnswered) return;
+            finished = true;
+            hwProgress.__finished = true;
+            await persist();
+            renderList();
+            renderFooter();
+          };
+          btnRow.appendChild(finishBtn);
+          footer.appendChild(btnRow);
+          if (!allAnswered) {
+            const hint = document.createElement('div');
+            hint.className = 'finish-hint';
+            hint.textContent = 'Ответьте на все задания, чтобы завершить домашку.';
+            footer.appendChild(hint);
+          }
+        } else {
+          const restartBtn = document.createElement('button');
+          restartBtn.className = 'btn btn-primary';
+          restartBtn.textContent = 'Повторить домашку';
+          restartBtn.onclick = async () => {
+            Object.keys(hwProgress).forEach(k => delete hwProgress[k]);
+            finished = false;
+            await persist();
+            renderList();
+            renderFooter();
+          };
+          btnRow.appendChild(restartBtn);
+          footer.appendChild(btnRow);
+        }
+      }
+
+      renderList();
+      renderFooter();
+    }
+
+    // ============================================================
+    // 13. RENDER LESSON
+    // ============================================================
+
+    function renderLessonModal(lessonId) {
+      const lesson = LESSONS.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      bg.id = 'lessonModalBg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.maxWidth = '480px';
+
+      let linksHtml = '';
+      if (lesson.links.length === 0) {
+        linksHtml = `<div class="empty-note">Видео пока не добавлено.</div>`;
+      } else {
+        linksHtml = `<div class="lesson-video-list">` + lesson.links.map(l => `<a class="lesson-link" href="${escapeAttr(l.url)}" target="_blank" rel="noopener">▶ ${escapeHtml(l.label||'Смотреть видео')}</a>`).join('') + `</div>`;
+      }
+
+      modal.innerHTML = `
+        <h3>${escapeHtml(lesson.title)}</h3>
+        <div class="lesson-body">${linksHtml}</div>
+        <div class="actions"><button class="btn btn-ghost" id="closeLessonBtn">Закрыть</button></div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+
+      bg.onclick = (e) => { if (e.target === bg) closeLessonModal(); };
+      modal.querySelector('#closeLessonBtn').onclick = closeLessonModal;
+    }
+
+    function closeLessonModal() {
+      const bg = document.getElementById('lessonModalBg');
+      if (bg) bg.remove();
+      VIEW = { name: 'home' };
+      render();
+    }
+
+    // ============================================================
+    // 14. RENDER STATS
+    // ============================================================
+
+    async function renderStats(container) {
+      container.innerHTML = '';
+
+      const reg = await loadRegistry();
+      const sortedKeys = Object.keys(reg).sort((a, b) => (reg[a].createdAt || 0) - (reg[b].createdAt || 0));
+
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<h1 class="page-title">Статистика учеников</h1><p class="page-sub">Добавляйте учеников и отслеживайте их прогресс.</p>`;
+
+      const tabs = document.createElement('div');
+      tabs.className = 'maintabs';
+      tabs.innerHTML = `
+        <div class="maintab" id="tabContent">Содержание</div>
+        <div class="maintab active" id="tabStats">Статистика учеников</div>
+        <div class="maintab" id="tabTeach">Обучаю</div>
+      `;
+      tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' };
+        render(); };
+      tabs.querySelector('#tabTeach').onclick = () => { window.enterTeachMode(); };
+      wrap.appendChild(tabs);
+
+      const addBox = document.createElement('div');
+      addBox.className = 'add-student-box';
+      addBox.innerHTML = `
+        <h3>➕ Добавить ученика</h3>
+        <div class="add-student-row">
+          <input type="text" id="newStudentName" placeholder="Имя ученика" style="flex:1;">
+          <input type="text" id="newStudentPassword" placeholder="Пароль" style="flex:1;">
+          <button class="btn btn-accent" id="addStudentBtn">Добавить</button>
+        </div>
+        <div id="addStudentMsg" class="add-err"></div>
+      `;
+      wrap.appendChild(addBox);
+
+      const listDiv = document.createElement('div');
+      listDiv.className = 'student-list';
+      listDiv.id = 'studentListContainer';
+
+      if (sortedKeys.length === 0) {
+        listDiv.innerHTML = `<div class="empty-note">Учеников пока нет. Добавьте первого!</div>`;
+      } else {
+        for (const key of sortedKeys) {
+          const student = reg[key];
+          const row = document.createElement('div');
+          row.className = 'student-row';
+          row.id = 'student-row-' + key;
+
+          const progress = await getProgress(key);
+          let totalTrainers = 0;
+          let totalCorrect = 0;
+          let totalReactions = 0;
+          let lessonsViewed = 0;
+          let homeworksDone = 0;
+
+          for (const trainerId in progress) {
+            const trainer = TRAINERS.find(t => t.id === trainerId);
+            if (!trainer) continue;
+            const trainerData = progress[trainerId];
+            if (trainerData.__finished !== true) continue;
+            totalTrainers++;
+            const correctCount = Object.keys(trainerData).filter(k => k !== '__finished' && trainerData[k].status === 'correct').length;
+            totalCorrect += correctCount;
+            totalReactions += trainer.reactions.length;
+          }
+
+          for (const lesson of LESSONS) {
+            if (progress['lesson:' + lesson.id] === true) {
+              lessonsViewed++;
+            }
+          }
+
+          for (const homework of HOMEWORKS) {
+            if (progress[homework.id] && progress[homework.id].__finished === true) {
+              homeworksDone++;
+            }
+          }
+
+          const totalLessons = LESSONS.length;
+          const totalHomeworks = HOMEWORKS.length;
+
+          row.innerHTML = `
+            <div class="student-row-top">
+              <div>
+                <div class="student-name">${escapeHtml(student.name)}</div>
+                <div class="student-meta">Пароль: ${escapeHtml(student.password)}</div>
+              </div>
+              <div class="student-actions">
+                <button class="btn btn-sm btn-ghost change-pass-btn" data-key="${key}">Сменить пароль</button>
+                <button class="btn btn-sm btn-danger delete-student-btn" data-key="${key}">Удалить</button>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;font-size:13px;color:var(--ink-soft);">
+              <div>📊 Тренажёров пройдено: <b>${totalTrainers}</b></div>
+              <div>✅ Правильных ответов: <b>${totalCorrect}/${totalReactions}</b></div>
+              <div>🎥 Уроков просмотрено: <b>${lessonsViewed}/${totalLessons}</b></div>
+              <div>📝 Домашек выполнено: <b>${homeworksDone}/${totalHomeworks}</b></div>
+            </div>
+            <button class="btn btn-sm btn-ghost" style="margin-top:8px;" data-detail-key="${key}">Подробнее</button>
+          `;
+
+          row.querySelector('.change-pass-btn').onclick = (e) => {
+            e.stopPropagation();
+            showChangePasswordModal(key);
+          };
+          row.querySelector('.delete-student-btn').onclick = (e) => {
+            e.stopPropagation();
+            showDeleteStudentConfirm(key);
+          };
+          row.querySelector('[data-detail-key]').onclick = (e) => {
+            e.stopPropagation();
+            VIEW = { name: 'studentDetail', studentKey: key };
+            render();
+          };
+          row.onclick = () => {
+            VIEW = { name: 'studentDetail', studentKey: key };
+            render();
+          };
+
+          listDiv.appendChild(row);
+        }
+      }
+
+      wrap.appendChild(listDiv);
+      container.appendChild(wrap);
+
+      addBox.querySelector('#addStudentBtn').onclick = async () => {
+        const nameInput = addBox.querySelector('#newStudentName');
+        const passInput = addBox.querySelector('#newStudentPassword');
+        const msgDiv = addBox.querySelector('#addStudentMsg');
+
+        const name = nameInput.value.trim();
+        const password = passInput.value.trim();
+
+        if (!name || !password) {
+          msgDiv.textContent = 'Введите имя и пароль.';
+          msgDiv.style.color = 'var(--bad)';
+          return;
+        }
+
+        const reg = await loadRegistry();
+        const key = name.toLowerCase();
+        if (reg[key]) {
+          msgDiv.textContent = 'Ученик с таким именем уже существует.';
+          msgDiv.style.color = 'var(--bad)';
+          return;
+        }
+
+        reg[key] = { name, password, createdAt: Date.now() };
+        await saveRegistry(reg);
+        nameInput.value = '';
+        passInput.value = '';
+        msgDiv.textContent = '✅ Ученик добавлен!';
+        msgDiv.style.color = 'var(--ok)';
+        renderStats(container);
+      };
+    }
+
+    // ============================================================
+    // 15. RENDER STUDENT DETAIL
+    // ============================================================
+
+    async function renderStudentDetail(container, studentKey) {
+      const reg = await loadRegistry();
+      const student = reg[studentKey];
+      if (!student) {
+        VIEW = { name: 'stats' };
+        render();
+        return;
+      }
+
+      const progress = await getProgress(studentKey);
+
+      const wrap = document.createElement('div');
+
+      const backRow = document.createElement('div');
+      backRow.className = 'back-row';
+      backRow.innerHTML = `<button class="back-btn">← Назад к списку</button>`;
+      backRow.querySelector('.back-btn').onclick = () => { VIEW = { name: 'stats' };
+        render(); };
+      wrap.appendChild(backRow);
+
+      const title = document.createElement('h1');
+      title.className = 'page-title';
+      title.textContent = `📊 ${student.name}`;
+      wrap.appendChild(title);
+
+      const detailDiv = document.createElement('div');
+      detailDiv.className = 'student-detail';
+
+      const sortedTopics = [...TOPICS].sort((a, b) => a.order - b.order);
+      let hasData = false;
+
+      const trainerStats = [];
+      for (const topic of sortedTopics) {
+        const topicTrainers = TRAINERS.filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
+        for (const trainer of topicTrainers) {
+          const trainerData = progress[trainer.id] || {};
+          const total = trainer.reactions.length;
+          const correct = Object.keys(trainerData).filter(k => k !== '__finished' && trainerData[k].status === 'correct').length;
+          const finished = trainerData.__finished === true;
+          const pct = total ? Math.round(correct / total * 100) : 0;
+          trainerStats.push({
+            topicName: topic.name,
+            title: trainer.title,
+            total,
+            correct,
+            finished,
+            pct,
+            type: 'trainer'
+          });
+          if (total > 0) hasData = true;
+        }
+      }
+
+      const homeworkStats = [];
+      for (const topic of sortedTopics) {
+        const topicHomeworks = HOMEWORKS.filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
+        for (const homework of topicHomeworks) {
+          const hwData = progress[homework.id] || {};
+          const total = homework.tasks ? homework.tasks.length : 0;
+          const correct = Object.keys(hwData).filter(k => k !== '__finished' && hwData[k].status === 'correct').length;
+          const finished = hwData.__finished === true;
+          const pct = total ? Math.round(correct / total * 100) : 0;
+          homeworkStats.push({
+            topicName: topic.name,
+            title: homework.title,
+            total,
+            correct,
+            finished,
+            pct,
+            type: 'homework'
+          });
+          if (total > 0) hasData = true;
+        }
+      }
+
+      const lessonStats = [];
+      for (const lesson of LESSONS) {
+        const viewed = progress['lesson:' + lesson.id] === true;
+        const topic = TOPICS.find(t => t.id === lesson.topicId);
+        lessonStats.push({
+          topicName: topic ? topic.name : 'Без темы',
+          title: lesson.title,
+          viewed,
+          type: 'lesson'
+        });
+        if (viewed) hasData = true;
+      }
+
+      if (!hasData) {
+        detailDiv.innerHTML = `<div class="empty-note">У ученика пока нет прогресса.</div>`;
+      } else {
+        if (trainerStats.length > 0) {
+          const trainDiv = document.createElement('div');
+          trainDiv.innerHTML = `<h3 style="margin:0 0 12px;">Тренажёры</h3>`;
+          for (const stat of trainerStats) {
+            const row = document.createElement('div');
+            row.className = 'topic-row';
+            row.innerHTML = `
+              <div>
+                <div class="topic-name">${escapeHtml(stat.title)}</div>
+                <div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(stat.topicName)}</div>
+              </div>
+              <div class="topic-stats" style="display:flex;align-items:center;gap:12px;">
+                <span>${stat.correct}/${stat.total}</span>
+                <div class="mini-bar"><div class="mini-fill" style="width:${stat.pct}%;${stat.finished?'background:var(--ok);':''}"></div></div>
+                ${stat.finished ? '<span style="color:var(--ok);font-weight:700;">✓</span>' : ''}
+              </div>
+            `;
+            trainDiv.appendChild(row);
+          }
+          detailDiv.appendChild(trainDiv);
+        }
+
+        if (homeworkStats.length > 0) {
+          const hwDiv = document.createElement('div');
+          hwDiv.style.marginTop = '20px';
+          hwDiv.innerHTML = `<h3 style="margin:0 0 12px;">Домашки</h3>`;
+          for (const stat of homeworkStats) {
+            const row = document.createElement('div');
+            row.className = 'topic-row';
+            row.innerHTML = `
+              <div>
+                <div class="topic-name">${escapeHtml(stat.title)}</div>
+                <div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(stat.topicName)}</div>
+              </div>
+              <div class="topic-stats" style="display:flex;align-items:center;gap:12px;">
+                <span>${stat.correct}/${stat.total}</span>
+                <div class="mini-bar"><div class="mini-fill" style="width:${stat.pct}%;${stat.finished?'background:var(--ok);':''}"></div></div>
+                ${stat.finished ? '<span style="color:var(--ok);font-weight:700;">✓</span>' : ''}
+              </div>
+            `;
+            hwDiv.appendChild(row);
+          }
+          detailDiv.appendChild(hwDiv);
+        }
+
+        if (lessonStats.length > 0) {
+          const lessonDiv = document.createElement('div');
+          lessonDiv.style.marginTop = '20px';
+          lessonDiv.innerHTML = `<h3 style="margin:0 0 12px;">Видеоуроки</h3>`;
+          for (const stat of lessonStats) {
+            const row = document.createElement('div');
+            row.className = 'topic-row';
+            row.innerHTML = `
+              <div>
+                <div class="topic-name">${escapeHtml(stat.title)}</div>
+                <div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(stat.topicName)}</div>
+              </div>
+              <div class="topic-stats">
+                ${stat.viewed ? '✅ Просмотрено' : '⏳ Не просмотрено'}
+              </div>
+            `;
+            lessonDiv.appendChild(row);
+          }
+          detailDiv.appendChild(lessonDiv);
+        }
+      }
+
+      wrap.appendChild(detailDiv);
+      container.appendChild(wrap);
+    }
+
+    // ============================================================
+    // 16. УПРАВЛЕНИЕ УЧЕНИКАМИ
+    // ============================================================
+
+    async function showChangePasswordModal(studentKey) {
+      const reg = await loadRegistry();
+      const student = reg[studentKey];
+      if (!student) return;
+
+      window.showPromptModal(`Смена пароля для ${student.name}`, '', async (newPass) => {
+        if (!newPass.trim()) return;
+        student.password = newPass.trim();
+        await saveRegistry(reg);
+        if (VIEW.name === 'stats') renderStats(document.getElementById('mainContainer'));
+        else if (VIEW.name === 'studentDetail') renderStudentDetail(document.getElementById('mainContainer'), studentKey);
+      });
+    }
+
+    async function showDeleteStudentConfirm(studentKey) {
+      const reg = await loadRegistry();
+      const student = reg[studentKey];
+      if (!student) return;
+
+      window.showConfirmModal(`Удалить ученика ${student.name}?`, 'Все данные прогресса будут удалены без возможности восстановления.', async () => {
+        delete reg[studentKey];
+        await saveRegistry(reg);
+        await remove(ref(db, `progress/${studentKey}`));
+        if (VIEW.name === 'stats') renderStats(document.getElementById('mainContainer'));
+        else { VIEW = { name: 'stats' };
+          render(); }
+      });
+    }
+
+    // ============================================================
+    // 17. КОНСТРУКТОР МАТЕРИАЛОВ
+    // ============================================================
+
+    function buildAdminBuilder() {
+      const box = document.createElement('div');
+      box.className = 'builder-box';
+      box.innerHTML = `
+        <h3>✏️ Добавить новый материал</h3>
+        <div class="field-row">
+          <select id="builderType">
+            <option value="trainer">Тренажёр</option>
+            <option value="lesson">Урок</option>
+            <option value="homework">Домашка</option>
+            <option value="topic">Новая тема</option>
+          </select>
+          <select id="builderTopic"></select>
+        </div>
+        <div id="builderFields"></div>
+        <button class="btn btn-accent btn-sm" id="builderSave">Сохранить</button>
+        <div id="builderMsg" style="margin-top:8px;font-size:12.5px;color:var(--ok);"></div>
+      `;
+
+      const typeSel = box.querySelector('#builderType');
+      const topicSel = box.querySelector('#builderTopic');
+      const fieldsBox = box.querySelector('#builderFields');
+
+      function refreshTopicOptions() {
+        const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
+        topicSel.innerHTML = sorted.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+      }
+      refreshTopicOptions();
+
+      let reactionRows = [];
+      let lessonLinkRows = [];
+      let homeworkRows = [];
+
+      function renderFields() {
+        const type = typeSel.value;
+        topicSel.style.display = (type === 'topic') ? 'none' : '';
+        if (type === 'trainer') {
+          reactionRows = [{}];
+          fieldsBox.innerHTML = `
+            <div class="field-row"><input type="text" id="fTrainerTitle" placeholder="Название тренажёра" style="flex:1;min-width:240px;"></div>
+            <small class="help">Для каждой реакции заполните 4 поля: задание, ответ, пояснение, полное уравнение. Если реакция не идёт — в поле «Ответ» впишите 0 или −.</small>
+            <div id="rxnRowsContainer"></div>
+            <button type="button" class="add-line-btn" id="addRxnRowBtn">+ Добавить реакцию</button>
+          `;
+          renderReactionRows();
+          fieldsBox.querySelector('#addRxnRowBtn').onclick = () => {
+            reactionRows.push({});
+            renderReactionRows();
+          };
+        } else if (type === 'lesson') {
+          lessonLinkRows = [{}];
+          fieldsBox.innerHTML = `
+            <div class="field-row"><input type="text" id="fLessonTitle" placeholder="Название урока" style="flex:1;min-width:240px;"></div>
+            <small class="help">Добавьте одну или несколько ссылок на видео (YouTube, RuTube и т.д.).</small>
+            <div id="lessonRowsContainer"></div>
+            <button type="button" class="add-line-btn" id="addLessonRowBtn">+ Добавить видео</button>
+          `;
+          renderLessonRows();
+          fieldsBox.querySelector('#addLessonRowBtn').onclick = () => {
+            lessonLinkRows.push({});
+            renderLessonRows();
+          };
+        } else if (type === 'homework') {
+          homeworkRows = [{}];
+          fieldsBox.innerHTML = `
+            <div class="field-row"><input type="text" id="fHomeworkTitle" placeholder="Название домашки" style="flex:1;min-width:240px;"></div>
+            <small class="help">Для каждого задания заполните: вопрос, ответ и пояснение (необязательно).</small>
+            <div id="homeworkRowsContainer"></div>
+            <button type="button" class="add-line-btn" id="addHomeworkRowBtn">+ Добавить задание</button>
+          `;
+          renderHomeworkRows();
+          fieldsBox.querySelector('#addHomeworkRowBtn').onclick = () => {
+            homeworkRows.push({});
+            renderHomeworkRows();
+          };
+        } else {
+          fieldsBox.innerHTML = `
+            <div class="field-row"><input type="text" id="fTopicName" placeholder="Название темы" style="flex:1;min-width:240px;"></div>
+          `;
+        }
+      }
+
+      function renderReactionRows() {
+        const cont = fieldsBox.querySelector('#rxnRowsContainer');
+        cont.innerHTML = reactionRows.map((_, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Реакция ${i+1}</span>${reactionRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Задание, например N2O5 + H2O →" data-field="lhs" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ответ, например HNO3 (или 0 / −)" data-field="answer" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">4</div><input type="text" placeholder="Полное уравнение" data-field="full" data-row="${i}"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            reactionRows.splice(i, 1);
+            renderReactionRows();
+          };
+        });
+      }
+
+      function renderLessonRows() {
+        const cont = fieldsBox.querySelector('#lessonRowsContainer');
+        cont.innerHTML = lessonLinkRows.map((_, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Видео ${i+1}</span>${lessonLinkRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Название видео" data-field="label" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ссылка (https://...)" data-field="url" data-row="${i}"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            lessonLinkRows.splice(i, 1);
+            renderLessonRows();
+          };
+        });
+      }
+
+      function renderHomeworkRows() {
+        const cont = fieldsBox.querySelector('#homeworkRowsContainer');
+        cont.innerHTML = homeworkRows.map((_, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Задание ${i+1}</span>${homeworkRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Вопрос" data-field="question" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Правильный ответ" data-field="answer" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение (необязательно)" data-field="explain" data-row="${i}"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            homeworkRows.splice(i, 1);
+            renderHomeworkRows();
+          };
+        });
+      }
+
+      typeSel.onchange = renderFields;
+      renderFields();
+
+      box.querySelector('#builderSave').onclick = async () => {
+        const type = typeSel.value;
+        const msg = box.querySelector('#builderMsg');
+        msg.textContent = '';
+        msg.style.color = 'var(--ok)';
+
+        if (type === 'topic') {
+          const name = document.getElementById('fTopicName').value.trim();
+          if (!name) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Введите название темы.'; return; }
+          const id = 'topic_' + Date.now();
+          const maxOrder = TOPICS.length ? Math.max(...TOPICS.map(t => t.order)) : -1;
+          TOPICS.push({ id, name, order: maxOrder + 1 });
+          await persistTopics();
+          msg.textContent = '✅ Тема добавлена!';
+          refreshTopicOptions();
+          render();
+        } else if (type === 'trainer') {
+          const title = document.getElementById('fTrainerTitle').value.trim();
+          const topicId = topicSel.value;
+          if (!title) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Введите название тренажёра.'; return; }
+
+          const container2 = fieldsBox.querySelector('#rxnRowsContainer');
+          const rows = [...container2.querySelectorAll('.rxn-row-builder')];
+          const reactions = [];
+          for (const row of rows) {
+            const lhs = row.querySelector('[data-field="lhs"]').value.trim();
+            const answer = row.querySelector('[data-field="answer"]').value.trim();
+            const explain = row.querySelector('[data-field="explain"]').value.trim();
+            const full = row.querySelector('[data-field="full"]').value.trim();
+            if (!lhs || !answer) continue;
+            const isInvalid = ['0', '-', '−'].includes(answer) || /НЕ ИДЁТ|НЕ ИДЕТ/i.test(answer);
+            if (isInvalid) {
+              reactions.push({ lhs, valid: false, correctSets: [], explanation: explain, fullEquation: full || 'Реакция не идёт' });
+            } else {
+              const products = answer.split(',').map(s => s.trim()).filter(s => s.length > 0);
+              reactions.push({ lhs, valid: true, correctSets: [products], explanation: explain, fullEquation: full });
+            }
+          }
+          if (reactions.length === 0) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Добавьте хотя бы одну заполненную реакцию.'; return; }
+
+          const id = 'trainer_' + Date.now();
+          const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
+          TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, reactions });
+          await persistTrainers();
+          msg.textContent = '✅ Тренажёр добавлен!';
+          render();
+        } else if (type === 'lesson') {
+          const title = document.getElementById('fLessonTitle').value.trim();
+          const topicId = topicSel.value;
+          if (!title) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Введите название урока.'; return; }
+
+          const container2 = fieldsBox.querySelector('#lessonRowsContainer');
+          const rows = [...container2.querySelectorAll('.rxn-row-builder')];
+          const links = [];
+          for (const row of rows) {
+            const label = row.querySelector('[data-field="label"]').value.trim();
+            const url = row.querySelector('[data-field="url"]').value.trim();
+            if (!url) continue;
+            links.push({ label: label || 'Видео', url });
+          }
+          const id = 'lesson_' + Date.now();
+          const siblingsMax = LESSONS.filter(l => l.topicId === topicId).reduce((m, l) => Math.max(m, l.order), -1);
+          LESSONS.push({ id, topicId, title, order: siblingsMax + 1, links });
+          await persistLessons();
+          msg.textContent = '✅ Урок добавлен!';
+          render();
+        } else if (type === 'homework') {
+          const title = document.getElementById('fHomeworkTitle').value.trim();
+          const topicId = topicSel.value;
+          if (!title) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Введите название домашки.'; return; }
+
+          const container2 = fieldsBox.querySelector('#homeworkRowsContainer');
+          const rows = [...container2.querySelectorAll('.rxn-row-builder')];
+          const tasks = [];
+          for (const row of rows) {
+            const question = row.querySelector('[data-field="question"]').value.trim();
+            const answer = row.querySelector('[data-field="answer"]').value.trim();
+            const explain = row.querySelector('[data-field="explain"]').value.trim();
+            if (!question || !answer) continue;
+            tasks.push({ question, answer, explanation: explain || '' });
+          }
+          if (tasks.length === 0) { msg.style.color = 'var(--bad)';
+            msg.textContent = 'Добавьте хотя бы одно задание.'; return; }
+
+          const id = 'homework_' + Date.now();
+          const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
+          HOMEWORKS.push({ id, topicId, title, order: siblingsMax + 1, tasks });
+          await persistHomeworks();
+          msg.textContent = '✅ Домашка добавлена!';
+          render();
+        }
+      };
+
+      return box;
+    }
+
+    // ============================================================
+    // 18. КОНСТРУКТОР С ИИ
+    // ============================================================
+
+    function buildAIBuilder() {
+      const box = document.createElement('div');
+      box.className = 'ai-builder-box';
+      box.innerHTML = `
+        <h3>🤖 Быстрое создание с ИИ</h3>
+        <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;">Вставьте готовые материалы, и ИИ сам разобьёт их по полям.</p>
+        <div class="field-row">
+          <select id="aiType">
+            <option value="trainer">Тренажёр</option>
+            <option value="homework">Домашка</option>
+          </select>
+          <select id="aiTopic"></select>
+        </div>
+        <div class="field-row">
+          <input type="text" id="aiTitle" placeholder="Название материала" style="flex:1;">
+        </div>
+        <div class="field-row">
+          <textarea id="aiInput" placeholder="Вставьте ваши материалы. Например:&#10;N2O5 + H2O → HNO3 | Кислотный оксид реагирует с водой | N2O5 + H2O = 2HNO3&#10;CaO + CO2 → CaCO3 | Основный оксид реагирует с кислотным оксидом | CaO + CO2 = CaCO3"></textarea>
+        </div>
+        <div class="field-row">
+          <span style="font-size:12px;color:var(--ink-soft);">Разделитель: каждая строка — одно задание. Используйте <b>|</b> для разделения полей.</span>
+        </div>
+        <button class="btn btn-accent btn-sm" id="aiGenerateBtn">✨ Создать из ИИ</button>
+        <div id="aiMsg" style="margin-top:8px;font-size:12.5px;color:var(--ok);"></div>
+      `;
+
+      const typeSel = box.querySelector('#aiType');
+      const topicSel = box.querySelector('#aiTopic');
+      const titleInput = box.querySelector('#aiTitle');
+      const textarea = box.querySelector('#aiInput');
+      const msgDiv = box.querySelector('#aiMsg');
+
+      function refreshTopicOptions() {
+        const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
+        topicSel.innerHTML = sorted.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+      }
+      refreshTopicOptions();
+
+      box.querySelector('#aiGenerateBtn').onclick = async () => {
+        const type = typeSel.value;
+        const topicId = topicSel.value;
+        const title = titleInput.value.trim();
+        const rawText = textarea.value;
+
+        msgDiv.textContent = '';
+        msgDiv.style.color = 'var(--bad)';
+
+        if (!title) { msgDiv.textContent = 'Введите название.'; return; }
+        if (!rawText) { msgDiv.textContent = 'Вставьте материалы.'; return; }
+
+        const lines = rawText.split('\n').filter(l => l.trim().length > 0);
+        const results = [];
+
+        for (const line of lines) {
+          const parts = line.split('|').map(p => p.trim());
+          if (type === 'trainer') {
+            const lhs = parts[0] || '';
+            const answer = parts[1] || '';
+            const explain = parts[2] || '';
+            const full = parts[3] || '';
+            if (!lhs || !answer) continue;
+
+            const isInvalid = ['0', '-', '−'].includes(answer) || /НЕ ИДЁТ|НЕ ИДЕТ/i.test(answer);
+            if (isInvalid) {
+              results.push({ lhs, valid: false, correctSets: [], explanation: explain || 'Реакция не идёт', fullEquation: full || 'Реакция не идёт' });
+            } else {
+              const products = answer.split(',').map(s => s.trim()).filter(s => s.length > 0);
+              results.push({ lhs, valid: true, correctSets: [products], explanation: explain || '', fullEquation: full || '' });
+            }
+          } else if (type === 'homework') {
+            const question = parts[0] || '';
+            const answer = parts[1] || '';
+            const explain = parts[2] || '';
+            if (!question || !answer) continue;
+            results.push({ question, answer, explanation: explain || '' });
+          }
+        }
+
+        if (results.length === 0) {
+          msgDiv.textContent = 'Не удалось распознать материалы. Убедитесь, что каждая строка содержит нужные поля через |';
+          return;
+        }
+
+        const id = (type === 'trainer' ? 'trainer_' : 'homework_') + Date.now();
+        const siblingsMax = type === 'trainer' ?
+          TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1) :
+          HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
+
+        if (type === 'trainer') {
+          TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, reactions: results });
+          await persistTrainers();
+        } else {
+          HOMEWORKS.push({ id, topicId, title, order: siblingsMax + 1, tasks: results });
+          await persistHomeworks();
+        }
+
+        msgDiv.style.color = 'var(--ok)';
+        msgDiv.textContent = `✅ ${type === 'trainer' ? 'Тренажёр' : 'Домашка'} "${title}" создан${type === 'homework' ? 'а' : ''} с ${results.length} задани${results.length === 1 ? 'ем' : 'ями'}!`;
+        textarea.value = '';
+        titleInput.value = '';
+        render();
+      };
+
+      return box;
+    }
+
+    // ============================================================
+    // 19. РЕДАКТИРОВАНИЕ
+    // ============================================================
+
+    function openEditTrainerModal(trainerId) {
+      const trainer = TRAINERS.find(t => t.id === trainerId);
+      if (!trainer) return;
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.maxWidth = '560px';
+
+      modal.innerHTML = `
+        <h3>Редактировать тренажёр</h3>
+        <div class="field"><label>Название</label><input type="text" id="editTrainerTitle" value="${escapeAttr(trainer.title)}"></div>
+        <small class="help">Формат: задание | ответ | пояснение | полное уравнение. Если реакция не идёт — в поле ответа впишите 0 или −.</small>
+        <div id="editRxnRows"></div>
+        <button type="button" class="add-line-btn" id="editAddRxnBtn">+ Добавить реакцию</button>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelEditTrainer">Отмена</button>
+          <button class="btn btn-accent" id="saveEditTrainer">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+
+      let rows = trainer.reactions.map(r => ({
+        lhs: r.lhs,
+        answer: r.valid ? (r.correctSets[0] || []).join(',') : '0',
+        explain: r.explanation || '',
+        full: r.fullEquation || ''
+      }));
+
+      function renderRows() {
+        const cont = modal.querySelector('#editRxnRows');
+        cont.innerHTML = rows.map((r, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Реакция ${i+1}</span>${rows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="lhs" data-row="${i}" value="${escapeAttr(r.lhs)}" placeholder="Задание"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="answer" data-row="${i}" value="${escapeAttr(r.answer)}" placeholder="Ответ"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explain)}" placeholder="Пояснение"></div>
+            <div class="builder-line"><div class="ln-label">4</div><input type="text" data-field="full" data-row="${i}" value="${escapeAttr(r.full)}" placeholder="Полное уравнение"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            rows.splice(i, 1);
+            renderRows();
+          };
+        });
+      }
+      renderRows();
+
+      modal.querySelector('#editAddRxnBtn').onclick = () => {
+        rows.push({ lhs: '', answer: '', explain: '', full: '' });
+        renderRows();
+      };
+      modal.querySelector('#cancelEditTrainer').onclick = () => bg.remove();
+      modal.querySelector('#saveEditTrainer').onclick = async () => {
+        const title = document.getElementById('editTrainerTitle').value.trim();
+        if (!title) return;
+
+        const cont = modal.querySelector('#editRxnRows');
+        const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
+        const newReactions = [];
+        for (const row of domRows) {
+          const lhs = row.querySelector('[data-field="lhs"]').value.trim();
+          const answer = row.querySelector('[data-field="answer"]').value.trim();
+          const explain = row.querySelector('[data-field="explain"]').value.trim();
+          const full = row.querySelector('[data-field="full"]').value.trim();
+          if (!lhs || !answer) continue;
+          const isInvalid = ['0', '-', '−'].includes(answer) || /НЕ ИДЁТ|НЕ ИДЕТ/i.test(answer);
+          if (isInvalid) {
+            newReactions.push({ lhs, valid: false, correctSets: [], explanation: explain, fullEquation: full || 'Реакция не идёт' });
+          } else {
+            const products = answer.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            newReactions.push({ lhs, valid: true, correctSets: [products], explanation: explain, fullEquation: full });
+          }
+        }
+        if (newReactions.length === 0) return;
+
+        trainer.title = title;
+        trainer.reactions = newReactions;
+        await persistTrainers();
+        bg.remove();
+        render();
+      };
+    }
+
+    function openEditLessonModal(lessonId) {
+      const lesson = LESSONS.find(l => l.id === lessonId);
+      if (!lesson) return;
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      modal.innerHTML = `
+        <h3>Редактировать урок</h3>
+        <div class="field"><label>Название</label><input type="text" id="editLessonTitle" value="${escapeAttr(lesson.title)}"></div>
+        <div id="editLessonRows"></div>
+        <button type="button" class="add-line-btn" id="editAddLessonBtn">+ Добавить видео</button>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelEditLesson">Отмена</button>
+          <button class="btn btn-accent" id="saveEditLesson">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+
+      let rows = lesson.links.length ? [...lesson.links] : [{ label: '', url: '' }];
+
+      function renderRows() {
+        const cont = modal.querySelector('#editLessonRows');
+        cont.innerHTML = rows.map((r, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Видео ${i+1}</span>${rows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="label" data-row="${i}" value="${escapeAttr(r.label||'')}" placeholder="Название видео"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="url" data-row="${i}" value="${escapeAttr(r.url||'')}" placeholder="Ссылка"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            rows.splice(i, 1);
+            renderRows();
+          };
+        });
+      }
+      renderRows();
+
+      modal.querySelector('#editAddLessonBtn').onclick = () => {
+        rows.push({ label: '', url: '' });
+        renderRows();
+      };
+      modal.querySelector('#cancelEditLesson').onclick = () => bg.remove();
+      modal.querySelector('#saveEditLesson').onclick = async () => {
+        const title = document.getElementById('editLessonTitle').value.trim();
+        if (!title) return;
+        const cont = modal.querySelector('#editLessonRows');
+        const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
+        const newLinks = [];
+        for (const row of domRows) {
+          const label = row.querySelector('[data-field="label"]').value.trim();
+          const url = row.querySelector('[data-field="url"]').value.trim();
+          if (!url) continue;
+          newLinks.push({ label: label || 'Видео', url });
+        }
+        lesson.title = title;
+        lesson.links = newLinks;
+        await persistLessons();
+        bg.remove();
+        render();
+      };
+    }
+
+    function openEditHomeworkModal(homeworkId) {
+      const homework = HOMEWORKS.find(h => h.id === homeworkId);
+      if (!homework) return;
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      modal.innerHTML = `
+        <h3>Редактировать домашку</h3>
+        <div class="field"><label>Название</label><input type="text" id="editHomeworkTitle" value="${escapeAttr(homework.title)}"></div>
+        <div id="editHomeworkRows"></div>
+        <button type="button" class="add-line-btn" id="editAddHomeworkBtn">+ Добавить задание</button>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelEditHomework">Отмена</button>
+          <button class="btn btn-accent" id="saveEditHomework">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+
+      let rows = homework.tasks ? [...homework.tasks] : [{ question: '', answer: '', explanation: '' }];
+
+      function renderRows() {
+        const cont = modal.querySelector('#editHomeworkRows');
+        cont.innerHTML = rows.map((r, i) => `
+          <div class="rxn-row-builder" data-row="${i}">
+            <div class="rrb-head"><span>Задание ${i+1}</span>${rows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="question" data-row="${i}" value="${escapeAttr(r.question||'')}" placeholder="Вопрос"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="answer" data-row="${i}" value="${escapeAttr(r.answer||'')}" placeholder="Правильный ответ"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explanation||'')}" placeholder="Пояснение"></div>
+          </div>
+        `).join('');
+        cont.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.onclick = () => {
+            const i = parseInt(btn.dataset.remove);
+            rows.splice(i, 1);
+            renderRows();
+          };
+        });
+      }
+      renderRows();
+
+      modal.querySelector('#editAddHomeworkBtn').onclick = () => {
+        rows.push({ question: '', answer: '', explanation: '' });
+        renderRows();
+      };
+      modal.querySelector('#cancelEditHomework').onclick = () => bg.remove();
+      modal.querySelector('#saveEditHomework').onclick = async () => {
+        const title = document.getElementById('editHomeworkTitle').value.trim();
+        if (!title) return;
+        const cont = modal.querySelector('#editHomeworkRows');
+        const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
+        const newTasks = [];
+        for (const row of domRows) {
+          const question = row.querySelector('[data-field="question"]').value.trim();
+          const answer = row.querySelector('[data-field="answer"]').value.trim();
+          const explain = row.querySelector('[data-field="explain"]').value.trim();
+          if (!question || !answer) continue;
+          newTasks.push({ question, answer, explanation: explain || '' });
+        }
+        if (newTasks.length === 0) return;
+        homework.title = title;
+        homework.tasks = newTasks;
+        await persistHomeworks();
+        bg.remove();
+        render();
+      };
+    }
+
+    // ============================================================
+    // 20. ИНИЦИАЛИЗАЦИЯ
     // ============================================================
 
     document.getElementById('loginPass').addEventListener('keydown', (e) => {
@@ -1414,26 +2484,6 @@
       }
     })();
 
-    // -----------------------------------------------------------------
-    // ВНИМАНИЕ: Из-за ограничения на длину ответа, я не могу вставить 
-    // весь твой код сюда. Но ты можешь взять свой оригинальный HTML-файл
-    // и заменить ВСЕ вызовы localStorage на Firebase-функции, 
-    // которые я описал выше.
-    // 
-    // Основные замены:
-    // - loadRegistry()       -> await loadFromFirebase('registry', {...})
-    // - saveRegistry(reg)    -> await saveToFirebase('registry', reg)
-    // - loadSession()        -> await loadFromFirebase('session', null)
-    // - saveSession(s)       -> await saveToFirebase('session', s) или remove
-    // - getProgress(key)     -> await loadFromFirebase('progress/'+key, {})
-    // - persistFullProgress(key, p) -> await saveToFirebase('progress/'+key, p)
-    // - storeGet('content:topics') -> await loadFromFirebase('content/topics', defaultTopics())
-    // - storeSet('content:topics', data) -> await saveToFirebase('content/topics', data)
-    // 
-    // Все функции, которые используют эти вызовы, должны быть async.
-    // -----------------------------------------------------------------
-
   </script>
-
 </body>
   </html>
