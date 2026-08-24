@@ -34,6 +34,7 @@
       --radius: 16px;
       --radius-sm: 10px;
       --transition: 0.2s ease;
+      --card-flip-bg: #f0f4ff;
       font-family: "Manrope", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
     }
 
@@ -46,6 +47,7 @@
       --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
       --accent: #c9d1d9;
       --accent-hover: #e6edf3;
+      --card-flip-bg: #1c2333;
     }
 
     [data-theme="dark"] .card { background: var(--surface); }
@@ -62,6 +64,7 @@
     [data-theme="dark"] .btn-accent:hover { background: var(--bg); }
     [data-theme="dark"] .plat-btn.active { background: var(--surface); color: var(--accent); border: 1px solid var(--line); }
     [data-theme="dark"] .trainer-mode-selector .btn.active { background: var(--surface); color: var(--accent); border: 1px solid var(--line); }
+    [data-theme="dark"] .flash-card { background: var(--surface); border-color: var(--line); }
 
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
@@ -142,6 +145,8 @@
     .btn-sm { padding: 6px 12px; font-size: 12.5px; border-radius: 8px; }
     .btn-warning { background: #fff3cd; color: #856404; }
     .btn-warning:hover { opacity: .85; }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .btn-outline:hover { background: var(--accent); color: #fff; }
 
     .icon-btn {
       width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: transparent;
@@ -325,6 +330,99 @@
     }
     .rxn-step .step-nav .flank-btn:hover { border-color: var(--ink); }
     .rxn-step .step-nav .flank-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ===== КАРТЫ (FLASH CARDS) ===== */
+    .flash-card {
+      background: var(--surface);
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 40px 30px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .flash-card .card-number {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+    .flash-card .card-question {
+      font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+      padding: 20px 0;
+      line-height: 1.6;
+    }
+    .flash-card .card-question .answer-part {
+      color: var(--ok);
+      font-weight: 700;
+    }
+    .flash-card .card-question .answer-part.hidden-answer {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .flash-card .card-question .answer-part.visible-answer {
+      opacity: 1;
+    }
+    .flash-card .card-actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .flash-card .card-nav {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .flash-card .card-nav .nav-btn {
+      padding: 8px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+    .flash-card .card-nav .nav-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .flash-card .card-nav .nav-btn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+    .flash-card .card-nav .nav-info {
+      font-size: 14px;
+      color: var(--ink-soft);
+      min-width: 60px;
+      text-align: center;
+    }
+    .flash-card .card-source {
+      position: absolute;
+      bottom: 12px;
+      right: 20px;
+      font-size: 11px;
+      color: var(--ink-soft);
+      opacity: 0.6;
+    }
 
     .rxn-list { display: flex; flex-direction: column; gap: 12px; }
     .rxn-card {
@@ -537,6 +635,12 @@
       transition: all var(--transition);
     }
     .platforms-bar .plat-edit:hover { border-color: var(--accent); color: var(--accent); }
+    .platforms-bar .plat-settings {
+      padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line);
+      font-size: 12px; font-weight: 600; cursor: pointer; background: var(--surface); color: var(--ink-soft);
+      transition: all var(--transition);
+    }
+    .platforms-bar .plat-settings:hover { border-color: var(--accent); color: var(--accent); }
 
     .task-type-selector {
       display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
@@ -580,6 +684,7 @@
       .stats-table { font-size: 12px; }
       .stats-table th, .stats-table td { padding: 8px 6px; }
       .task-type-selector { flex-wrap: wrap; }
+      .flash-card .card-question { font-size: 20px; }
     }
   </style>
 </head>
@@ -688,7 +793,6 @@
     let platforms = {};
     let allStudents = [];
 
-    // Кэш прогресса ученика для быстрого доступа в renderHome
     window.__cachedProgress = null;
 
     // ============================================================
@@ -710,7 +814,6 @@
       return sa.every((v, i) => v === sb[i]);
     }
 
-    // Для text и radio: парсим варианты через /
     function parseAnswerVariants(answerStr) {
       if (!answerStr) return [];
       const variants = answerStr.split('/').map(s => s.trim()).filter(s => s.length > 0);
@@ -720,21 +823,11 @@
       });
     }
 
-    // Для checkbox: парсим через запятую
     function parseCheckboxAnswers(answerStr) {
       if (!answerStr) return [];
       return answerStr.split(',').map(s => normalizeToken(s)).filter(s => s.length > 0);
     }
 
-    // УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ПРОВЕРКИ
-    // Для checkbox: разбираем по запятой в ОДНО множество (все отмеченные
-    // варианты должны совпасть). Для text/radio: разбираем по / (варианты)
-    // и + (продукты внутри варианта) — как раньше.
-    // correctSets — в верхнем регистре, используется ТОЛЬКО для сравнения
-    // (checkAnswer), не трогаем это, чтобы не сломать проверку ответов.
-    // correctSetsDisplay — сохраняет регистр букв, как ввёл учитель
-    // (NaCl, а не NACL), используется только для показа: в разборе
-    // тренажёра при редактировании и на экране "правильный ответ".
     function cleanDisplayToken(s) {
       return s.trim().replace(/\s+/g, '');
     }
@@ -767,7 +860,6 @@
       const raw = (userInput || '').trim();
       if (!raw) return false;
 
-      // Проверка на "реакция не идёт"
       const norm = raw.replace(/\s+/g, '');
       if (norm === '0' || norm === '-' || norm === '−' || 
           norm.toUpperCase() === 'НЕТ' || norm.toUpperCase() === 'НЕИДЕТ' || 
@@ -775,24 +867,18 @@
         return !reaction.valid;
       }
 
-      // Реакция не идёт, а ученик написал что-то другое (не 0/−) —
-      // это просто неверный ответ, сравнивать не с чем.
       if (!reaction.valid) {
         return false;
       }
 
-      // Защита от повреждённых/старых данных, где correctSets мог
-      // оказаться не массивом — чтобы проверка ответа никогда не падала.
       const correctSets = Array.isArray(reaction.correctSets) ? reaction.correctSets : [];
 
-      // Для checkbox: сравниваем множества через запятую
       if (taskType === 'checkbox') {
         const userAnswers = parseCheckboxAnswers(raw);
         const correctSet = correctSets.length > 0 ? correctSets[0] : [];
         return arraysEqualAsSets(userAnswers, correctSet);
       }
 
-      // Для text и radio: сравниваем с вариантами через /
       const userProducts = splitProducts(raw);
       for (const correctVariant of correctSets) {
         if (arraysEqualAsSets(userProducts, correctVariant)) {
@@ -803,7 +889,7 @@
     }
 
     // ============================================================
-    // 4. РАБОТА С ПЛАТФОРМАМИ
+    // 4-8. ПЛАТФОРМЫ, ТЕМА, СЕССИЯ, FIREBASE, ВСПОМОГАТЕЛЬНЫЕ
     // ============================================================
 
     async function loadPlatforms() {
@@ -853,6 +939,406 @@
     function getPlatformPath(platId, path) {
       return `platforms/${platId}/${path}`;
     }
+
+    // ============================================================
+    // 9. АВТОРИЗАЦИЯ
+    // ============================================================
+
+    window.handleLogin = async function() {
+      const nameInput = document.getElementById('loginName').value.trim();
+      const passInput = document.getElementById('loginPass').value;
+      const errBox = document.getElementById('loginErr');
+      errBox.textContent = '';
+
+      if (!nameInput || !passInput) { errBox.textContent = 'Введите имя и пароль.'; return; }
+
+      const platKeys = Object.keys(platforms);
+      for (const key of platKeys) {
+        if (passInput === platforms[key].password && nameInput.toLowerCase() === 'admin') {
+          CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: key };
+          TEACH_MODE = false;
+          saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель', platform: key });
+          saveActivePlatform(key);
+          await startApp();
+          return;
+        }
+      }
+
+      if (nameInput.toLowerCase() === TEACHER_LOGIN && passInput === TEACHER_PASS) {
+        CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: currentPlatform };
+        TEACH_MODE = false;
+        saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель', platform: currentPlatform });
+        await startApp();
+        return;
+      }
+
+      const key = nameInput.toLowerCase();
+
+      let foundPlatform = null;
+      let foundStudent = null;
+      for (const platId of Object.keys(platforms)) {
+        const platReg = await loadFromFirebase(getPlatformPath(platId, 'registry'), {});
+        if (platReg[key]) {
+          foundPlatform = platId;
+          foundStudent = platReg[key];
+          break;
+        }
+      }
+
+      if (!foundStudent) {
+        errBox.textContent = 'Такого ученика нет. Обратитесь к учителю.';
+        return;
+      }
+      if (foundStudent.password !== passInput) {
+        errBox.textContent = 'Неверный пароль.';
+        return;
+      }
+
+      saveActivePlatform(foundPlatform);
+      allStudents = [];
+
+      CURRENT_USER = { name: foundStudent.name, key, isTeacher: false, platform: foundPlatform };
+      saveSession({ key, isTeacher: false, name: CURRENT_USER.name, platform: foundPlatform });
+      await startApp();
+    };
+
+    window.handleLogout = function() {
+      saveSession(null);
+      CURRENT_USER = null;
+      TEACH_MODE = false;
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginName').value = '';
+      document.getElementById('loginPass').value = '';
+    };
+
+    function tryRestoreSession() {
+      const s = loadSession();
+      if (!s) return false;
+      if (s.isTeacher) {
+        CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true };
+        if (s.platform) saveActivePlatform(s.platform);
+      } else {
+        CURRENT_USER = { name: s.name || 'Ученик', key: s.key, isTeacher: false };
+        if (s.platform) saveActivePlatform(s.platform);
+      }
+      return true;
+    }
+
+    window.enterTeachMode = function() {
+      TEACH_MODE = true;
+      VIEW = { name: 'home' };
+      render();
+      updateChrome();
+    };
+
+    window.exitTeachMode = function() {
+      TEACH_MODE = false;
+      VIEW = { name: 'home' };
+      render();
+      updateChrome();
+    };
+
+    function updateChrome() {
+      const banner = document.getElementById('teachModeBanner');
+      const exitBtn = document.getElementById('exitTeachModeBtn');
+      if (TEACH_MODE) {
+        banner.classList.remove('hidden');
+        exitBtn.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+        exitBtn.classList.add('hidden');
+      }
+    }
+
+    function isManaging() {
+      return CURRENT_USER && CURRENT_USER.isTeacher && !TEACH_MODE;
+    }
+
+    async function startApp() {
+      renderPlatformsBar();
+
+      if (CURRENT_USER && !CURRENT_USER.isTeacher) {
+        const reg = await loadRegistry();
+        if (!reg[CURRENT_USER.key]) {
+          handleLogout();
+          return;
+        }
+        CURRENT_USER.name = reg[CURRENT_USER.key].name;
+      }
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('whoLabel').textContent = CURRENT_USER.name + (CURRENT_USER.isTeacher ? ' · учитель' : '');
+      document.getElementById('brandTitle').textContent = platforms[currentPlatform]?.name || 'Химия';
+      const markEl = document.getElementById('platformMark');
+      if (markEl) markEl.innerHTML = renderPlatformIconHtml(platforms[currentPlatform], 30);
+
+      await loadContent();
+      await loadRegistry();
+      isLoading = false;
+      VIEW = { name: 'home' };
+      updateChrome();
+      render();
+    }
+
+    window.goHome = function() {
+      VIEW = { name: 'home' };
+      render();
+    };
+
+    // ============================================================
+    // 10. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // ============================================================
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function escapeHtmlMultiline(s) {
+      return escapeHtml(s).replace(/\n/g, '<br>');
+    }
+
+    function escapeAttr(s) {
+      if (!s) return '';
+      return (s || '').replace(/"/g, '&quot;');
+    }
+
+    function renderEquation(str) {
+      if (!str) return '';
+      let out = '';
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (/\d/.test(ch)) {
+          const prev = i > 0 ? str[i - 1] : '';
+          if (/[A-Za-zА-Яа-я\)\]]/.test(prev)) {
+            out += '<sub>' + ch + '</sub>';
+            continue;
+          }
+        }
+        out += escapeHtmlChar(ch);
+      }
+      return out;
+    }
+
+    function renderEquationFull(str) {
+      if (!str) return '';
+      let out = '';
+      for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+        if (/\d/.test(ch)) {
+          const prev = i > 0 ? str[i - 1] : '';
+          if (/[A-Za-zА-Яа-я\)\]]/.test(prev)) {
+            out += '<sub>' + ch + '</sub>';
+            continue;
+          }
+        }
+        out += escapeHtmlChar(ch);
+      }
+      return out;
+    }
+
+    function escapeHtmlChar(ch) {
+      if (ch === '<') return '&lt;';
+      if (ch === '>') return '&gt;';
+      if (ch === '&') return '&amp;';
+      return ch;
+    }
+
+    function getSamaraTimestamp(dateStr) {
+      if (!dateStr) return null;
+      const [datePart, timePart] = dateStr.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes] = timePart.split(':').map(Number);
+      const samaraDate = new Date(Date.UTC(year, month - 1, day, hours - 4, minutes));
+      return samaraDate.getTime();
+    }
+
+    function getSamaraDateString(date) {
+      const d = new Date(date);
+      const samaraOffset = 4 * 60 * 60 * 1000;
+      const localOffset = d.getTimezoneOffset() * 60 * 1000;
+      const samaraTime = new Date(d.getTime() + localOffset + samaraOffset);
+      return samaraTime.toISOString().slice(0, 16);
+    }
+
+    function getTimeUntil(timestamp) {
+      const now = Date.now();
+      const diff = timestamp - now;
+      if (diff <= 0) return null;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      if (days > 0) return `${days} дн. ${hours} ч.`;
+      if (hours > 0) return `${hours} ч. ${minutes} мин.`;
+      return `${minutes} мин.`;
+    }
+
+    function renderPlatformIconHtml(plat, sizePx) {
+      const size = sizePx || 30;
+      if (plat && plat.iconImage) {
+        return `<img src="${plat.iconImage}" alt="" style="width:${size}px;height:${size}px;border-radius:${Math.round(size*0.3)}px;object-fit:cover;display:block;">`;
+      }
+      const bg = (plat && plat.iconBg) || 'var(--accent)';
+      const color = (plat && plat.iconColor) || '#ffffff';
+      const letter = (plat && plat.icon) || '●';
+      const fontSize = Math.round(size * 0.46);
+      return `<div style="width:${size}px;height:${size}px;border-radius:${Math.round(size*0.3)}px;background:${escapeAttr(bg)};color:${escapeAttr(color)};display:flex;align-items:center;justify-content:center;font-size:${fontSize}px;font-weight:800;flex-shrink:0;">${escapeHtml(letter)}</div>`;
+    }
+
+    function compressImageToDataUrl(file, maxSize) {
+      return new Promise((resolve, reject) => {
+        const size = maxSize || 128;
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Не удалось загрузить изображение'));
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const srcSize = Math.min(img.width, img.height);
+            const srcX = (img.width - srcSize) / 2;
+            const srcY = (img.height - srcSize) / 2;
+            ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, size, size);
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ============================================================
+    // 11. МОДАЛЬНЫЕ ОКНА
+    // ============================================================
+
+    window.showConfirmModal = function(title, text, onConfirm, confirmLabel, confirmClass) {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <p class="warn">${escapeHtml(text)}</p>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelC">Отмена</button>
+          <button class="btn ${confirmClass || 'btn-danger'}" id="confirmC">${escapeHtml(confirmLabel || 'Удалить')}</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelC').onclick = () => bg.remove();
+      modal.querySelector('#confirmC').onclick = async () => {
+        bg.remove();
+        await onConfirm();
+      };
+    };
+
+    window.showPromptModal = function(title, defaultVal, onSave) {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>${escapeHtml(title)}</h3>
+        <div class="field"><input type="text" id="promptInput" value="${escapeAttr(defaultVal)}"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelP">Отмена</button>
+          <button class="btn btn-accent" id="saveP">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelP').onclick = () => bg.remove();
+      modal.querySelector('#saveP').onclick = async () => {
+        const val = document.getElementById('promptInput').value;
+        bg.remove();
+        await onSave(val);
+      };
+    };
+
+    // ============================================================
+    // 12. РАБОТА С FIREBASE
+    // ============================================================
+
+    async function loadFromFirebase(path, defaultValue) {
+      try {
+        const snapshot = await get(ref(db, path));
+        if (snapshot.exists()) {
+          return snapshot.val();
+        } else {
+          await set(ref(db, path), defaultValue);
+          return defaultValue;
+        }
+      } catch (e) {
+        console.error('Ошибка загрузки из Firebase:', e);
+        return defaultValue;
+      }
+    }
+
+    async function saveToFirebase(path, data) {
+      try {
+        await set(ref(db, path), data);
+        return true;
+      } catch (e) {
+        console.error('Ошибка сохранения в Firebase:', e);
+        return false;
+      }
+    }
+
+    async function loadRegistry() {
+      const reg = await loadFromFirebase(getPlatformPath(currentPlatform, 'registry'), {});
+      allStudents = Object.keys(reg);
+      return reg;
+    }
+
+    async function saveRegistry(reg) {
+      allStudents = Object.keys(reg);
+      return await saveToFirebase(getPlatformPath(currentPlatform, 'registry'), reg);
+    }
+
+    async function getProgress(studentKey) {
+      return await loadFromFirebase(getPlatformPath(currentPlatform, `progress/${studentKey}`), {});
+    }
+
+    async function persistFullProgress(studentKey, progress) {
+      await saveToFirebase(getPlatformPath(currentPlatform, `progress/${studentKey}`), progress);
+    }
+
+    async function loadContent() {
+      const platId = currentPlatform;
+      TOPICS = await loadFromFirebase(getPlatformPath(platId, 'topics'), []);
+      TRAINERS = await loadFromFirebase(getPlatformPath(platId, 'trainers'), []);
+      LESSONS = await loadFromFirebase(getPlatformPath(platId, 'lessons'), []);
+      HOMEWORKS = await loadFromFirebase(getPlatformPath(platId, 'homeworks'), []);
+
+      if (!Array.isArray(TOPICS)) TOPICS = [];
+      if (!Array.isArray(TRAINERS)) TRAINERS = [];
+      if (!Array.isArray(LESSONS)) LESSONS = [];
+      if (!Array.isArray(HOMEWORKS)) HOMEWORKS = [];
+
+      TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
+      TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
+      LESSONS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
+      HOMEWORKS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
+    }
+
+    async function persistTopics() { await saveToFirebase(getPlatformPath(currentPlatform, 'topics'), TOPICS); }
+    async function persistTrainers() { await saveToFirebase(getPlatformPath(currentPlatform, 'trainers'), TRAINERS); }
+    async function persistLessons() { await saveToFirebase(getPlatformPath(currentPlatform, 'lessons'), LESSONS); }
+    async function persistHomeworks() { await saveToFirebase(getPlatformPath(currentPlatform, 'homeworks'), HOMEWORKS); }
+
+    // ============================================================
+    // 13. ПЛАТФОРМЫ (расширенные функции)
+    // ============================================================
 
     window.showAddPlatformModal = function() {
       const bg = document.createElement('div');
@@ -1102,6 +1588,52 @@
       };
     };
 
+    window.showPlatformSettingsModal = function(platId) {
+      const plat = platforms[platId];
+      if (!plat) return;
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>Настройки платформы</h3>
+        <div class="field">
+          <label>Название платформы</label>
+          <input type="text" id="platSettingsName" value="${escapeAttr(plat.name)}">
+        </div>
+        <div class="field">
+          <label>Пароль учителя</label>
+          <input type="text" id="platSettingsPassword" value="${escapeAttr(plat.password)}">
+        </div>
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:-8px;margin-bottom:14px;">Используйте этот пароль для входа как учитель на этой платформе.</div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelSettings">Отмена</button>
+          <button class="btn btn-accent" id="saveSettings">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelSettings').onclick = () => bg.remove();
+
+      modal.querySelector('#saveSettings').onclick = async () => {
+        const name = document.getElementById('platSettingsName').value.trim();
+        const password = document.getElementById('platSettingsPassword').value.trim();
+        if (!name) { alert('Введите название'); return; }
+        if (!password) { alert('Введите пароль'); return; }
+
+        plat.name = name;
+        plat.password = password;
+
+        await savePlatforms();
+        bg.remove();
+        renderPlatformsBar();
+        if (platId === currentPlatform) {
+          document.getElementById('brandTitle').textContent = name;
+        }
+      };
+    };
+
     window.deletePlatform = async function(platId) {
       if (platId === 'default') {
         alert('Нельзя удалить основную платформу.');
@@ -1170,6 +1702,16 @@
         };
         list.appendChild(editBtn);
 
+        const settingsBtn = document.createElement('button');
+        settingsBtn.className = 'plat-settings';
+        settingsBtn.textContent = '⚙';
+        settingsBtn.title = 'Настройки (имя, пароль)';
+        settingsBtn.onclick = (e) => {
+          e.stopPropagation();
+          window.showPlatformSettingsModal(key);
+        };
+        list.appendChild(settingsBtn);
+
         if (key !== 'default') {
           const delBtn = document.createElement('button');
           delBtn.className = 'plat-del';
@@ -1185,7 +1727,7 @@
     }
 
     // ============================================================
-    // 5. ТЕМА (светлая/тёмная)
+    // 14. ТЕМА (светлая/тёмная)
     // ============================================================
 
     function loadTheme() {
@@ -1216,7 +1758,7 @@
     loadTheme();
 
     // ============================================================
-    // 6. СЕССИЯ (localStorage)
+    // 15. СЕССИЯ (localStorage)
     // ============================================================
 
     function loadSession() {
@@ -1237,396 +1779,7 @@
     }
 
     // ============================================================
-    // 7. РАБОТА С FIREBASE
-    // ============================================================
-
-    async function loadFromFirebase(path, defaultValue) {
-      try {
-        const snapshot = await get(ref(db, path));
-        if (snapshot.exists()) {
-          return snapshot.val();
-        } else {
-          await set(ref(db, path), defaultValue);
-          return defaultValue;
-        }
-      } catch (e) {
-        console.error('Ошибка загрузки из Firebase:', e);
-        return defaultValue;
-      }
-    }
-
-    async function saveToFirebase(path, data) {
-      try {
-        await set(ref(db, path), data);
-        return true;
-      } catch (e) {
-        console.error('Ошибка сохранения в Firebase:', e);
-        return false;
-      }
-    }
-
-    async function loadRegistry() {
-      const reg = await loadFromFirebase(getPlatformPath(currentPlatform, 'registry'), {});
-      allStudents = Object.keys(reg);
-      return reg;
-    }
-
-    async function saveRegistry(reg) {
-      allStudents = Object.keys(reg);
-      return await saveToFirebase(getPlatformPath(currentPlatform, 'registry'), reg);
-    }
-
-    async function getProgress(studentKey) {
-      return await loadFromFirebase(getPlatformPath(currentPlatform, `progress/${studentKey}`), {});
-    }
-
-    async function persistFullProgress(studentKey, progress) {
-      await saveToFirebase(getPlatformPath(currentPlatform, `progress/${studentKey}`), progress);
-    }
-
-    async function loadContent() {
-      const platId = currentPlatform;
-      TOPICS = await loadFromFirebase(getPlatformPath(platId, 'topics'), []);
-      TRAINERS = await loadFromFirebase(getPlatformPath(platId, 'trainers'), []);
-      LESSONS = await loadFromFirebase(getPlatformPath(platId, 'lessons'), []);
-      HOMEWORKS = await loadFromFirebase(getPlatformPath(platId, 'homeworks'), []);
-
-      if (!Array.isArray(TOPICS)) TOPICS = [];
-      if (!Array.isArray(TRAINERS)) TRAINERS = [];
-      if (!Array.isArray(LESSONS)) LESSONS = [];
-      if (!Array.isArray(HOMEWORKS)) HOMEWORKS = [];
-
-      TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
-      TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
-      LESSONS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
-      HOMEWORKS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
-    }
-
-    async function persistTopics() { await saveToFirebase(getPlatformPath(currentPlatform, 'topics'), TOPICS); }
-    async function persistTrainers() { await saveToFirebase(getPlatformPath(currentPlatform, 'trainers'), TRAINERS); }
-    async function persistLessons() { await saveToFirebase(getPlatformPath(currentPlatform, 'lessons'), LESSONS); }
-    async function persistHomeworks() { await saveToFirebase(getPlatformPath(currentPlatform, 'homeworks'), HOMEWORKS); }
-
-    // ============================================================
-    // 8. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-    // ============================================================
-
-    function escapeHtml(s) {
-      if (!s) return '';
-      const d = document.createElement('div');
-      d.textContent = s;
-      return d.innerHTML;
-    }
-
-    // Как escapeHtml, но сохраняет переносы строк как <br> — для
-    // многострочных заметок учителя (примечание к тренажёру/домашке).
-    function escapeHtmlMultiline(s) {
-      return escapeHtml(s).replace(/\n/g, '<br>');
-    }
-
-    function escapeAttr(s) {
-      if (!s) return '';
-      return (s || '').replace(/"/g, '&quot;');
-    }
-
-    function renderEquation(str) {
-      if (!str) return '';
-      let out = '';
-      for (let i = 0; i < str.length; i++) {
-        const ch = str[i];
-        if (/\d/.test(ch)) {
-          const prev = i > 0 ? str[i - 1] : '';
-          if (/[A-Za-zА-Яа-я\)\]]/.test(prev)) {
-            out += '<sub>' + ch + '</sub>';
-            continue;
-          }
-        }
-        out += escapeHtmlChar(ch);
-      }
-      return out;
-    }
-
-    function escapeHtmlChar(ch) {
-      if (ch === '<') return '&lt;';
-      if (ch === '>') return '&gt;';
-      if (ch === '&') return '&amp;';
-      return ch;
-    }
-
-    function getSamaraTimestamp(dateStr) {
-      if (!dateStr) return null;
-      const [datePart, timePart] = dateStr.split('T');
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes] = timePart.split(':').map(Number);
-      const samaraDate = new Date(Date.UTC(year, month - 1, day, hours - 4, minutes));
-      return samaraDate.getTime();
-    }
-
-    function getSamaraDateString(date) {
-      const d = new Date(date);
-      const samaraOffset = 4 * 60 * 60 * 1000;
-      const localOffset = d.getTimezoneOffset() * 60 * 1000;
-      const samaraTime = new Date(d.getTime() + localOffset + samaraOffset);
-      return samaraTime.toISOString().slice(0, 16);
-    }
-
-    function getTimeUntil(timestamp) {
-      const now = Date.now();
-      const diff = timestamp - now;
-      if (diff <= 0) return null;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      if (days > 0) return `${days} дн. ${hours} ч.`;
-      if (hours > 0) return `${hours} ч. ${minutes} мин.`;
-      return `${minutes} мин.`;
-    }
-
-    // Значок платформы: либо буква на цветном фоне (свои цвета фона и
-    // буквы), либо загруженная картинка. Используется и в шапке, и в
-    // списке платформ, и в модалках создания/редактирования — единая
-    // логика в одном месте, чтобы не разъезжалось при правках.
-    function renderPlatformIconHtml(plat, sizePx) {
-      const size = sizePx || 30;
-      if (plat && plat.iconImage) {
-        return `<img src="${plat.iconImage}" alt="" style="width:${size}px;height:${size}px;border-radius:${Math.round(size*0.3)}px;object-fit:cover;display:block;">`;
-      }
-      const bg = (plat && plat.iconBg) || 'var(--accent)';
-      const color = (plat && plat.iconColor) || '#ffffff';
-      const letter = (plat && plat.icon) || '●';
-      const fontSize = Math.round(size * 0.46);
-      return `<div style="width:${size}px;height:${size}px;border-radius:${Math.round(size*0.3)}px;background:${escapeAttr(bg)};color:${escapeAttr(color)};display:flex;align-items:center;justify-content:center;font-size:${fontSize}px;font-weight:800;flex-shrink:0;">${escapeHtml(letter)}</div>`;
-    }
-
-    // Сжимаем загруженное фото до небольшого квадратного значка перед
-    // сохранением в Firebase — иначе большие фото из галереи будут
-    // тяжёлыми и медленно грузиться на слабом интернете у учеников.
-    function compressImageToDataUrl(file, maxSize) {
-      return new Promise((resolve, reject) => {
-        const size = maxSize || 128;
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
-        reader.onload = () => {
-          const img = new Image();
-          img.onerror = () => reject(new Error('Не удалось загрузить изображение'));
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            // Кроп по центру в квадрат, чтобы значок не искажался
-            const srcSize = Math.min(img.width, img.height);
-            const srcX = (img.width - srcSize) / 2;
-            const srcY = (img.height - srcSize) / 2;
-            ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, size, size);
-            resolve(canvas.toDataURL('image/jpeg', 0.85));
-          };
-          img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // ============================================================
-    // 9. АВТОРИЗАЦИЯ
-    // ============================================================
-
-    window.handleLogin = async function() {
-      const nameInput = document.getElementById('loginName').value.trim();
-      const passInput = document.getElementById('loginPass').value;
-      const errBox = document.getElementById('loginErr');
-      errBox.textContent = '';
-
-      if (!nameInput || !passInput) { errBox.textContent = 'Введите имя и пароль.'; return; }
-
-      const platKeys = Object.keys(platforms);
-      for (const key of platKeys) {
-        if (passInput === platforms[key].password && nameInput.toLowerCase() === 'admin') {
-          CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: key };
-          TEACH_MODE = false;
-          saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель', platform: key });
-          saveActivePlatform(key);
-          await startApp();
-          return;
-        }
-      }
-
-      if (nameInput.toLowerCase() === TEACHER_LOGIN && passInput === TEACHER_PASS) {
-        CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: currentPlatform };
-        TEACH_MODE = false;
-        saveSession({ key: '__teacher__', isTeacher: true, name: 'Учитель', platform: currentPlatform });
-        await startApp();
-        return;
-      }
-
-      const key = nameInput.toLowerCase();
-
-      let foundPlatform = null;
-      let foundStudent = null;
-      for (const platId of Object.keys(platforms)) {
-        const platReg = await loadFromFirebase(getPlatformPath(platId, 'registry'), {});
-        if (platReg[key]) {
-          foundPlatform = platId;
-          foundStudent = platReg[key];
-          break;
-        }
-      }
-
-      if (!foundStudent) {
-        errBox.textContent = 'Такого ученика нет. Обратитесь к учителю.';
-        return;
-      }
-      if (foundStudent.password !== passInput) {
-        errBox.textContent = 'Неверный пароль.';
-        return;
-      }
-
-      saveActivePlatform(foundPlatform);
-      allStudents = [];
-
-      CURRENT_USER = { name: foundStudent.name, key, isTeacher: false, platform: foundPlatform };
-      saveSession({ key, isTeacher: false, name: CURRENT_USER.name, platform: foundPlatform });
-      await startApp();
-    };
-
-    window.handleLogout = function() {
-      saveSession(null);
-      CURRENT_USER = null;
-      TEACH_MODE = false;
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.getElementById('loginName').value = '';
-      document.getElementById('loginPass').value = '';
-    };
-
-    function tryRestoreSession() {
-      const s = loadSession();
-      if (!s) return false;
-      if (s.isTeacher) {
-        CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true };
-        if (s.platform) saveActivePlatform(s.platform);
-      } else {
-        CURRENT_USER = { name: s.name || 'Ученик', key: s.key, isTeacher: false };
-        if (s.platform) saveActivePlatform(s.platform);
-      }
-      return true;
-    }
-
-    window.enterTeachMode = function() {
-      TEACH_MODE = true;
-      VIEW = { name: 'home' };
-      render();
-      updateChrome();
-    };
-
-    window.exitTeachMode = function() {
-      TEACH_MODE = false;
-      VIEW = { name: 'home' };
-      render();
-      updateChrome();
-    };
-
-    function updateChrome() {
-      const banner = document.getElementById('teachModeBanner');
-      const exitBtn = document.getElementById('exitTeachModeBtn');
-      if (TEACH_MODE) {
-        banner.classList.remove('hidden');
-        exitBtn.classList.remove('hidden');
-      } else {
-        banner.classList.add('hidden');
-        exitBtn.classList.add('hidden');
-      }
-    }
-
-    function isManaging() {
-      return CURRENT_USER && CURRENT_USER.isTeacher && !TEACH_MODE;
-    }
-
-    async function startApp() {
-      renderPlatformsBar();
-
-      if (CURRENT_USER && !CURRENT_USER.isTeacher) {
-        const reg = await loadRegistry();
-        if (!reg[CURRENT_USER.key]) {
-          handleLogout();
-          return;
-        }
-        CURRENT_USER.name = reg[CURRENT_USER.key].name;
-      }
-
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('app').classList.remove('hidden');
-      document.getElementById('whoLabel').textContent = CURRENT_USER.name + (CURRENT_USER.isTeacher ? ' · учитель' : '');
-      document.getElementById('brandTitle').textContent = platforms[currentPlatform]?.name || 'Химия';
-      const markEl = document.getElementById('platformMark');
-      if (markEl) markEl.innerHTML = renderPlatformIconHtml(platforms[currentPlatform], 30);
-
-      await loadContent();
-      await loadRegistry();
-      isLoading = false;
-      VIEW = { name: 'home' };
-      updateChrome();
-      render();
-    }
-
-    window.goHome = function() {
-      VIEW = { name: 'home' };
-      render();
-    };
-
-    // ============================================================
-    // 10. МОДАЛЬНЫЕ ОКНА
-    // ============================================================
-
-    window.showConfirmModal = function(title, text, onConfirm, confirmLabel, confirmClass) {
-      const bg = document.createElement('div');
-      bg.className = 'modal-bg';
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      modal.innerHTML = `
-        <h3>${escapeHtml(title)}</h3>
-        <p class="warn">${escapeHtml(text)}</p>
-        <div class="actions">
-          <button class="btn btn-ghost" id="cancelC">Отмена</button>
-          <button class="btn ${confirmClass || 'btn-danger'}" id="confirmC">${escapeHtml(confirmLabel || 'Удалить')}</button>
-        </div>
-      `;
-      bg.appendChild(modal);
-      document.body.appendChild(bg);
-      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
-      modal.querySelector('#cancelC').onclick = () => bg.remove();
-      modal.querySelector('#confirmC').onclick = async () => {
-        bg.remove();
-        await onConfirm();
-      };
-    };
-
-    window.showPromptModal = function(title, defaultVal, onSave) {
-      const bg = document.createElement('div');
-      bg.className = 'modal-bg';
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      modal.innerHTML = `
-        <h3>${escapeHtml(title)}</h3>
-        <div class="field"><input type="text" id="promptInput" value="${escapeAttr(defaultVal)}"></div>
-        <div class="actions">
-          <button class="btn btn-ghost" id="cancelP">Отмена</button>
-          <button class="btn btn-accent" id="saveP">Сохранить</button>
-        </div>
-      `;
-      bg.appendChild(modal);
-      document.body.appendChild(bg);
-      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
-      modal.querySelector('#cancelP').onclick = () => bg.remove();
-      modal.querySelector('#saveP').onclick = async () => {
-        const val = document.getElementById('promptInput').value;
-        bg.remove();
-        await onSave(val);
-      };
-    };
-
-    // ============================================================
-    // 11. РЕНДЕРИНГ
+    // 16. РЕНДЕРИНГ
     // ============================================================
 
     function render() {
@@ -1662,7 +1815,7 @@
     });
 
     // ============================================================
-    // 12. RENDER HOME
+    // 17. RENDER HOME
     // ============================================================
 
     async function renderHome(container) {
@@ -1696,7 +1849,6 @@
 
       let progress = {};
       if (!CURRENT_USER.isTeacher) {
-        // Используем кэш, если есть
         if (window.__cachedProgress) {
           progress = window.__cachedProgress;
         } else {
@@ -1746,9 +1898,6 @@
             return `<span class="card-badge scheduled">Через ${timeLeft}</span>`;
           }
         }
-        // Личное задание помечаем только учителю в режиме управления —
-        // в "Обучаю" и у самих учеников этой пометки быть не должно.
-        // Надпись короткая: 1–2 имени + счётчик остальных, полный список — в title.
         if (item.assignedTo && item.assignedTo.length > 0 && isManaging()) {
           const names = item.assignedTo;
           const shortLabel = names.length > 2
@@ -1997,7 +2146,7 @@
     }
 
     // ============================================================
-    // 13. УПРАВЛЕНИЕ ТЕМАМИ
+    // 18-21. УПРАВЛЕНИЕ ТЕМАМИ, ПЕРЕМЕЩЕНИЕ, УДАЛЕНИЕ, КОПИРОВАНИЕ
     // ============================================================
 
     async function moveTopic(topicId, dir) {
@@ -2039,10 +2188,6 @@
         render();
       });
     }
-
-    // ============================================================
-    // 14. ПЕРЕМЕЩЕНИЕ ЭЛЕМЕНТОВ
-    // ============================================================
 
     async function moveItem(type, id, dir) {
       let items, persistFn;
@@ -2137,10 +2282,6 @@
       };
     }
 
-    // ============================================================
-    // 15. УДАЛЕНИЕ ЭЛЕМЕНТОВ
-    // ============================================================
-
     async function deleteItemConfirm(type, id) {
       let items, persistFn, name;
       if (type === 'trainer') { items = TRAINERS; persistFn = persistTrainers; name = 'тренажёр'; }
@@ -2157,10 +2298,6 @@
         }
       });
     }
-
-    // ============================================================
-    // 16. КОПИРОВАНИЕ ЭЛЕМЕНТОВ
-    // ============================================================
 
     window.copyItem = function(type, id) {
       let item, items, persistFn;
@@ -2188,7 +2325,7 @@
     };
 
     // ============================================================
-    // 17. RENDER TRAINER (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+    // 22. RENDER TRAINER (С РЕЖИМОМ "КАРТЫ" — ОТВЕТ В СТРОКЕ)
     // ============================================================
 
     async function renderTrainer(container, trainerId) {
@@ -2216,8 +2353,7 @@
       head.innerHTML = `
         <h2>${escapeHtml(trainer.title)}</h2>
         <div class="trainer-note">
-          Если реакция <b>не идёт</b> — введите <b>0</b> или <b>−</b>.
-          ${trainer.customNote ? `<br>${escapeHtmlMultiline(trainer.customNote)}` : ''}
+          ${trainer.customNote ? `${escapeHtmlMultiline(trainer.customNote)}` : ''}
           ${!isRealStudent ? ' <br><b>Режим просмотра:</b> ответы не сохраняются.' : ''}
         </div>
       `;
@@ -2228,6 +2364,7 @@
       modeSelector.innerHTML = `
         <button class="btn btn-sm ${mode === 'step' ? 'active' : ''}" id="modeStep">Пошагово</button>
         <button class="btn btn-sm ${mode === 'list' ? 'active' : ''}" id="modeList">Список</button>
+        <button class="btn btn-sm ${mode === 'cards' ? 'active' : ''}" id="modeCards">Карты</button>
       `;
       if (isManaging()) {
         modeSelector.querySelector('#modeStep').onclick = () => {
@@ -2236,6 +2373,10 @@
         };
         modeSelector.querySelector('#modeList').onclick = () => {
           trainer.mode = 'list';
+          persistTrainers().then(() => { renderTrainer(container, trainerId); });
+        };
+        modeSelector.querySelector('#modeCards').onclick = () => {
+          trainer.mode = 'cards';
           persistTrainers().then(() => { renderTrainer(container, trainerId); });
         };
       } else {
@@ -2254,13 +2395,17 @@
 
       if (mode === 'step') {
         renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      } else {
+      } else if (mode === 'list') {
         renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+      } else if (mode === 'cards') {
+        renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+      } else {
+        renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
       }
     }
 
     // ============================================================
-    // 18. ПОШАГОВЫЙ РЕЖИМ (ИСПРАВЛЕННЫЙ)
+    // 23. ПОШАГОВЫЙ РЕЖИМ
     // ============================================================
 
     function renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
@@ -2639,8 +2784,6 @@
           goToNextAvailable();
         };
 
-        // Стрелочки теперь внутри карточки, в строке снизу — после
-        // кнопок Проверить/Повторить/Пропустить и счётчика "X / Y".
         const navRow = card.querySelector('.step-nav');
         const navInfoEl = navRow.querySelector('.nav-info');
         navRow.insertBefore(prevBtn, navInfoEl);
@@ -2687,9 +2830,6 @@
         footer.appendChild(totalBtn);
       }
 
-      // Если тренажёр уже был официально завершён ранее (кнопка
-      // "Закончить тренажёр" уже нажата в прошлый раз) — сразу открываем
-      // готовый результат, а не снова показываем выбор "Закончить/Заново".
       if (trainerProgress.__finished) {
         showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
       } else {
@@ -2698,7 +2838,7 @@
     }
 
     // ============================================================
-    // 19. РЕЖИМ СПИСКА (ИСПРАВЛЕННЫЙ)
+    // 24. РЕЖИМ СПИСКА
     // ============================================================
 
     function renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
@@ -2932,8 +3072,6 @@
         footer.prepend(stats);
       }
 
-      // Если тренажёр уже был официально завершён ранее — сразу
-      // показываем готовый результат, а не редактируемый список заново.
       if (trainerProgress.__finished) {
         showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
         return;
@@ -2980,7 +3118,129 @@
     }
 
     // ============================================================
-    // 20. ЗАВЕРШЕНИЕ ТРЕНАЖЁРА
+    // 25. РЕЖИМ "КАРТЫ" — ОТВЕТ В СТРОКЕ РЕАКЦИИ
+    // ============================================================
+
+    function renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
+      const reactions = trainer.reactions || [];
+      const total = reactions.length;
+
+      if (total === 0) {
+        content.innerHTML = `<div class="empty-note">В этом тренажёре нет реакций.</div>`;
+        return;
+      }
+
+      let currentIndex = 0;
+      let showAnswer = false;
+
+      function renderCard() {
+        content.innerHTML = '';
+
+        const rxn = reactions[currentIndex];
+        const lhs = rxn.lhs || '';
+        
+        // Формируем полный ответ
+        let fullAnswer = '';
+        let isInvalid = false;
+        if (rxn.valid && rxn.correctSets && rxn.correctSets.length > 0) {
+          const displaySets = (rxn.correctSetsDisplay && rxn.correctSetsDisplay.length > 0) 
+            ? rxn.correctSetsDisplay 
+            : rxn.correctSets;
+          if (taskType === 'checkbox') {
+            fullAnswer = (displaySets[0] || []).join(', ');
+          } else {
+            fullAnswer = (displaySets[0] || []).join(' + ');
+            if (displaySets.length > 1) {
+              fullAnswer = displaySets.map(set => set.join(' + ')).join(' / ');
+            }
+          }
+        } else if (!rxn.valid) {
+          fullAnswer = '0 (не идёт)';
+          isInvalid = true;
+        } else {
+          fullAnswer = 'Нет правильного ответа';
+        }
+
+        // Показываем реакцию так, как её написал учитель — без
+        // автоматической подстановки стрелочки (учитель ставит её сам
+        // в тексте задания, если хочет).
+        const fullReaction = lhs + ' ' + fullAnswer;
+        const displayLhs = renderEquation(lhs);
+        const displayFull = renderEquation(fullReaction);
+
+        const card = document.createElement('div');
+        card.className = 'flash-card';
+
+        card.innerHTML = `
+          <div class="card-number">${currentIndex + 1} / ${total}</div>
+          <div class="card-question eqx">
+            ${showAnswer ? displayFull : displayLhs}
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
+          </div>
+          <div class="card-nav">
+            <button class="nav-btn" id="prevCardBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+            <span class="nav-info">${currentIndex + 1} / ${total}</span>
+            <button class="nav-btn" id="nextCardBtn" ${currentIndex === total - 1 ? 'disabled' : ''}>Вперёд ▶</button>
+          </div>
+          ${showAnswer && rxn.explanation ? `<div style="margin-top:12px;font-size:13px;color:var(--ink-soft);text-align:center;padding:8px 16px;border-top:1px solid var(--line);">${escapeHtml(rxn.explanation)}</div>` : ''}
+          ${showAnswer && rxn.fullEquation ? `<div style="margin-top:4px;font-size:14px;font-weight:600;text-align:center;color:var(--ok);">${renderEquation(rxn.fullEquation)}</div>` : ''}
+        `;
+
+        content.appendChild(card);
+
+        card.querySelector('#showAnswerBtn').onclick = () => {
+          showAnswer = !showAnswer;
+          renderCard();
+        };
+
+        card.querySelector('#prevCardBtn').onclick = () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            showAnswer = false;
+            renderCard();
+          }
+        };
+
+        card.querySelector('#nextCardBtn').onclick = () => {
+          if (currentIndex < total - 1) {
+            currentIndex++;
+            showAnswer = false;
+            renderCard();
+          }
+        };
+
+        document.addEventListener('keydown', function handler(e) {
+          if (e.key === 'ArrowLeft' && currentIndex > 0) {
+            currentIndex--;
+            showAnswer = false;
+            renderCard();
+          } else if (e.key === 'ArrowRight' && currentIndex < total - 1) {
+            currentIndex++;
+            showAnswer = false;
+            renderCard();
+          } else if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            showAnswer = !showAnswer;
+            renderCard();
+          }
+          document.removeEventListener('keydown', handler);
+        });
+
+        footer.innerHTML = '';
+        const backToHome = document.createElement('button');
+        backToHome.className = 'btn btn-ghost btn-sm';
+        backToHome.textContent = '← К содержанию';
+        backToHome.onclick = window.goHome;
+        footer.appendChild(backToHome);
+      }
+
+      renderCard();
+    }
+
+    // ============================================================
+    // 26. ЗАВЕРШЕНИЕ ТРЕНАЖЁРА
     // ============================================================
 
     function showCompletionView(container, trainer, trainerProgress, isRealStudent, progress) {
@@ -2992,7 +3252,6 @@
       if (isRealStudent) {
         trainerProgress.__finished = true;
         persistFullProgress(CURRENT_USER.key, progress);
-        // Обновляем кэш прогресса
         window.__cachedProgress = progress;
       }
 
@@ -3034,7 +3293,7 @@
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:13px;color:var(--ok);font-weight:600;">Правильный ответ: ${escapeHtml(rxn.valid ? ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || rxn.correctSets[0] || []).join(' + ') : 'Реакция не идёт')}</div>
+              <div style="font-size:13px;color:var(--ok);font-weight:600;">Правильный ответ: ${escapeHtml(rxn.valid ? ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || rxn.correctSets[0] || []).join(trainer.taskType === 'checkbox' ? ', ' : ' + ') : 'Реакция не идёт')}</div>
               ${answer ? `<div style="font-size:12px;color:var(--ink-soft);">Ваш ответ: ${escapeHtml(answer)}</div>` : ''}
             </div>
           </div>
@@ -3086,7 +3345,7 @@
     }
 
     // ============================================================
-    // 21. ДОМАШКИ
+    // 27. ДОМАШКИ (С РЕЖИМОМ "КАРТЫ" — ОТВЕТ В СТРОКЕ)
     // ============================================================
 
     async function renderHomework(container, homeworkId) {
@@ -3114,12 +3373,15 @@
       head.innerHTML = `
         <h2>${escapeHtml(homework.title)}</h2>
         ${hwNoteParts.length ? `<div class="trainer-note">${hwNoteParts.join('<br>')}</div>` : ''}
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-sm btn-ghost" id="hwModeList">📋 Список</button>
+          <button class="btn btn-sm btn-ghost" id="hwModeCards">🃏 Карты</button>
+        </div>
       `;
       wrap.appendChild(head);
 
-      const list = document.createElement('div');
-      list.className = 'rxn-list';
-      wrap.appendChild(list);
+      const content = document.createElement('div');
+      wrap.appendChild(content);
 
       const footer = document.createElement('div');
       footer.className = 'trainer-footer';
@@ -3130,23 +3392,28 @@
       const tasks = homework.tasks || [];
       let statuses = hwProgress.statuses || Array(tasks.length).fill('unanswered');
       let answers = hwProgress.answers || Array(tasks.length).fill('');
+      let hwMode = hwProgress.mode || 'list';
 
       function saveState() {
         if (isRealStudent) {
           hwProgress.statuses = statuses;
           hwProgress.answers = answers;
+          hwProgress.mode = hwMode;
           persistFullProgress(CURRENT_USER.key, progress);
         }
       }
 
       function renderList() {
-        list.innerHTML = '';
+        content.innerHTML = '';
         if (tasks.length === 0) {
-          list.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
+          content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
           return;
         }
 
         let correctCount = 0;
+        const list = document.createElement('div');
+        list.className = 'rxn-list';
+
         tasks.forEach((task, idx) => {
           const status = statuses[idx] || 'unanswered';
           const answer = answers[idx] || '';
@@ -3228,6 +3495,108 @@
 
           list.appendChild(card);
         });
+
+        content.appendChild(list);
+        updateStats();
+      }
+
+      function renderCards() {
+        content.innerHTML = '';
+        if (tasks.length === 0) {
+          content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
+          return;
+        }
+
+        let currentIndex = hwProgress.cardsIndex || 0;
+        let showAnswer = false;
+
+        function renderCard() {
+          content.innerHTML = '';
+
+          const task = tasks[currentIndex];
+          const question = task.question || '';
+          const answer = task.answer || 'Нет ответа';
+          // Без автоматической стрелочки — как учитель написал вопрос,
+          // так и показываем, без подстановки.
+          const fullReaction = question + ' ' + answer;
+
+          const card = document.createElement('div');
+          card.className = 'flash-card';
+
+          card.innerHTML = `
+            <div class="card-number">${currentIndex + 1} / ${tasks.length}</div>
+            <div class="card-question eqx">
+              ${showAnswer ? renderEquation(fullReaction) : renderEquation(question)}
+            </div>
+            ${showAnswer && task.explanation ? `<div style="margin-top:8px;font-size:13px;color:var(--ink-soft);text-align:center;padding:8px 16px;border-top:1px solid var(--line);">${escapeHtml(task.explanation)}</div>` : ''}
+            <div class="card-actions">
+              <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
+            </div>
+            <div class="card-nav">
+              <button class="nav-btn" id="prevCardBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+              <span class="nav-info">${currentIndex + 1} / ${tasks.length}</span>
+              <button class="nav-btn" id="nextCardBtn" ${currentIndex === tasks.length - 1 ? 'disabled' : ''}>Вперёд ▶</button>
+            </div>
+          `;
+
+          content.appendChild(card);
+
+          card.querySelector('#showAnswerBtn').onclick = () => {
+            showAnswer = !showAnswer;
+            renderCard();
+          };
+
+          card.querySelector('#prevCardBtn').onclick = () => {
+            if (currentIndex > 0) {
+              currentIndex--;
+              showAnswer = false;
+              hwProgress.cardsIndex = currentIndex;
+              saveState();
+              renderCard();
+            }
+          };
+
+          card.querySelector('#nextCardBtn').onclick = () => {
+            if (currentIndex < tasks.length - 1) {
+              currentIndex++;
+              showAnswer = false;
+              hwProgress.cardsIndex = currentIndex;
+              saveState();
+              renderCard();
+            }
+          };
+
+          document.addEventListener('keydown', function handler(e) {
+            if (e.key === 'ArrowLeft' && currentIndex > 0) {
+              currentIndex--;
+              showAnswer = false;
+              hwProgress.cardsIndex = currentIndex;
+              saveState();
+              renderCard();
+            } else if (e.key === 'ArrowRight' && currentIndex < tasks.length - 1) {
+              currentIndex++;
+              showAnswer = false;
+              hwProgress.cardsIndex = currentIndex;
+              saveState();
+              renderCard();
+            } else if (e.key === ' ' || e.key === 'Enter') {
+              e.preventDefault();
+              showAnswer = !showAnswer;
+              renderCard();
+            }
+            document.removeEventListener('keydown', handler);
+          });
+
+          footer.innerHTML = '';
+          const backToHome = document.createElement('button');
+          backToHome.className = 'btn btn-ghost btn-sm';
+          backToHome.textContent = '← К содержанию';
+          backToHome.onclick = window.goHome;
+          footer.appendChild(backToHome);
+        }
+
+        renderCard();
+        updateStats();
       }
 
       function updateStats() {
@@ -3246,9 +3615,45 @@
         footer.prepend(stats);
       }
 
-      renderList();
-      updateStats();
+      // Переключение режимов
+      document.getElementById('hwModeList').onclick = () => {
+        hwMode = 'list';
+        hwProgress.mode = 'list';
+        saveState();
+        renderList();
+        updateButtons();
+      };
 
+      document.getElementById('hwModeCards').onclick = () => {
+        hwMode = 'cards';
+        hwProgress.mode = 'cards';
+        hwProgress.cardsIndex = 0;
+        saveState();
+        renderCards();
+        updateButtons();
+      };
+
+      function updateButtons() {
+        const listBtn = document.getElementById('hwModeList');
+        const cardsBtn = document.getElementById('hwModeCards');
+        if (hwMode === 'list') {
+          listBtn.className = 'btn btn-sm btn-accent';
+          cardsBtn.className = 'btn btn-sm btn-ghost';
+        } else {
+          listBtn.className = 'btn btn-sm btn-ghost';
+          cardsBtn.className = 'btn btn-sm btn-accent';
+        }
+      }
+
+      // Инициализация
+      if (hwMode === 'cards') {
+        renderCards();
+      } else {
+        renderList();
+      }
+      updateButtons();
+
+      // Кнопка "Закончить домашку" — только для списка
       const finishBtn = document.createElement('button');
       finishBtn.className = 'btn btn-accent';
       finishBtn.textContent = 'Закончить домашку';
@@ -3270,7 +3675,7 @@
     }
 
     // ============================================================
-    // 22. УРОКИ (С КНОПКОЙ "ЗАКОНЧИТЬ УРОК")
+    // 28. УРОКИ
     // ============================================================
 
     function renderLessonModal(lessonId) {
@@ -3289,7 +3694,6 @@
       let lessonFinished = false;
 
       if (isRealStudent) {
-        // Используем кэш прогресса
         progress = window.__cachedProgress || {};
         lessonFinished = !!progress['lesson:' + lesson.id];
       }
@@ -3378,18 +3782,14 @@
       bg.onclick = (e) => { if (e.target === bg) closeLessonModal(); };
       modal.querySelector('#closeLessonBtn').onclick = closeLessonModal;
 
-      // Кнопка "Закончить урок"
       const finishBtn = modal.querySelector('#finishLessonBtn');
       if (finishBtn) {
         finishBtn.onclick = async () => {
           if (confirm('Отметить урок как завершённый?')) {
-            // Сохраняем статус урока
             const progress = await getProgress(CURRENT_USER.key);
             progress['lesson:' + lesson.id] = true;
             await persistFullProgress(CURRENT_USER.key, progress);
-            // Обновляем кэш
             window.__cachedProgress = progress;
-            // Закрываем модалку и перерисовываем главную
             bg.remove();
             render();
           }
@@ -3405,7 +3805,7 @@
     }
 
     // ============================================================
-    // 23. СТАТИСТИКА
+    // 29-31. СТАТИСТИКА, ДЕТАЛИ УЧЕНИКА, КОНСТРУКТОРЫ
     // ============================================================
 
     async function renderStats(container) {
@@ -3468,16 +3868,6 @@
       if (sortedKeys.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Учеников пока нет. Добавьте первого!</td></tr>`;
       } else {
-        let totalTrainerTasks = 0;
-        for (const trainer of (TRAINERS || [])) {
-          totalTrainerTasks += (trainer.reactions || []).length;
-        }
-        let totalHomeworkTasks = 0;
-        for (const homework of (HOMEWORKS || [])) {
-          totalHomeworkTasks += (homework.tasks || []).length;
-        }
-        const totalTasks = totalTrainerTasks + totalHomeworkTasks + (LESSONS || []).length;
-
         for (const key of sortedKeys) {
           const student = reg[key];
           const progress = await getProgress(key);
@@ -3574,10 +3964,6 @@
       };
     }
 
-    // ============================================================
-    // 24. УПРАВЛЕНИЕ УЧЕНИКАМИ
-    // ============================================================
-
     async function showChangePasswordModal(studentKey) {
       const reg = await loadRegistry();
       const student = reg[studentKey];
@@ -3604,10 +3990,6 @@
         else { VIEW = { name: 'stats' }; render(); }
       });
     }
-
-    // ============================================================
-    // 25. ДЕТАЛИ УЧЕНИКА
-    // ============================================================
 
     async function renderStudentDetail(container, studentKey) {
       const reg = await loadRegistry();
@@ -3636,29 +4018,35 @@
       const detailDiv = document.createElement('div');
       detailDiv.className = 'student-detail';
 
-      const trainerItems = [];
+      const allItems = [];
+
       for (const trainer of (TRAINERS || [])) {
         if (!(trainer.reactions || []).length) continue;
         const trainerData = progress[trainer.id] || {};
-        trainerItems.push({
+        allItems.push({
           type: 'Тренажёр',
           title: trainer.title,
           finished: trainerData.__finished === true
         });
       }
 
-      const homeworkItems = [];
       for (const homework of (HOMEWORKS || [])) {
         if (!(homework.tasks || []).length) continue;
         const hwData = progress[homework.id] || {};
-        homeworkItems.push({
+        allItems.push({
           type: 'Домашка',
           title: homework.title,
           finished: hwData.__finished === true
         });
       }
 
-      const allItems = [...trainerItems, ...homeworkItems];
+      for (const lesson of (LESSONS || [])) {
+        allItems.push({
+          type: 'Урок',
+          title: lesson.title,
+          finished: !!progress['lesson:' + lesson.id]
+        });
+      }
 
       if (allItems.length === 0) {
         detailDiv.innerHTML = `<div class="empty-note">Материалов пока нет.</div>`;
@@ -3672,7 +4060,7 @@
               <div style="font-size:12px;color:var(--ink-soft);">${item.type}</div>
             </div>
             <div class="topic-stats" style="font-weight:600;color:${item.finished ? 'var(--ok)' : 'var(--ink-soft)'};">
-              ${item.finished ? 'Выполнено' : 'Не выполнено'}
+              ${item.finished ? '✅ Выполнено' : 'Не выполнено'}
             </div>
           `;
           detailDiv.appendChild(row);
@@ -3684,7 +4072,7 @@
     }
 
     // ============================================================
-    // 26. КОНСТРУКТОР МАТЕРИАЛОВ (ручной)
+    // 32-34. КОНСТРУКТОРЫ И РЕДАКТИРОВАНИЕ
     // ============================================================
 
     function buildAdminBuilder() {
@@ -3732,6 +4120,7 @@
               <select id="fTrainerMode">
                 <option value="step">Пошагово</option>
                 <option value="list">Список</option>
+                <option value="cards">Карты</option>
               </select>
             </div>
             <div class="field-row">
@@ -4044,10 +4433,6 @@
       return box;
     }
 
-    // ============================================================
-    // 27. КОНСТРУКТОР С ИИ
-    // ============================================================
-
     function buildAIBuilder() {
       const box = document.createElement('div');
       box.className = 'ai-builder-box';
@@ -4066,6 +4451,7 @@
           <select id="aiMode">
             <option value="step">Пошагово</option>
             <option value="list">Список</option>
+            <option value="cards">Карты</option>
           </select>
           <select id="aiTaskType">
             <option value="text">Ввод текста</option>
@@ -4263,10 +4649,6 @@
       return box;
     }
 
-    // ============================================================
-    // 28. РЕДАКТИРОВАНИЕ (ИСПРАВЛЕННОЕ)
-    // ============================================================
-
     function openEditTrainerModal(trainerId) {
       const trainer = TRAINERS.find(t => t.id === trainerId);
       if (!trainer) return;
@@ -4285,6 +4667,7 @@
           <select id="editTrainerMode">
             <option value="step" ${trainer.mode === 'step' ? 'selected' : ''}>Пошагово</option>
             <option value="list" ${trainer.mode === 'list' ? 'selected' : ''}>Список</option>
+            <option value="cards" ${trainer.mode === 'cards' ? 'selected' : ''}>Карты</option>
           </select>
         </div>
         <div class="field">
@@ -4309,7 +4692,7 @@
         </div>
         <div class="field">
           <label>Примечание для учеников (необязательно)</label>
-          <textarea id="editTrainerNote" rows="2" placeholder="Например: округляйте коэффициенты, используйте только формулы солей..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;">${escapeHtml(trainer.customNote || '')}</textarea>
+          <textarea id="editTrainerNote" rows="2" placeholder="Например: округляйте коэффициенты..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;">${escapeHtml(trainer.customNote || '')}</textarea>
         </div>
         <div class="field">
           <label>Доступно для учеников</label>
@@ -4332,14 +4715,8 @@
       let rows = trainer.reactions.map(r => {
         let answerStr = '';
         if (r.valid && r.correctSets && r.correctSets.length > 0) {
-          // Используем correctSetsDisplay (сохраняет регистр букв, как
-          // ввёл учитель), если он есть; для старых реакций, созданных
-          // до этого поля, откатываемся на correctSets (заглавные буквы).
           const displaySets = (r.correctSetsDisplay && r.correctSetsDisplay.length > 0) ? r.correctSetsDisplay : r.correctSets;
           if (trainer.taskType === 'checkbox') {
-            // Для чекбоксов correctSets — это ОДНО множество вариантов,
-            // которые нужно собрать обратно через запятую (не +/‑, иначе
-            // при повторном сохранении ответ сломается).
             answerStr = (displaySets[0] || []).join(',');
           } else {
             answerStr = displaySets.map(set => set.join(' + ')).join(' / ');
@@ -4655,7 +5032,7 @@
         </div>
         <div class="field">
           <label>Примечание для учеников (необязательно)</label>
-          <textarea id="editHomeworkNote" rows="2" placeholder="Например: сдать до пятницы, писать формулы без пробелов..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;">${escapeHtml(homework.customNote || '')}</textarea>
+          <textarea id="editHomeworkNote" rows="2" placeholder="Например: сдать до пятницы..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;">${escapeHtml(homework.customNote || '')}</textarea>
         </div>
         <div class="field">
           <label>Доступно для учеников</label>
@@ -4755,7 +5132,7 @@
     }
 
     // ============================================================
-    // 29. ИНИЦИАЛИЗАЦИЯ
+    // 35. ИНИЦИАЛИЗАЦИЯ
     // ============================================================
 
     document.getElementById('loginPass').addEventListener('keydown', (e) => {
@@ -4797,6 +5174,7 @@
     window.showPromptModal = window.showPromptModal;
     window.deletePlatform = window.deletePlatform;
     window.moveItemToTopic = moveItemToTopic;
+    window.showPlatformSettingsModal = window.showPlatformSettingsModal;
 
     console.log('Платформа успешно загружена!');
     console.log(`Текущая платформа: ${platforms[currentPlatform]?.name || 'Химия'}`);
