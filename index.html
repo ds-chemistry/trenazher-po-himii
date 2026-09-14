@@ -101,17 +101,13 @@
       display: flex; align-items: center; justify-content: center;
       color: #fff; font-size: 14px; font-weight: 800;
     }
-    .topbar-actions {
-      display: flex; align-items: center; gap: 8px;
-    }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; }
     .theme-toggle {
       background: none; border: 1px solid var(--line); border-radius: 8px;
       padding: 6px 10px; cursor: pointer; color: var(--ink-soft);
       font-size: 16px; transition: all var(--transition);
     }
-    .theme-toggle:hover {
-      border-color: var(--accent); color: var(--accent);
-    }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
     .mode-banner {
       background: #fff3d6; border-bottom: 1px solid #f0d998; color: #7a5c10;
@@ -198,9 +194,16 @@
       padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
       cursor: pointer; color: var(--ink-soft); border: 1px solid transparent;
       transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: 8px;
     }
     .maintab.active { background: var(--accent); color: #fff; }
     .maintab:not(.active):hover { background: var(--surface); border-color: var(--line); }
+    .maintab .badge-count {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      background: var(--bad-bg); color: var(--bad);
+      border-radius: 10px; padding: 1px 8px; min-width: 18px; text-align: center;
+    }
+    .maintab.active .badge-count { background: rgba(255,255,255,.25); color: #fff; }
 
     .topic-block { margin-bottom: 8px; }
     .topic-block-head {
@@ -276,15 +279,9 @@
     .trainer-summary { display: flex; gap: 18px; margin-top: 14px; font-size: 13px; color: var(--ink-soft); flex-wrap: wrap; }
     .trainer-summary b { color: var(--ink); }
 
-    .trainer-mode-selector {
-      display: flex; gap: 8px; margin-bottom: 16px;
-    }
-    .trainer-mode-selector .btn {
-      flex: 1; text-align: center;
-    }
-    .trainer-mode-selector .btn.active {
-      background: var(--accent); color: #fff; border-color: var(--accent);
-    }
+    .trainer-mode-selector { display: flex; gap: 8px; margin-bottom: 16px; }
+    .trainer-mode-selector .btn { flex: 1; text-align: center; }
+    .trainer-mode-selector .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
     .rxn-step {
       background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
@@ -293,6 +290,16 @@
     }
     .rxn-step .rxn-num { font-size: 12px; color: var(--ink-soft); font-weight: 600; margin-bottom: 8px; }
     .rxn-step .rxn-eq { font-size: 25px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 20px; line-height: 1.6; }
+    .task-image {
+      max-width: 100%; max-height: 320px; border-radius: 12px; border: 1px solid var(--line);
+      display: block; margin: 4px 0 16px; cursor: zoom-in; transition: opacity .15s;
+    }
+    .task-image:hover { opacity: .85; }
+    .task-image.cards-image { margin: 12px auto; max-height: 260px; }
+    .task-image-gallery { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 16px; }
+    .task-image-gallery.cards-gallery { justify-content: center; margin: 12px 0; }
+    .task-image-gallery .task-image { margin: 0; max-width: 220px; max-height: 220px; }
+    .task-image-gallery.cards-gallery .task-image { max-height: 200px; }
     .rxn-step .rxn-input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .rxn-step .rxn-input {
       flex: 1; min-width: 180px; padding: 14px 16px; border-radius: 10px; border: 1.5px solid var(--line);
@@ -318,9 +325,7 @@
       display: flex; gap: 12px; align-items: center; justify-content: center;
       margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
     }
-    .rxn-step .step-nav .nav-info {
-      font-size: 13px; color: var(--ink-soft); min-width: 44px; text-align: center;
-    }
+    .rxn-step .step-nav .nav-info { font-size: 13px; color: var(--ink-soft); min-width: 44px; text-align: center; }
     .rxn-step .step-nav .flank-btn {
       display: flex; align-items: center; justify-content: center;
       width: 30px; height: 30px; flex-shrink: 0; border-radius: 9px;
@@ -346,82 +351,36 @@
       position: relative;
     }
     .flash-card .card-number {
-      position: absolute;
-      top: 16px;
-      left: 20px;
-      font-size: 12px;
-      color: var(--ink-soft);
-      font-weight: 600;
+      position: absolute; top: 16px; left: 20px;
+      font-size: 12px; color: var(--ink-soft); font-weight: 600;
     }
     .flash-card .card-question {
-      font-size: 28px;
-      font-weight: 600;
-      text-align: center;
-      padding: 20px 0;
-      line-height: 1.6;
+      font-size: 32px; font-weight: 600; text-align: center;
+      padding: 20px 0; line-height: 1.6;
     }
-    .flash-card .card-question .answer-part {
-      color: var(--ok);
-      font-weight: 700;
+    .flash-card .card-answer-block {
+      margin-top: 4px; padding-top: 20px; border-top: 1px solid var(--line);
+      width: 100%; text-align: center; font-size: 22px; font-weight: 700; color: var(--ok);
     }
-    .flash-card .card-question .answer-part.hidden-answer {
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    .flash-card .card-question .answer-part.visible-answer {
-      opacity: 1;
-    }
-    .flash-card .card-actions {
-      margin-top: 24px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    .flash-card .card-question .answer-part { color: var(--ok); font-weight: 700; }
+    .flash-card .card-question .answer-part.hidden-answer { opacity: 0; transition: opacity 0.3s ease; }
+    .flash-card .card-question .answer-part.visible-answer { opacity: 1; }
+    .flash-card .card-actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
     .flash-card .card-nav {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
+      margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line);
+      display: flex; gap: 16px; align-items: center; justify-content: center; width: 100%;
     }
     .flash-card .card-nav .nav-btn {
-      padding: 8px 20px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ink);
-      transition: all var(--transition);
-      font-family: inherit;
+      padding: 8px 20px; border-radius: 10px; border: 1px solid var(--line);
+      background: var(--surface); cursor: pointer; font-size: 14px; font-weight: 600;
+      color: var(--ink); transition: all var(--transition); font-family: inherit;
     }
-    .flash-card .card-nav .nav-btn:hover:not(:disabled) {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #fff;
-    }
-    .flash-card .card-nav .nav-btn:disabled {
-      opacity: .35;
-      cursor: not-allowed;
-    }
-    .flash-card .card-nav .nav-info {
-      font-size: 14px;
-      color: var(--ink-soft);
-      min-width: 60px;
-      text-align: center;
-    }
+    .flash-card .card-nav .nav-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .flash-card .card-nav .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .flash-card .card-nav .nav-info { font-size: 14px; color: var(--ink-soft); min-width: 60px; text-align: center; }
     .flash-card .card-source {
-      position: absolute;
-      bottom: 12px;
-      right: 20px;
-      font-size: 11px;
-      color: var(--ink-soft);
-      opacity: 0.6;
+      position: absolute; bottom: 12px; right: 20px;
+      font-size: 11px; color: var(--ink-soft); opacity: 0.6;
     }
 
     .rxn-list { display: flex; flex-direction: column; gap: 12px; }
@@ -457,12 +416,8 @@
     .rxn-card .rxn-explain .full-eq { font-size: 15px; color: var(--ink); font-weight: 600; margin-top: 4px; }
     .rxn-card .rxn-explain .user-given { font-size: 12px; margin-top: 6px; color: var(--ink-soft); }
 
-    .progress-rounds {
-      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
-    }
-    .progress-round {
-      flex: 1; min-width: 150px;
-    }
+    .progress-rounds { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .progress-round { flex: 1; min-width: 150px; }
     .progress-round .label { font-size: 12px; color: var(--ink-soft); margin-bottom: 4px; }
     .progress-round .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
     .progress-round .bar .fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width .3s; }
@@ -490,24 +445,74 @@
       padding: 12px 12px; border-bottom: 1px solid var(--line);
       font-size: 14px;
     }
-    .stats-table .student-name { font-weight: 600; }
+    .stats-table .student-name {
+      font-weight: 600; cursor: pointer; color: var(--accent);
+      text-decoration: underline dotted; text-underline-offset: 3px;
+    }
+    .stats-table .student-name:hover { opacity: .75; }
     .stats-progress-bar {
       width: 100%; max-width: 200px; height: 8px; border-radius: 4px;
       background: var(--line); overflow: hidden; display: inline-block;
     }
-    .stats-progress-bar .fill {
-      height: 100%; border-radius: 4px; background: var(--accent);
-      transition: width .5s ease;
-    }
+    .stats-progress-bar .fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width .5s ease; }
     .stats-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .student-detail-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .student-detail-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 18px; flex-wrap: wrap;
+    }
+    .student-detail-row .sdr-title { font-weight: 600; font-size: 15px; }
+    .student-detail-row .sdr-type { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+    .student-detail-row .sdr-progress { font-size: 13px; font-weight: 600; min-width: 110px; text-align: right; }
+    .student-detail-row .sdr-bar {
+      width: 100%; max-width: 180px; height: 6px; border-radius: 3px;
+      background: var(--line); overflow: hidden; margin-top: 6px;
+    }
+    .student-detail-row .sdr-bar .fill { height: 100%; background: var(--accent); border-radius: 3px; }
+    .student-detail-row .sdr-bar .fill.done { background: var(--ok); }
+
+    /* ====== ВКЛАДКА ОШИБОК ====== */
+    .error-card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 12px; padding: 18px 20px;
+      border-left: 4px solid var(--bad);
+    }
+    .error-card__top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .error-card__source {
+      font-size: 11.5px; color: var(--ink-soft); font-weight: 600;
+      background: var(--bg); border-radius: 20px; padding: 3px 12px;
+      display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .error-card__source .sep { opacity: .4; }
+    .error-card__progress { font-size: 12px; font-weight: 700; color: var(--ok); background: var(--ok-bg); border-radius: 20px; padding: 3px 12px; }
+    .error-card__question { font-size: 18px; font-weight: 600; margin: 4px 0 10px; line-height: 1.5; }
+    .error-card__correct { font-size: 13.5px; color: var(--ok); font-weight: 600; margin-top: 6px; }
+    .error-card__explain {
+      font-size: 13px; color: var(--ink-soft); margin-top: 6px;
+      padding-top: 8px; border-top: 1px dashed var(--line); line-height: 1.5;
+    }
+    .error-card__actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .error-card .task-image { max-height: 200px; margin: 6px 0 10px; }
+    .errors-empty { text-align: center; padding: 48px 20px; color: var(--ink-soft); }
+    .errors-empty .big { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+
+    .errors-progress-round { display: flex; gap: 6px; align-items: center; }
+    .errors-progress-round .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--line); border: 1px solid var(--line);
+    }
+    .errors-progress-round .dot.filled { background: var(--ok); border-color: var(--ok); }
 
     .modal-bg {
       position: fixed; inset: 0; background: rgba(20, 24, 31, .45); z-index: 100;
       display: flex; align-items: center; justify-content: center; padding: 20px;
     }
-    [data-theme="dark"] .modal-bg {
-      background: rgba(0,0,0,.7);
-    }
+    [data-theme="dark"] .modal-bg { background: rgba(0,0,0,.7); }
     .modal {
       background: var(--surface); border-radius: 16px; padding: 26px; max-width: 560px; width: 100%;
       box-shadow: var(--shadow);
@@ -543,9 +548,7 @@
       font-family: inherit; font-size: 13.5px; background: var(--bg); color: var(--ink);
       transition: border-color .15s, background var(--transition);
     }
-    .builder-box .field-row input:focus, .builder-box .field-row select:focus {
-      outline: none; border-color: var(--accent);
-    }
+    .builder-box .field-row input:focus, .builder-box .field-row select:focus { outline: none; border-color: var(--accent); }
     .builder-box .field-row textarea {
       flex: 1; min-width: 300px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
       font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 100px;
@@ -565,9 +568,7 @@
       font-family: inherit; font-size: 13.5px; background: var(--bg); color: var(--ink);
       transition: border-color .15s, background var(--transition);
     }
-    .ai-builder-box .field-row input:focus, .ai-builder-box .field-row select:focus {
-      outline: none; border-color: var(--accent);
-    }
+    .ai-builder-box .field-row input:focus, .ai-builder-box .field-row select:focus { outline: none; border-color: var(--accent); }
     .ai-builder-box .field-row textarea {
       flex: 1; min-width: 300px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
       font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 120px;
@@ -614,9 +615,7 @@
       transition: all var(--transition);
     }
     .platforms-bar .plat-btn:hover { background: var(--surface); border-color: var(--line); }
-    .platforms-bar .plat-btn.active {
-      background: var(--accent); color: #fff; border-color: var(--accent);
-    }
+    .platforms-bar .plat-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .platforms-bar .plat-add {
       padding: 4px 12px; border-radius: 8px; border: 1px dashed var(--line);
       font-size: 13px; font-weight: 600; cursor: pointer; background: none; color: var(--ink-soft);
@@ -642,34 +641,28 @@
     }
     .platforms-bar .plat-settings:hover { border-color: var(--accent); color: var(--accent); }
 
-    .task-type-selector {
-      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
-    }
-    .task-type-selector .btn {
-      font-size: 12px; padding: 4px 12px;
-    }
-    .task-type-selector .btn.active {
-      background: var(--accent); color: #fff; border-color: var(--accent);
-    }
+    .task-type-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .task-type-selector .btn { font-size: 12px; padding: 4px 12px; }
+    .task-type-selector .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    .options-group {
-      display: flex; flex-direction: column; gap: 10px; margin-top: 10px;
-    }
+    .options-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     .options-group label {
       display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 400;
       cursor: pointer;
     }
-    .options-group input[type="radio"],
-    .options-group input[type="checkbox"] {
+    .options-group input[type="radio"], .options-group input[type="checkbox"] {
       width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer;
     }
-    .options-group .option-row {
-      display: flex; align-items: center; gap: 8px;
-    }
+    .options-group .option-row { display: flex; align-items: center; gap: 8px; }
     .options-group .option-row input[type="text"] {
       flex: 1; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line);
       font-size: 13px; background: var(--bg); color: var(--ink);
     }
+
+    .task-image-preview-list { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+    .task-image-preview-item { position:relative; }
+    .task-image-preview-item img { max-height:60px; border-radius:6px; border:1px solid var(--line); display:block; }
+    .task-image-preview-item .remove-img-btn { position:absolute; top:-8px; right:-8px; width:22px; height:22px; }
 
     @media (max-width: 600px) {
       .container { padding: 20px 14px 60px; }
@@ -684,7 +677,8 @@
       .stats-table { font-size: 12px; }
       .stats-table th, .stats-table td { padding: 8px 6px; }
       .task-type-selector { flex-wrap: wrap; }
-      .flash-card .card-question { font-size: 20px; }
+      .flash-card .card-question { font-size: 23px; }
+      .flash-card .card-answer-block { font-size: 17px; }
     }
   </style>
 </head>
@@ -780,6 +774,7 @@
     const PLATFORMS_KEY = 'chem_platforms_v1';
     const ACTIVE_PLATFORM_KEY = 'chem_active_platform_v1';
     const THEME_KEY = 'chem_theme_v1';
+    const ERROR_MASTERY_TARGET = 3;
 
     let CURRENT_USER = null;
     let TEACH_MODE = false;
@@ -796,7 +791,7 @@
     window.__cachedProgress = null;
 
     // ============================================================
-    // 3. НОВАЯ ЛОГИКА ПРОВЕРКИ ОТВЕТОВ (ДЛЯ ВСЕХ ТИПОВ)
+    // 3. ЛОГИКА ПРОВЕРКИ ОТВЕТОВ (ДЛЯ ВСЕХ ТИПОВ)
     // ============================================================
 
     function normalizeToken(t) {
@@ -889,7 +884,84 @@
     }
 
     // ============================================================
-    // 4-8. ПЛАТФОРМЫ, ТЕМА, СЕССИЯ, FIREBASE, ВСПОМОГАТЕЛЬНЫЕ
+    // 4. ОШИБКИ (ученика)
+    // ============================================================
+
+    function errorKey(sourceType, sourceId, taskIdx) {
+      return `${sourceType}_${sourceId}_${taskIdx}`;
+    }
+
+    function getTopicNameById(topicId) {
+      const t = TOPICS.find(x => x.id === topicId);
+      return t ? t.name : '(без темы)';
+    }
+
+    function recordError(progressObj, studentKey, isRealStudent, params) {
+      const { sourceType, sourceId, sourceTitle, topicId, taskIdx, question, correctAnswer, explanation, images, taskType, options } = params;
+      const key = errorKey(sourceType, sourceId, taskIdx);
+      if (!progressObj.__errors) progressObj.__errors = {};
+      const existing = progressObj.__errors[key] || {};
+      progressObj.__errors[key] = {
+        key,
+        sourceType,
+        sourceId,
+        sourceTitle,
+        topicId,
+        topicName: getTopicNameById(topicId),
+        taskIdx,
+        taskNum: taskIdx + 1,
+        question,
+        correctAnswer,
+        explanation: explanation || '',
+        images: images || [],
+        taskType: taskType || 'text',
+        options: options || [],
+        mastery: existing.mastery || 0,
+        lastWrongAt: Date.now(),
+        createdAt: existing.createdAt || Date.now()
+      };
+      if (isRealStudent) persistFullProgress(studentKey, progressObj);
+    }
+
+    function clearErrorIfAny(progressObj, studentKey, isRealStudent, sourceType, sourceId, taskIdx) {
+      if (!progressObj.__errors) return;
+      const key = errorKey(sourceType, sourceId, taskIdx);
+      if (progressObj.__errors[key]) {
+        delete progressObj.__errors[key];
+        if (isRealStudent) persistFullProgress(studentKey, progressObj);
+      }
+    }
+
+    function applyErrorMastery(progressObj, studentKey, isRealStudent, errKey, correct) {
+      if (!progressObj.__errors) return false;
+      const err = progressObj.__errors[errKey];
+      if (!err) return false;
+      if (correct) {
+        err.mastery = (err.mastery || 0) + 1;
+        if (err.mastery >= ERROR_MASTERY_TARGET) {
+          delete progressObj.__errors[errKey];
+          if (isRealStudent) persistFullProgress(studentKey, progressObj);
+          return true;
+        }
+      } else {
+        err.mastery = 0;
+      }
+      if (isRealStudent) persistFullProgress(studentKey, progressObj);
+      return false;
+    }
+
+    function countErrors(progress) {
+      if (!progress || !progress.__errors) return 0;
+      return Object.keys(progress.__errors).length;
+    }
+
+    function getErrorList(progress) {
+      if (!progress || !progress.__errors) return [];
+      return Object.values(progress.__errors).sort((a, b) => (b.lastWrongAt || 0) - (a.lastWrongAt || 0));
+    }
+
+    // ============================================================
+    // 5-8. ПЛАТФОРМЫ, ТЕМА, СЕССИЯ, FIREBASE, ВСПОМОГАТЕЛЬНЫЕ
     // ============================================================
 
     async function loadPlatforms() {
@@ -1212,6 +1284,69 @@
         };
         reader.readAsDataURL(file);
       });
+    }
+
+    window.openImageLightbox = function(src) {
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      bg.style.cursor = 'zoom-out';
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.cssText = 'max-width:95vw;max-height:95vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.4);';
+      bg.appendChild(img);
+      bg.onclick = () => bg.remove();
+      document.body.appendChild(bg);
+    };
+
+    function getTaskImages(item) {
+      if (!item) return [];
+      if (Array.isArray(item.images) && item.images.length > 0) return item.images;
+      if (item.image) return [item.image];
+      return [];
+    }
+
+    function renderTaskImagesHtml(item, isCardsMode) {
+      const images = getTaskImages(item);
+      if (images.length === 0) return '';
+      if (images.length === 1) {
+        return `<img class="task-image${isCardsMode ? ' cards-image' : ''}" src="${images[0]}" alt="">`;
+      }
+      return `<div class="task-image-gallery${isCardsMode ? ' cards-gallery' : ''}">${images.map(src => `<img class="task-image" src="${src}" alt="">`).join('')}</div>`;
+    }
+
+    function attachImageZoomHandlers(container) {
+      container.querySelectorAll('.task-image').forEach(img => {
+        img.onclick = () => window.openImageLightbox(img.src);
+      });
+    }
+
+    function compressTaskImageToDataUrl(file, maxDimension) {
+      return new Promise((resolve, reject) => {
+        if (!file) { reject(new Error('Файл не выбран')); return; }
+        if (!file.type || !file.type.startsWith('image/')) {
+          reject(new Error('Это не картинка. Выберите файл изображения (JPG, PNG и т.п.).'));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Браузер не смог прочитать файл.'));
+        reader.onload = () => {
+          if (!reader.result || typeof reader.result !== 'string') {
+            reject(new Error('Файл прочитан, но результат пустой.'));
+            return;
+          }
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function buildImagePreviewHtml(images, rowIdx, removeClass) {
+      return (images || []).map((img, imgIdx) => `
+        <div class="task-image-preview-item">
+          <img src="${img}" alt="">
+          <button type="button" class="icon-btn danger ${removeClass}" data-row="${rowIdx}" data-imgidx="${imgIdx}" title="Убрать">✕</button>
+        </div>
+      `).join('');
     }
 
     // ============================================================
@@ -1787,6 +1922,7 @@
       const c = document.getElementById('mainContainer');
       c.innerHTML = '';
       if (VIEW.name === 'home') renderHome(c);
+      else if (VIEW.name === 'errors') renderErrorsTab(c);
       else if (VIEW.name === 'trainer') renderTrainer(c, VIEW.trainerId);
       else if (VIEW.name === 'homework') renderHomework(c, VIEW.homeworkId);
       else if (VIEW.name === 'lesson') renderLessonModal(VIEW.lessonId);
@@ -1825,6 +1961,19 @@
       title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами.' : 'Выберите тренажёр или видеоурок по теме'}</p>`;
       wrap.appendChild(title);
 
+      let progress = {};
+      if (!CURRENT_USER.isTeacher) {
+        if (window.__cachedProgress) {
+          progress = window.__cachedProgress;
+        } else {
+          progress = await getProgress(CURRENT_USER.key);
+          window.__cachedProgress = progress;
+        }
+      }
+
+      const errCount = countErrors(progress);
+
+      // Вкладки
       if (CURRENT_USER.isTeacher && !TEACH_MODE) {
         const tabs = document.createElement('div');
         tabs.className = 'maintabs';
@@ -1843,19 +1992,19 @@
 
         const aiBuilder = buildAIBuilder();
         wrap.appendChild(aiBuilder);
+      } else {
+        const tabs = document.createElement('div');
+        tabs.className = 'maintabs';
+        tabs.innerHTML = `
+          <div class="maintab active" id="tabContent">Содержание</div>
+          <div class="maintab" id="tabErrors">Ошибки ${errCount > 0 ? `<span class="badge-count">${errCount}</span>` : ''}</div>
+        `;
+        tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' }; render(); };
+        tabs.querySelector('#tabErrors').onclick = () => { VIEW = { name: 'errors' }; render(); };
+        wrap.appendChild(tabs);
       }
 
       const sortedTopics = [...TOPICS].sort((a, b) => a.order - b.order);
-
-      let progress = {};
-      if (!CURRENT_USER.isTeacher) {
-        if (window.__cachedProgress) {
-          progress = window.__cachedProgress;
-        } else {
-          progress = await getProgress(CURRENT_USER.key);
-          window.__cachedProgress = progress;
-        }
-      }
 
       function isItemAvailable(item) {
         if (!item) return true;
@@ -2001,7 +2150,7 @@
                 ${badge}
               </div>
               <h3>${escapeHtml(trainer.title)}</h3>
-              <div class="meta">${(trainer.reactions || []).length} реакций${isManaging() ? ` · ${trainer.mode === 'step' ? 'Пошагово' : 'Список'}` : ''}</div>
+              <div class="meta">${(trainer.reactions || []).length} реакций${isManaging() ? ` · ${trainer.mode === 'step' ? 'Пошагово' : trainer.mode === 'cards' ? 'Карты' : 'Список'}${trainer.allowModeChoice ? ' · свободный режим' : ''}` : ''}</div>
               ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${isFinished ? ' finished' : ''}" style="width:${pct}%"></div></div>` : ''}
               ${isManaging() ? `<div class="card-edit-row">
                 <button class="icon-btn" data-act="up" title="Вверх">↑</button>
@@ -2102,7 +2251,7 @@
             card.innerHTML = `
               <span class="kind homework">Домашка</span>
               <h3>${escapeHtml(homework.title)}</h3>
-              <div class="meta">${(homework.tasks || []).length} заданий</div>
+              <div class="meta">${(homework.tasks || []).length} заданий${isManaging() ? ` · ${homework.mode === 'step' ? 'Пошагово' : homework.mode === 'cards' ? 'Карты' : 'Список'}${homework.allowModeChoice ? ' · свободный режим' : ''}` : ''}</div>
               ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${hwFinished ? ' finished' : ''}" style="width:${hwPct}%"></div></div>` : ''}
               ${badge}
               ${isManaging() ? `<div class="card-edit-row">
@@ -2143,6 +2292,247 @@
       }
 
       container.appendChild(wrap);
+    }
+
+    // ============================================================
+    // 17a. ВКЛАДКА «ОШИБКИ»
+    // ============================================================
+
+    async function renderErrorsTab(container) {
+      const isRealStudent = !CURRENT_USER.isTeacher;
+      let progress;
+      if (isRealStudent) {
+        progress = await getProgress(CURRENT_USER.key);
+        window.__cachedProgress = progress;
+      } else {
+        progress = {};
+      }
+
+      const wrap = document.createElement('div');
+
+      const title = document.createElement('div');
+      title.innerHTML = `<h1 class="page-title">Ошибки</h1><p class="page-sub">Все задания, в которых вы ошиблись. Отработайте каждое ${ERROR_MASTERY_TARGET} раза правильно — и оно исчезнет.</p>`;
+      wrap.appendChild(title);
+
+      const errCount = countErrors(progress);
+      const tabs = document.createElement('div');
+      tabs.className = 'maintabs';
+      tabs.innerHTML = `
+        <div class="maintab" id="tabContent">Содержание</div>
+        <div class="maintab active" id="tabErrors">Ошибки ${errCount > 0 ? `<span class="badge-count">${errCount}</span>` : ''}</div>
+      `;
+      tabs.querySelector('#tabContent').onclick = () => { VIEW = { name: 'home' }; render(); };
+      wrap.appendChild(tabs);
+
+      const errors = getErrorList(progress);
+
+      if (errors.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'errors-empty';
+        empty.innerHTML = `<div class="big">🎉</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;">Ошибок нет!</div><div>Так держать. Все задания отработаны.</div>`;
+        wrap.appendChild(empty);
+        container.appendChild(wrap);
+        return;
+      }
+
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;';
+      const practiceAllBtn = document.createElement('button');
+      practiceAllBtn.className = 'btn btn-accent';
+      practiceAllBtn.textContent = 'Отработать все ошибки';
+      practiceAllBtn.onclick = () => openErrorsPracticeModal(errors, progress, isRealStudent, CURRENT_USER.key);
+      actions.appendChild(practiceAllBtn);
+      wrap.appendChild(actions);
+
+      const list = document.createElement('div');
+      list.className = 'rxn-list';
+
+      for (const err of errors) {
+        const card = document.createElement('div');
+        card.className = 'error-card';
+
+        const sourceBits = [];
+        sourceBits.push(escapeHtml(err.topicName || ''));
+        sourceBits.push(err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка');
+        sourceBits.push(escapeHtml(err.sourceTitle || ''));
+        sourceBits.push(`№ ${err.taskNum}`);
+
+        const masteryDots = Array.from({ length: ERROR_MASTERY_TARGET }, (_, i) =>
+          `<span class="dot ${i < (err.mastery || 0) ? 'filled' : ''}"></span>`
+        ).join('');
+
+        card.innerHTML = `
+          <div class="error-card__top">
+            <div class="error-card__source">
+              ${sourceBits.map((b, i) => i > 0 ? `<span class="sep">·</span>${b}` : b).join(' ')}
+            </div>
+            <div class="errors-progress-round" title="Отработано ${err.mastery || 0} из ${ERROR_MASTERY_TARGET}">
+              ${masteryDots}
+            </div>
+          </div>
+          <div class="error-card__question">${escapeHtml(err.question)}</div>
+          ${renderTaskImagesHtml(err, false)}
+          ${err.taskType === 'radio' || err.taskType === 'checkbox' ? renderOptionsHtml(err) : ''}
+          <div class="error-card__correct">Правильный ответ: ${escapeHtml(err.correctAnswer || '—')}</div>
+          ${err.explanation ? `<div class="error-card__explain">${escapeHtml(err.explanation)}</div>` : ''}
+          <div class="error-card__actions">
+            <button class="btn btn-sm btn-accent practice-one-btn">Отработать</button>
+          </div>
+        `;
+
+        card.querySelector('.practice-one-btn').onclick = () => {
+          openErrorsPracticeModal([err], progress, isRealStudent, CURRENT_USER.key);
+        };
+
+        list.appendChild(card);
+      }
+
+      wrap.appendChild(list);
+      container.appendChild(wrap);
+      attachImageZoomHandlers(container);
+    }
+
+    function renderOptionsHtml(err) {
+      if (!err.options || err.options.length === 0) return '';
+      const correctSet = err.taskType === 'checkbox'
+        ? (err.correctAnswer || '').split(',').map(s => s.trim().toUpperCase())
+        : [(err.correctAnswer || '').trim().toUpperCase()];
+      return `<div class="options-group">` + err.options.map(opt => {
+        const isRight = correctSet.includes(opt.trim().toUpperCase());
+        return `<label style="${isRight ? 'color:var(--ok);font-weight:700;' : ''}">
+          <input type="${err.taskType === 'radio' ? 'radio' : 'checkbox'}" disabled ${isRight ? 'checked' : ''}>
+          ${escapeHtml(opt)}${isRight ? ' ✓' : ''}
+        </label>`;
+      }).join('') + `</div>`;
+    }
+
+    // Модальное окно отработки ошибок. studentKey — кому сохранять (ученик или ученик, от имени которого учитель отрабатывает).
+    function openErrorsPracticeModal(errors, progress, isRealStudent, studentKey) {
+      let queue = errors.filter(e => progress.__errors && progress.__errors[e.key]);
+      if (queue.length === 0) { alert('Все ошибки уже отработаны!'); return; }
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.maxWidth = '640px';
+
+      let index = 0;
+      let sessionCorrect = 0;
+      let sessionWrong = 0;
+
+      function renderCurrent() {
+        if (index >= queue.length) { renderSummary(); return; }
+        const err = queue[index];
+        if (!progress.__errors || !progress.__errors[err.key]) {
+          index++;
+          renderCurrent();
+          return;
+        }
+
+        modal.innerHTML = `
+          <h3>Отработка ошибок · ${index + 1} из ${queue.length}</h3>
+          <div class="error-card__source" style="margin-bottom:10px;">
+            ${escapeHtml(err.topicName || '')} <span class="sep">·</span>
+            ${err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка'} <span class="sep">·</span>
+            ${escapeHtml(err.sourceTitle || '')} <span class="sep">·</span> № ${err.taskNum}
+          </div>
+          <div class="error-card__question">${escapeHtml(err.question)}</div>
+          ${renderTaskImagesHtml(err, false)}
+          <div id="practiceInputZone"></div>
+          <div class="feedback-slot" style="margin-top:10px;font-size:13px;font-weight:700;"></div>
+          <div class="actions" style="justify-content:space-between;">
+            <button class="btn btn-ghost" id="practiceCancel">Закрыть</button>
+            <button class="btn btn-accent" id="practiceCheck">Проверить</button>
+          </div>
+        `;
+        attachImageZoomHandlers(modal);
+
+        const inputZone = modal.querySelector('#practiceInputZone');
+        const fbSlot = modal.querySelector('.feedback-slot');
+        const checkBtn = modal.querySelector('#practiceCheck');
+        const cancelBtn = modal.querySelector('#practiceCancel');
+        cancelBtn.onclick = () => { bg.remove(); if (VIEW.name === 'errors' || VIEW.name === 'home' || VIEW.name === 'studentDetail') render(); };
+
+        if (err.taskType === 'text' || !err.taskType) {
+          inputZone.innerHTML = `<div class="rxn-input-row"><input type="text" class="rxn-input" id="practiceInput" placeholder="Введите ответ"></div>`;
+        } else if (err.taskType === 'radio') {
+          inputZone.innerHTML = `<div class="options-group">` + (err.options || []).map((opt) => `
+            <label><input type="radio" name="practiceRadio" value="${escapeAttr(opt)}"> ${escapeHtml(opt)}</label>
+          `).join('') + `</div>`;
+        } else if (err.taskType === 'checkbox') {
+          inputZone.innerHTML = `<div class="options-group">` + (err.options || []).map((opt) => `
+            <label><input type="checkbox" name="practiceCheckbox" value="${escapeAttr(opt)}"> ${escapeHtml(opt)}</label>
+          `).join('') + `</div>`;
+        }
+
+        checkBtn.onclick = () => {
+          let val = '';
+          if (err.taskType === 'radio') {
+            const checked = modal.querySelector('input[name="practiceRadio"]:checked');
+            if (!checked) { alert('Выберите вариант'); return; }
+            val = checked.value;
+          } else if (err.taskType === 'checkbox') {
+            const checked = modal.querySelectorAll('input[name="practiceCheckbox"]:checked');
+            if (checked.length === 0) { alert('Выберите хотя бы один вариант'); return; }
+            val = Array.from(checked).map(el => el.value).join(',');
+          } else {
+            const inp = modal.querySelector('#practiceInput');
+            val = (inp?.value || '').trim();
+            if (!val) { alert('Введите ответ'); return; }
+          }
+
+          const sets = buildCorrectSets(err.correctAnswer, err.taskType);
+          const fakeReaction = {
+            valid: true,
+            correctSets: sets.correctSets,
+            correctSetsDisplay: sets.correctSetsDisplay
+          };
+          const isCorrect = checkAnswer(fakeReaction, val, err.taskType);
+
+          if (isCorrect) {
+            sessionCorrect++;
+            const removed = applyErrorMastery(progress, studentKey, true, err.key, true);
+            if (removed) {
+              fbSlot.innerHTML = '<span style="color:var(--ok);">Верно! Ошибка полностью отработана и удалена из списка.</span>';
+            } else {
+              const cur = progress.__errors[err.key]?.mastery || 0;
+              fbSlot.innerHTML = `<span style="color:var(--ok);">Верно! Отработано ${cur} из ${ERROR_MASTERY_TARGET}.</span>`;
+            }
+            checkBtn.disabled = true;
+            setTimeout(() => { index++; renderCurrent(); }, 900);
+          } else {
+            sessionWrong++;
+            applyErrorMastery(progress, studentKey, true, err.key, false);
+            fbSlot.innerHTML = '<span style="color:var(--bad);">Неверно. Счётчик отработки сброшен. Правильный ответ: ' + escapeHtml(err.correctAnswer) + '</span>';
+            checkBtn.disabled = true;
+            setTimeout(() => { index++; renderCurrent(); }, 1400);
+          }
+        };
+      }
+
+      function renderSummary() {
+        modal.innerHTML = `
+          <h3>Сессия отработки завершена</h3>
+          <p style="font-size:14px;line-height:1.6;">
+            Правильных ответов: <b style="color:var(--ok);">${sessionCorrect}</b><br>
+            Неправильных ответов: <b style="color:var(--bad);">${sessionWrong}</b>
+          </p>
+          <div class="actions">
+            <button class="btn btn-accent" id="summaryClose">Закрыть</button>
+          </div>
+        `;
+        modal.querySelector('#summaryClose').onclick = () => {
+          bg.remove();
+          render();
+        };
+      }
+
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+
+      renderCurrent();
     }
 
     // ============================================================
@@ -2325,7 +2715,7 @@
     };
 
     // ============================================================
-    // 22. RENDER TRAINER (С РЕЖИМОМ "КАРТЫ" — ОТВЕТ В СТРОКЕ)
+    // 22. RENDER TRAINER
     // ============================================================
 
     async function renderTrainer(container, trainerId) {
@@ -2339,6 +2729,7 @@
 
       const mode = trainer.mode || 'step';
       const taskType = trainer.taskType || 'text';
+      const allowChoice = !!trainer.allowModeChoice;
 
       const wrap = document.createElement('div');
 
@@ -2359,30 +2750,49 @@
       `;
       wrap.appendChild(head);
 
-      const modeSelector = document.createElement('div');
-      modeSelector.className = 'trainer-mode-selector';
-      modeSelector.innerHTML = `
-        <button class="btn btn-sm ${mode === 'step' ? 'active' : ''}" id="modeStep">Пошагово</button>
-        <button class="btn btn-sm ${mode === 'list' ? 'active' : ''}" id="modeList">Список</button>
-        <button class="btn btn-sm ${mode === 'cards' ? 'active' : ''}" id="modeCards">Карты</button>
-      `;
-      if (isManaging()) {
+      const canSwitch = isManaging() || (isRealStudent && allowChoice);
+      if (canSwitch) {
+        const modeSelector = document.createElement('div');
+        modeSelector.className = 'trainer-mode-selector';
+        modeSelector.innerHTML = `
+          <button class="btn btn-sm ${mode === 'step' ? 'active' : ''}" id="modeStep">Пошагово</button>
+          <button class="btn btn-sm ${mode === 'list' ? 'active' : ''}" id="modeList">Список</button>
+          <button class="btn btn-sm ${mode === 'cards' ? 'active' : ''}" id="modeCards">Карты</button>
+        `;
         modeSelector.querySelector('#modeStep').onclick = () => {
           trainer.mode = 'step';
-          persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          if (isManaging()) {
+            persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          } else {
+            trainerProgress.__chosenMode = 'step';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderTrainer(container, trainerId));
+          }
         };
         modeSelector.querySelector('#modeList').onclick = () => {
           trainer.mode = 'list';
-          persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          if (isManaging()) {
+            persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          } else {
+            trainerProgress.__chosenMode = 'list';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderTrainer(container, trainerId));
+          }
         };
         modeSelector.querySelector('#modeCards').onclick = () => {
           trainer.mode = 'cards';
-          persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          if (isManaging()) {
+            persistTrainers().then(() => { renderTrainer(container, trainerId); });
+          } else {
+            trainerProgress.__chosenMode = 'cards';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderTrainer(container, trainerId));
+          }
         };
-      } else {
-        modeSelector.style.display = 'none';
+        wrap.appendChild(modeSelector);
       }
-      wrap.appendChild(modeSelector);
+
+      let effectiveMode = mode;
+      if (isRealStudent && allowChoice && trainerProgress.__chosenMode) {
+        effectiveMode = trainerProgress.__chosenMode;
+      }
 
       const content = document.createElement('div');
       wrap.appendChild(content);
@@ -2393,11 +2803,11 @@
 
       container.appendChild(wrap);
 
-      if (mode === 'step') {
+      if (effectiveMode === 'step') {
         renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      } else if (mode === 'list') {
+      } else if (effectiveMode === 'list') {
         renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      } else if (mode === 'cards') {
+      } else if (effectiveMode === 'cards') {
         renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
       } else {
         renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
@@ -2545,7 +2955,11 @@
           content.appendChild(finishDiv);
 
           finishDiv.querySelector('#finishTrainerBtn').onclick = () => {
-            showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
+            trainerProgress.__finished = true;
+            if (isRealStudent) {
+              persistFullProgress(CURRENT_USER.key, progress);
+            }
+            showFinishedScreen();
           };
           finishDiv.querySelector('#restartTrainerBtn').onclick = () => {
             window.showConfirmModal(
@@ -2574,7 +2988,11 @@
           finishBtn.className = 'btn btn-accent';
           finishBtn.textContent = 'Закончить тренажёр';
           finishBtn.onclick = () => {
-            showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
+            trainerProgress.__finished = true;
+            if (isRealStudent) {
+              persistFullProgress(CURRENT_USER.key, progress);
+            }
+            showFinishedScreen();
           };
           footer.appendChild(finishBtn);
           return;
@@ -2643,6 +3061,7 @@
         card.innerHTML = `
           <div class="rxn-num">Реакция ${currentIndex+1} ${round === 2 ? '· Доработка' : ''}</div>
           <div class="rxn-eq eqx">${eqHtml}</div>
+          ${renderTaskImagesHtml(rxn, false)}
           ${inputHtml}
           <div class="rxn-actions">
             <button class="btn btn-sm btn-accent" id="stepCheck" ${isCorrect ? 'disabled' : ''}>Проверить</button>
@@ -2727,10 +3146,26 @@
             disableInputs(true);
             checkBtn.disabled = true;
             showFeedback(true);
+            if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'trainer', trainer.id, currentIndex);
           } else {
             statuses[currentIndex] = 'wrong';
             answers[currentIndex] = val;
             showFeedback(false);
+            if (isRealStudent) {
+              recordError(progress, CURRENT_USER.key, true, {
+                sourceType: 'trainer',
+                sourceId: trainer.id,
+                sourceTitle: trainer.title,
+                topicId: trainer.topicId,
+                taskIdx: currentIndex,
+                question: rxn.lhs || '',
+                correctAnswer: (rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) ? rxn.correctSetsDisplay[0].join(taskType === 'checkbox' ? ', ' : ' + ') : (rxn.valid ? '' : '0'),
+                explanation: rxn.explanation || '',
+                images: getTaskImages(rxn),
+                taskType,
+                options: rxn.options || []
+              });
+            }
           }
           saveState();
           updateNav();
@@ -2789,6 +3224,7 @@
         navRow.insertBefore(prevBtn, navInfoEl);
         navRow.appendChild(nextBtn);
         content.appendChild(card);
+        attachImageZoomHandlers(content);
         updateNav();
 
         footer.innerHTML = '';
@@ -2830,8 +3266,23 @@
         footer.appendChild(totalBtn);
       }
 
+      function showFinishedScreen() {
+        showSimpleCardsCompletion(content, footer, trainer, trainerProgress, isRealStudent, progress, async () => {
+          trainerProgress.statuses = Array(reactions.length).fill('unanswered');
+          trainerProgress.answers = Array(reactions.length).fill('');
+          trainerProgress.currentIndex = 0;
+          trainerProgress.round = 1;
+          if (isRealStudent) {
+            await persistFullProgress(CURRENT_USER.key, progress);
+          }
+          renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+        }, () => {
+          renderStepReviewMode(content, footer, trainer, trainerProgress, taskType, showFinishedScreen);
+        });
+      }
+
       if (trainerProgress.__finished) {
-        showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
+        showFinishedScreen();
       } else {
         renderStep();
       }
@@ -2859,6 +3310,7 @@
       const list = document.createElement('div');
       list.className = 'rxn-list';
       content.appendChild(list);
+      attachImageZoomHandlers(content);
 
       function renderList() {
         list.innerHTML = '';
@@ -2924,6 +3376,7 @@
           card.innerHTML = `
             <div class="rxn-num">Реакция ${idx+1}</div>
             <div class="rxn-eq eqx">${eqHtml}</div>
+            ${renderTaskImagesHtml(rxn, false)}
             ${inputHtml}
             <div class="feedback-slot"></div>
           `;
@@ -2963,6 +3416,7 @@
                   fb.textContent = 'Верно!';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-correct';
+                  if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'trainer', trainer.id, idx);
                 } else {
                   statuses[idx] = 'wrong';
                   answers[idx] = val;
@@ -2973,6 +3427,16 @@
                   fb.textContent = 'Неверно. Попробуй ещё раз.';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-wrong';
+                  if (isRealStudent) {
+                    recordError(progress, CURRENT_USER.key, true, {
+                      sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
+                      topicId: trainer.topicId, taskIdx: idx,
+                      question: rxn.lhs || '',
+                      correctAnswer: (rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) ? rxn.correctSetsDisplay[0].join(taskType === 'checkbox' ? ', ' : ' + ') : (rxn.valid ? '' : '0'),
+                      explanation: rxn.explanation || '',
+                      images: getTaskImages(rxn), taskType, options: rxn.options || []
+                    });
+                  }
                 }
               } else if (taskType === 'radio') {
                 const checked = card.querySelector(`input[name="radio_${idx}"]:checked`);
@@ -2990,6 +3454,7 @@
                   fb.textContent = 'Верно!';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-correct';
+                  if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'trainer', trainer.id, idx);
                 } else {
                   statuses[idx] = 'wrong';
                   answers[idx] = val;
@@ -2999,6 +3464,16 @@
                   fb.textContent = 'Неверно. Попробуй ещё раз.';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-wrong';
+                  if (isRealStudent) {
+                    recordError(progress, CURRENT_USER.key, true, {
+                      sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
+                      topicId: trainer.topicId, taskIdx: idx,
+                      question: rxn.lhs || '',
+                      correctAnswer: (rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) ? rxn.correctSetsDisplay[0].join(', ') : '',
+                      explanation: rxn.explanation || '',
+                      images: getTaskImages(rxn), taskType, options: rxn.options || []
+                    });
+                  }
                 }
               } else if (taskType === 'checkbox') {
                 const checked = card.querySelectorAll(`input[name="check_${idx}"]:checked`);
@@ -3016,6 +3491,7 @@
                   fb.textContent = 'Верно!';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-correct';
+                  if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'trainer', trainer.id, idx);
                 } else {
                   statuses[idx] = 'wrong';
                   answers[idx] = val;
@@ -3025,6 +3501,16 @@
                   fb.textContent = 'Неверно. Попробуй ещё раз.';
                   fbSlot.appendChild(fb);
                   card.className = 'rxn-card state-wrong';
+                  if (isRealStudent) {
+                    recordError(progress, CURRENT_USER.key, true, {
+                      sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
+                      topicId: trainer.topicId, taskIdx: idx,
+                      question: rxn.lhs || '',
+                      correctAnswer: (rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) ? rxn.correctSetsDisplay[0].join(', ') : '',
+                      explanation: rxn.explanation || '',
+                      images: getTaskImages(rxn), taskType, options: rxn.options || []
+                    });
+                  }
                 }
               }
               saveState();
@@ -3072,8 +3558,23 @@
         footer.prepend(stats);
       }
 
+      function showFinishedScreen() {
+        showSimpleCardsCompletion(content, footer, trainer, trainerProgress, isRealStudent, progress, async () => {
+          statuses = Array(total).fill('unanswered');
+          answers = Array(total).fill('');
+          trainerProgress.statuses = statuses;
+          trainerProgress.answers = answers;
+          if (isRealStudent) {
+            await persistFullProgress(CURRENT_USER.key, progress);
+          }
+          renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+        }, () => {
+          renderListReview(content, footer, trainer, trainerProgress, taskType, showFinishedScreen);
+        });
+      }
+
       if (trainerProgress.__finished) {
-        showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
+        showFinishedScreen();
         return;
       }
 
@@ -3086,7 +3587,11 @@
       finishBtn.onclick = () => {
         const correct = statuses.filter(s => s === 'correct').length;
         if (correct === total) {
-          showCompletionView(content, trainer, trainerProgress, isRealStudent, progress);
+          trainerProgress.__finished = true;
+          if (isRealStudent) {
+            persistFullProgress(CURRENT_USER.key, progress);
+          }
+          showFinishedScreen();
         } else {
           alert(`Вы ответили правильно на ${correct} из ${total} реакций. Доработайте остальные!`);
         }
@@ -3117,16 +3622,127 @@
       footer.appendChild(resetBtn);
     }
 
+    // Просмотр результата в режиме Список (без ответа ученика, без поля ввода)
+    function renderListReview(content, footer, trainer, trainerProgress, taskType, exitFn) {
+      const reactions = trainer.reactions || [];
+      content.innerHTML = '';
+
+      const list = document.createElement('div');
+      list.className = 'rxn-list';
+
+      reactions.forEach((rxn, idx) => {
+        const card = document.createElement('div');
+        card.className = 'rxn-card';
+
+        const eqHtml = renderEquation(rxn.lhs);
+        const isInvalid = !rxn.valid;
+        const correctAnswerText = isInvalid
+          ? 'Реакция не идёт'
+          : ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || (rxn.correctSets && rxn.correctSets[0]) || [])
+              .join(taskType === 'checkbox' ? ', ' : ' + ');
+
+        let optionsHtml = '';
+        if (taskType === 'radio' || taskType === 'checkbox') {
+          const options = rxn.options || [];
+          const correctSet = isInvalid ? [] : ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || (rxn.correctSets && rxn.correctSets[0]) || []);
+          optionsHtml = `<div class="options-group">` + options.map(opt => {
+            const isRight = correctSet.some(c => c.toUpperCase() === opt.trim().toUpperCase());
+            return `<label style="${isRight ? 'color:var(--ok);font-weight:700;' : ''}">
+              <input type="${taskType === 'radio' ? 'radio' : 'checkbox'}" disabled ${isRight ? 'checked' : ''}>
+              ${escapeHtml(opt)}${isRight ? ' ✓' : ''}
+            </label>`;
+          }).join('') + `</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="rxn-num">Реакция ${idx+1}</div>
+          <div class="rxn-eq eqx">${eqHtml}</div>
+          ${renderTaskImagesHtml(rxn, false)}
+          ${optionsHtml}
+          <div class="rxn-explain" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);">
+            ${rxn.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(rxn.explanation)}</div>` : ''}
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(correctAnswerText)}</div>
+            ${rxn.fullEquation ? `<div style="font-size:14px;font-weight:600;margin-top:4px;">${renderEquation(rxn.fullEquation)}</div>` : ''}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      content.appendChild(list);
+      attachImageZoomHandlers(content);
+
+      footer.innerHTML = '';
+      const backBtn = document.createElement('button');
+      backBtn.className = 'btn btn-ghost';
+      backBtn.textContent = '← Назад к результату';
+      backBtn.onclick = exitFn;
+      footer.appendChild(backBtn);
+    }
+
     // ============================================================
-    // 25. РЕЖИМ "КАРТЫ" — ОТВЕТ В СТРОКЕ РЕАКЦИИ
+    // 25. РЕЖИМ "КАРТЫ"
     // ============================================================
 
-    function renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
+    function showSimpleCardsCompletion(content, footer, item, itemProgress, isRealStudent, progress, reopenFn, reviewFn) {
+      content.innerHTML = '';
+      footer.innerHTML = '';
+
+      const div = document.createElement('div');
+      div.className = 'rxn-step';
+      div.style.textAlign = 'center';
+      div.innerHTML = `<div style="font-size:18px;font-weight:700;padding:24px 0;">Выполнено на 100%</div>`;
+      content.appendChild(div);
+
+      if (reviewFn) {
+        const reviewBtn = document.createElement('button');
+        reviewBtn.className = 'btn btn-ghost';
+        reviewBtn.textContent = 'Посмотреть результат';
+        reviewBtn.onclick = reviewFn;
+        footer.appendChild(reviewBtn);
+      }
+
+      const restartBtn = document.createElement('button');
+      restartBtn.className = 'btn btn-accent';
+      restartBtn.textContent = 'Пройти заново';
+      restartBtn.onclick = () => {
+        window.showConfirmModal(
+          'Начать заново?',
+          'Отметка о прохождении будет сброшена.',
+          async () => {
+            itemProgress.__finished = false;
+            if (isRealStudent) {
+              await persistFullProgress(CURRENT_USER.key, progress);
+            }
+            reopenFn();
+          },
+          'Начать заново',
+          'btn-accent'
+        );
+      };
+      footer.appendChild(restartBtn);
+
+      const backToHome = document.createElement('button');
+      backToHome.className = 'btn btn-ghost';
+      backToHome.textContent = '← К содержанию';
+      backToHome.onclick = window.goHome;
+      footer.appendChild(backToHome);
+    }
+
+    function renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType, reviewMode) {
       const reactions = trainer.reactions || [];
       const total = reactions.length;
 
       if (total === 0) {
         content.innerHTML = `<div class="empty-note">В этом тренажёре нет реакций.</div>`;
+        return;
+      }
+
+      if (trainerProgress.__finished && !reviewMode) {
+        showSimpleCardsCompletion(content, footer, trainer, trainerProgress, isRealStudent, progress, () => {
+          renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+        }, () => {
+          renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType, true);
+        });
         return;
       }
 
@@ -3139,9 +3755,7 @@
         const rxn = reactions[currentIndex];
         const lhs = rxn.lhs || '';
         
-        // Формируем полный ответ
         let fullAnswer = '';
-        let isInvalid = false;
         if (rxn.valid && rxn.correctSets && rxn.correctSets.length > 0) {
           const displaySets = (rxn.correctSetsDisplay && rxn.correctSetsDisplay.length > 0) 
             ? rxn.correctSetsDisplay 
@@ -3156,26 +3770,23 @@
           }
         } else if (!rxn.valid) {
           fullAnswer = '0 (не идёт)';
-          isInvalid = true;
         } else {
           fullAnswer = 'Нет правильного ответа';
         }
 
-        // Показываем реакцию так, как её написал учитель — без
-        // автоматической подстановки стрелочки (учитель ставит её сам
-        // в тексте задания, если хочет).
         const fullReaction = lhs + ' ' + fullAnswer;
-        const displayLhs = renderEquation(lhs);
-        const displayFull = renderEquation(fullReaction);
+        const displayLhs = escapeHtml(lhs);
+        const displayFull = escapeHtml(fullReaction);
 
         const card = document.createElement('div');
         card.className = 'flash-card';
 
         card.innerHTML = `
           <div class="card-number">${currentIndex + 1} / ${total}</div>
-          <div class="card-question eqx">
+          <div class="card-question">
             ${showAnswer ? displayFull : displayLhs}
           </div>
+          ${renderTaskImagesHtml(rxn, true)}
           <div class="card-actions">
             <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
           </div>
@@ -3185,45 +3796,30 @@
             <button class="nav-btn" id="nextCardBtn" ${currentIndex === total - 1 ? 'disabled' : ''}>Вперёд ▶</button>
           </div>
           ${showAnswer && rxn.explanation ? `<div style="margin-top:12px;font-size:13px;color:var(--ink-soft);text-align:center;padding:8px 16px;border-top:1px solid var(--line);">${escapeHtml(rxn.explanation)}</div>` : ''}
-          ${showAnswer && rxn.fullEquation ? `<div style="margin-top:4px;font-size:14px;font-weight:600;text-align:center;color:var(--ok);">${renderEquation(rxn.fullEquation)}</div>` : ''}
+          ${showAnswer && rxn.fullEquation ? `<div style="margin-top:4px;font-size:14px;font-weight:600;text-align:center;color:var(--ok);">${escapeHtml(rxn.fullEquation)}</div>` : ''}
         `;
 
         content.appendChild(card);
+        attachImageZoomHandlers(content);
 
         card.querySelector('#showAnswerBtn').onclick = () => {
           showAnswer = !showAnswer;
           renderCard();
         };
-
         card.querySelector('#prevCardBtn').onclick = () => {
-          if (currentIndex > 0) {
-            currentIndex--;
-            showAnswer = false;
-            renderCard();
-          }
+          if (currentIndex > 0) { currentIndex--; showAnswer = false; renderCard(); }
         };
-
         card.querySelector('#nextCardBtn').onclick = () => {
-          if (currentIndex < total - 1) {
-            currentIndex++;
-            showAnswer = false;
-            renderCard();
-          }
+          if (currentIndex < total - 1) { currentIndex++; showAnswer = false; renderCard(); }
         };
 
         document.addEventListener('keydown', function handler(e) {
           if (e.key === 'ArrowLeft' && currentIndex > 0) {
-            currentIndex--;
-            showAnswer = false;
-            renderCard();
+            currentIndex--; showAnswer = false; renderCard();
           } else if (e.key === 'ArrowRight' && currentIndex < total - 1) {
-            currentIndex++;
-            showAnswer = false;
-            renderCard();
+            currentIndex++; showAnswer = false; renderCard();
           } else if (e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault();
-            showAnswer = !showAnswer;
-            renderCard();
+            e.preventDefault(); showAnswer = !showAnswer; renderCard();
           }
           document.removeEventListener('keydown', handler);
         });
@@ -3231,9 +3827,25 @@
         footer.innerHTML = '';
         const backToHome = document.createElement('button');
         backToHome.className = 'btn btn-ghost btn-sm';
-        backToHome.textContent = '← К содержанию';
-        backToHome.onclick = window.goHome;
+        backToHome.textContent = reviewMode ? '← Назад к результату' : '← К содержанию';
+        backToHome.onclick = reviewMode
+          ? () => { renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType); }
+          : window.goHome;
         footer.appendChild(backToHome);
+
+        if (!reviewMode) {
+          const finishBtn = document.createElement('button');
+          finishBtn.className = 'btn btn-accent btn-sm';
+          finishBtn.textContent = 'Закончить';
+          finishBtn.onclick = () => {
+            trainerProgress.__finished = true;
+            if (isRealStudent) {
+              persistFullProgress(CURRENT_USER.key, progress);
+            }
+            renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+          };
+          footer.appendChild(finishBtn);
+        }
       }
 
       renderCard();
@@ -3242,6 +3854,82 @@
     // ============================================================
     // 26. ЗАВЕРШЕНИЕ ТРЕНАЖЁРА
     // ============================================================
+
+    function renderStepReviewMode(content, footer, trainer, trainerProgress, taskType, exitFn) {
+      const reactions = trainer.reactions || [];
+      const total = reactions.length;
+      let currentIndex = 0;
+
+      function renderCard() {
+        content.innerHTML = '';
+
+        const rxn = reactions[currentIndex];
+        const eqHtml = renderEquation(rxn.lhs || '');
+        const isInvalid = !rxn.valid;
+        const correctAnswerText = isInvalid
+          ? 'Реакция не идёт'
+          : ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || (rxn.correctSets && rxn.correctSets[0]) || [])
+              .join(taskType === 'checkbox' ? ', ' : ' + ');
+
+        let optionsHtml = '';
+        if (taskType === 'radio' || taskType === 'checkbox') {
+          const options = rxn.options || [];
+          const correctSet = isInvalid ? [] : ((rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) || (rxn.correctSets && rxn.correctSets[0]) || []);
+          optionsHtml = `<div class="options-group">` + options.map(opt => {
+            const isRight = correctSet.some(c => c.toUpperCase() === opt.trim().toUpperCase());
+            return `<label style="${isRight ? 'color:var(--ok);font-weight:700;' : ''}">
+              <input type="${taskType === 'radio' ? 'radio' : 'checkbox'}" disabled ${isRight ? 'checked' : ''}>
+              ${escapeHtml(opt)}${isRight ? ' ✓' : ''}
+            </label>`;
+          }).join('') + `</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'rxn-step';
+        card.innerHTML = `
+          <div class="rxn-num">Реакция ${currentIndex+1} / ${total}</div>
+          <div class="rxn-eq eqx">${eqHtml}</div>
+          ${renderTaskImagesHtml(rxn, false)}
+          ${optionsHtml}
+          <div class="rxn-explain" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);">
+            ${rxn.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(rxn.explanation)}</div>` : ''}
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(correctAnswerText)}</div>
+            ${rxn.fullEquation ? `<div style="font-size:14px;font-weight:600;margin-top:4px;">${renderEquation(rxn.fullEquation)}</div>` : ''}
+          </div>
+          <div class="step-nav"></div>
+        `;
+
+        content.appendChild(card);
+        attachImageZoomHandlers(content);
+
+        const navRow = card.querySelector('.step-nav');
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'flank-btn';
+        prevBtn.textContent = '◀';
+        prevBtn.disabled = currentIndex === 0;
+        prevBtn.onclick = () => { if (currentIndex > 0) { currentIndex--; renderCard(); } };
+        const navInfo = document.createElement('span');
+        navInfo.className = 'nav-info';
+        navInfo.textContent = `${currentIndex + 1} / ${total}`;
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'flank-btn';
+        nextBtn.textContent = '▶';
+        nextBtn.disabled = currentIndex === total - 1;
+        nextBtn.onclick = () => { if (currentIndex < total - 1) { currentIndex++; renderCard(); } };
+        navRow.appendChild(prevBtn);
+        navRow.appendChild(navInfo);
+        navRow.appendChild(nextBtn);
+      }
+
+      footer.innerHTML = '';
+      const backBtn = document.createElement('button');
+      backBtn.className = 'btn btn-ghost';
+      backBtn.textContent = '← Назад к результату';
+      backBtn.onclick = exitFn;
+      footer.appendChild(backBtn);
+
+      renderCard();
+    }
 
     function showCompletionView(container, trainer, trainerProgress, isRealStudent, progress) {
       const reactions = trainer.reactions || [];
@@ -3345,7 +4033,7 @@
     }
 
     // ============================================================
-    // 27. ДОМАШКИ (С РЕЖИМОМ "КАРТЫ" — ОТВЕТ В СТРОКЕ)
+    // 27. ДОМАШКИ
     // ============================================================
 
     async function renderHomework(container, homeworkId) {
@@ -3356,6 +4044,8 @@
       let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
       if (!progress[homeworkId]) progress[homeworkId] = {};
       const hwProgress = progress[homeworkId];
+      const mode = homework.mode || 'list';
+      const allowChoice = !!homework.allowModeChoice;
 
       const wrap = document.createElement('div');
 
@@ -3373,12 +4063,52 @@
       head.innerHTML = `
         <h2>${escapeHtml(homework.title)}</h2>
         ${hwNoteParts.length ? `<div class="trainer-note">${hwNoteParts.join('<br>')}</div>` : ''}
-        <div style="margin-top:12px;display:flex;gap:8px;">
-          <button class="btn btn-sm btn-ghost" id="hwModeList">📋 Список</button>
-          <button class="btn btn-sm btn-ghost" id="hwModeCards">🃏 Карты</button>
-        </div>
       `;
       wrap.appendChild(head);
+
+      const canSwitch = isManaging() || (isRealStudent && allowChoice);
+      if (canSwitch) {
+        const modeSelector = document.createElement('div');
+        modeSelector.className = 'trainer-mode-selector';
+        modeSelector.innerHTML = `
+          <button class="btn btn-sm ${mode === 'step' ? 'active' : ''}" id="hwModeStep">Пошагово</button>
+          <button class="btn btn-sm ${mode === 'list' ? 'active' : ''}" id="hwModeList">Список</button>
+          <button class="btn btn-sm ${mode === 'cards' ? 'active' : ''}" id="hwModeCards">Карты</button>
+        `;
+        modeSelector.querySelector('#hwModeStep').onclick = () => {
+          homework.mode = 'step';
+          if (isManaging()) {
+            persistHomeworks().then(() => { renderHomework(container, homeworkId); });
+          } else {
+            hwProgress.__chosenMode = 'step';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderHomework(container, homeworkId));
+          }
+        };
+        modeSelector.querySelector('#hwModeList').onclick = () => {
+          homework.mode = 'list';
+          if (isManaging()) {
+            persistHomeworks().then(() => { renderHomework(container, homeworkId); });
+          } else {
+            hwProgress.__chosenMode = 'list';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderHomework(container, homeworkId));
+          }
+        };
+        modeSelector.querySelector('#hwModeCards').onclick = () => {
+          homework.mode = 'cards';
+          if (isManaging()) {
+            persistHomeworks().then(() => { renderHomework(container, homeworkId); });
+          } else {
+            hwProgress.__chosenMode = 'cards';
+            persistFullProgress(CURRENT_USER.key, progress).then(() => renderHomework(container, homeworkId));
+          }
+        };
+        wrap.appendChild(modeSelector);
+      }
+
+      let effectiveMode = mode;
+      if (isRealStudent && allowChoice && hwProgress.__chosenMode) {
+        effectiveMode = hwProgress.__chosenMode;
+      }
 
       const content = document.createElement('div');
       wrap.appendChild(content);
@@ -3389,16 +4119,84 @@
 
       container.appendChild(wrap);
 
+      if (effectiveMode === 'step') {
+        renderHwStepMode(content, footer, homework, hwProgress, isRealStudent, progress);
+      } else if (effectiveMode === 'cards') {
+        renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress);
+      } else {
+        renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress);
+      }
+    }
+
+    function renderHwListReview(container, homework) {
+      const tasks = homework.tasks || [];
+
+      container.innerHTML = '';
+      const title = document.createElement('h3');
+      title.textContent = 'Результаты домашки';
+      title.style.cssText = 'margin:0 0 20px;font-size:20px;';
+      container.appendChild(title);
+
+      const stats = document.createElement('div');
+      stats.style.cssText = 'margin-bottom:20px;padding:16px;background:var(--bg);border-radius:12px;text-align:center;font-size:15px;font-weight:600;';
+      stats.textContent = 'Домашка пройдена на 100%';
+      container.appendChild(stats);
+
+      const list = document.createElement('div');
+      list.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+
+      tasks.forEach((task, idx) => {
+        const item = document.createElement('div');
+        item.className = 'rxn-card';
+        item.innerHTML = `
+          <div class="rxn-num">Задание ${idx+1}</div>
+          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          ${renderTaskImagesHtml(task, false)}
+          ${task.explanation ? `<div style="font-size:13px;color:var(--ink-soft);margin-top:8px;">${escapeHtml(task.explanation)}</div>` : ''}
+          <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(task.answer)}</div>
+        `;
+        list.appendChild(item);
+      });
+
+      container.appendChild(list);
+      attachImageZoomHandlers(container);
+    }
+
+    function renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress) {
       const tasks = homework.tasks || [];
       let statuses = hwProgress.statuses || Array(tasks.length).fill('unanswered');
       let answers = hwProgress.answers || Array(tasks.length).fill('');
-      let hwMode = hwProgress.mode || 'list';
+
+      function showFinishedScreen() {
+        showSimpleCardsCompletion(content, footer, homework, hwProgress, isRealStudent, progress, async () => {
+          statuses = Array(tasks.length).fill('unanswered');
+          answers = Array(tasks.length).fill('');
+          hwProgress.statuses = statuses;
+          hwProgress.answers = answers;
+          if (isRealStudent) {
+            await persistFullProgress(CURRENT_USER.key, progress);
+          }
+          renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress);
+        }, () => {
+          renderHwListReview(content, homework);
+          footer.innerHTML = '';
+          const backBtn = document.createElement('button');
+          backBtn.className = 'btn btn-ghost';
+          backBtn.textContent = '← Назад к результату';
+          backBtn.onclick = showFinishedScreen;
+          footer.appendChild(backBtn);
+        });
+      }
+
+      if (hwProgress.__finished) {
+        showFinishedScreen();
+        return;
+      }
 
       function saveState() {
         if (isRealStudent) {
           hwProgress.statuses = statuses;
           hwProgress.answers = answers;
-          hwProgress.mode = hwMode;
           persistFullProgress(CURRENT_USER.key, progress);
         }
       }
@@ -3410,7 +4208,6 @@
           return;
         }
 
-        let correctCount = 0;
         const list = document.createElement('div');
         list.className = 'rxn-list';
 
@@ -3425,6 +4222,7 @@
           card.innerHTML = `
             <div class="rxn-num">Задание ${idx+1}</div>
             <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+            ${renderTaskImagesHtml(task, false)}
             <div class="rxn-input-row">
               <input type="text" class="rxn-input ${isCorrect ? 'correct' : status === 'wrong' ? 'wrong' : ''}" 
                      placeholder="Введите ответ" value="${escapeHtml(answer)}" 
@@ -3441,7 +4239,6 @@
             fb.className = 'rxn-feedback ok';
             fb.textContent = 'Верно!';
             fbSlot.appendChild(fb);
-            correctCount++;
           } else if (status === 'wrong') {
             const fb = document.createElement('div');
             fb.className = 'rxn-feedback bad';
@@ -3466,6 +4263,7 @@
               fb.textContent = 'Верно!';
               fbSlot.appendChild(fb);
               card.className = 'rxn-card state-correct';
+              if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'homework', homework.id, idx);
             } else {
               statuses[idx] = 'wrong';
               answers[idx] = val;
@@ -3476,6 +4274,15 @@
               fb.textContent = 'Неверно. Попробуй ещё раз.';
               fbSlot.appendChild(fb);
               card.className = 'rxn-card state-wrong';
+              if (isRealStudent) {
+                recordError(progress, CURRENT_USER.key, true, {
+                  sourceType: 'homework', sourceId: homework.id, sourceTitle: homework.title,
+                  topicId: homework.topicId, taskIdx: idx,
+                  question: task.question, correctAnswer: task.answer,
+                  explanation: task.explanation || '', images: getTaskImages(task),
+                  taskType: 'text', options: []
+                });
+              }
             }
             saveState();
             updateStats();
@@ -3497,105 +4304,7 @@
         });
 
         content.appendChild(list);
-        updateStats();
-      }
-
-      function renderCards() {
-        content.innerHTML = '';
-        if (tasks.length === 0) {
-          content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
-          return;
-        }
-
-        let currentIndex = hwProgress.cardsIndex || 0;
-        let showAnswer = false;
-
-        function renderCard() {
-          content.innerHTML = '';
-
-          const task = tasks[currentIndex];
-          const question = task.question || '';
-          const answer = task.answer || 'Нет ответа';
-          // Без автоматической стрелочки — как учитель написал вопрос,
-          // так и показываем, без подстановки.
-          const fullReaction = question + ' ' + answer;
-
-          const card = document.createElement('div');
-          card.className = 'flash-card';
-
-          card.innerHTML = `
-            <div class="card-number">${currentIndex + 1} / ${tasks.length}</div>
-            <div class="card-question eqx">
-              ${showAnswer ? renderEquation(fullReaction) : renderEquation(question)}
-            </div>
-            ${showAnswer && task.explanation ? `<div style="margin-top:8px;font-size:13px;color:var(--ink-soft);text-align:center;padding:8px 16px;border-top:1px solid var(--line);">${escapeHtml(task.explanation)}</div>` : ''}
-            <div class="card-actions">
-              <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
-            </div>
-            <div class="card-nav">
-              <button class="nav-btn" id="prevCardBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
-              <span class="nav-info">${currentIndex + 1} / ${tasks.length}</span>
-              <button class="nav-btn" id="nextCardBtn" ${currentIndex === tasks.length - 1 ? 'disabled' : ''}>Вперёд ▶</button>
-            </div>
-          `;
-
-          content.appendChild(card);
-
-          card.querySelector('#showAnswerBtn').onclick = () => {
-            showAnswer = !showAnswer;
-            renderCard();
-          };
-
-          card.querySelector('#prevCardBtn').onclick = () => {
-            if (currentIndex > 0) {
-              currentIndex--;
-              showAnswer = false;
-              hwProgress.cardsIndex = currentIndex;
-              saveState();
-              renderCard();
-            }
-          };
-
-          card.querySelector('#nextCardBtn').onclick = () => {
-            if (currentIndex < tasks.length - 1) {
-              currentIndex++;
-              showAnswer = false;
-              hwProgress.cardsIndex = currentIndex;
-              saveState();
-              renderCard();
-            }
-          };
-
-          document.addEventListener('keydown', function handler(e) {
-            if (e.key === 'ArrowLeft' && currentIndex > 0) {
-              currentIndex--;
-              showAnswer = false;
-              hwProgress.cardsIndex = currentIndex;
-              saveState();
-              renderCard();
-            } else if (e.key === 'ArrowRight' && currentIndex < tasks.length - 1) {
-              currentIndex++;
-              showAnswer = false;
-              hwProgress.cardsIndex = currentIndex;
-              saveState();
-              renderCard();
-            } else if (e.key === ' ' || e.key === 'Enter') {
-              e.preventDefault();
-              showAnswer = !showAnswer;
-              renderCard();
-            }
-            document.removeEventListener('keydown', handler);
-          });
-
-          footer.innerHTML = '';
-          const backToHome = document.createElement('button');
-          backToHome.className = 'btn btn-ghost btn-sm';
-          backToHome.textContent = '← К содержанию';
-          backToHome.onclick = window.goHome;
-          footer.appendChild(backToHome);
-        }
-
-        renderCard();
+        attachImageZoomHandlers(content);
         updateStats();
       }
 
@@ -3615,45 +4324,8 @@
         footer.prepend(stats);
       }
 
-      // Переключение режимов
-      document.getElementById('hwModeList').onclick = () => {
-        hwMode = 'list';
-        hwProgress.mode = 'list';
-        saveState();
-        renderList();
-        updateButtons();
-      };
+      renderList();
 
-      document.getElementById('hwModeCards').onclick = () => {
-        hwMode = 'cards';
-        hwProgress.mode = 'cards';
-        hwProgress.cardsIndex = 0;
-        saveState();
-        renderCards();
-        updateButtons();
-      };
-
-      function updateButtons() {
-        const listBtn = document.getElementById('hwModeList');
-        const cardsBtn = document.getElementById('hwModeCards');
-        if (hwMode === 'list') {
-          listBtn.className = 'btn btn-sm btn-accent';
-          cardsBtn.className = 'btn btn-sm btn-ghost';
-        } else {
-          listBtn.className = 'btn btn-sm btn-ghost';
-          cardsBtn.className = 'btn btn-sm btn-accent';
-        }
-      }
-
-      // Инициализация
-      if (hwMode === 'cards') {
-        renderCards();
-      } else {
-        renderList();
-      }
-      updateButtons();
-
-      // Кнопка "Закончить домашку" — только для списка
       const finishBtn = document.createElement('button');
       finishBtn.className = 'btn btn-accent';
       finishBtn.textContent = 'Закончить домашку';
@@ -3663,15 +4335,311 @@
           hwProgress.__finished = true;
           if (isRealStudent) {
             persistFullProgress(CURRENT_USER.key, progress);
-            window.__cachedProgress = progress;
           }
-          alert('Домашка пройдена на 100%');
-          window.goHome();
+          showFinishedScreen();
         } else {
           alert(`Вы ответили правильно на ${correct} из ${tasks.length} заданий. Доработайте остальные!`);
         }
       };
       footer.appendChild(finishBtn);
+    }
+
+    function renderHwStepReviewMode(content, footer, homework, hwProgress, exitFn) {
+      const tasks = homework.tasks || [];
+      const total = tasks.length;
+      let currentIndex = 0;
+
+      function renderCard() {
+        content.innerHTML = '';
+
+        const task = tasks[currentIndex];
+
+        const card = document.createElement('div');
+        card.className = 'rxn-step';
+        card.innerHTML = `
+          <div class="rxn-num">Задание ${currentIndex+1} / ${total}</div>
+          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          ${renderTaskImagesHtml(task, false)}
+          <div class="rxn-explain" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);">
+            ${task.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(task.explanation)}</div>` : ''}
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(task.answer)}</div>
+          </div>
+          <div class="step-nav"></div>
+        `;
+
+        content.appendChild(card);
+        attachImageZoomHandlers(content);
+
+        const navRow = card.querySelector('.step-nav');
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'flank-btn';
+        prevBtn.textContent = '◀';
+        prevBtn.disabled = currentIndex === 0;
+        prevBtn.onclick = () => { if (currentIndex > 0) { currentIndex--; renderCard(); } };
+        const navInfo = document.createElement('span');
+        navInfo.className = 'nav-info';
+        navInfo.textContent = `${currentIndex + 1} / ${total}`;
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'flank-btn';
+        nextBtn.textContent = '▶';
+        nextBtn.disabled = currentIndex === total - 1;
+        nextBtn.onclick = () => { if (currentIndex < total - 1) { currentIndex++; renderCard(); } };
+        navRow.appendChild(prevBtn);
+        navRow.appendChild(navInfo);
+        navRow.appendChild(nextBtn);
+      }
+
+      footer.innerHTML = '';
+      const backBtn = document.createElement('button');
+      backBtn.className = 'btn btn-ghost';
+      backBtn.textContent = '← Назад к результату';
+      backBtn.onclick = exitFn;
+      footer.appendChild(backBtn);
+
+      renderCard();
+    }
+
+    function renderHwStepMode(content, footer, homework, hwProgress, isRealStudent, progress) {
+      const tasks = homework.tasks || [];
+      const total = tasks.length;
+      if (total === 0) {
+        content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
+        return;
+      }
+
+      function showFinishedScreen() {
+        showSimpleCardsCompletion(content, footer, homework, hwProgress, isRealStudent, progress, async () => {
+          hwProgress.statuses = Array(total).fill('unanswered');
+          hwProgress.answers = Array(total).fill('');
+          hwProgress.stepIndex = 0;
+          if (isRealStudent) {
+            await persistFullProgress(CURRENT_USER.key, progress);
+          }
+          renderHwStepMode(content, footer, homework, hwProgress, isRealStudent, progress);
+        }, () => {
+          renderHwStepReviewMode(content, footer, homework, hwProgress, showFinishedScreen);
+        });
+      }
+
+      if (hwProgress.__finished) {
+        showFinishedScreen();
+        return;
+      }
+
+      let statuses = hwProgress.statuses || Array(total).fill('unanswered');
+      let answers = hwProgress.answers || Array(total).fill('');
+      let currentIndex = hwProgress.stepIndex || 0;
+      if (currentIndex >= total || currentIndex < 0) currentIndex = 0;
+
+      function saveState() {
+        if (isRealStudent) {
+          hwProgress.statuses = statuses;
+          hwProgress.answers = answers;
+          hwProgress.stepIndex = currentIndex;
+          persistFullProgress(CURRENT_USER.key, progress);
+        }
+      }
+
+      function isAllCorrect() {
+        return statuses.length === total && statuses.every(s => s === 'correct');
+      }
+
+      function renderStep() {
+        content.innerHTML = '';
+        footer.innerHTML = '';
+
+        const task = tasks[currentIndex];
+        const status = statuses[currentIndex] || 'unanswered';
+        const answer = answers[currentIndex] || '';
+        const isCorrect = status === 'correct';
+
+        const card = document.createElement('div');
+        card.className = 'rxn-step';
+        card.innerHTML = `
+          <div class="rxn-num">Задание ${currentIndex+1} / ${total}</div>
+          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          ${renderTaskImagesHtml(task, false)}
+          <div class="rxn-input-row">
+            <input type="text" class="rxn-input ${isCorrect ? 'correct' : status === 'wrong' ? 'wrong' : ''}" placeholder="Введите ответ" value="${escapeHtml(answer)}" ${isCorrect ? 'disabled' : ''}>
+          </div>
+          <div class="rxn-actions">
+            <button class="btn btn-sm btn-accent" id="hwStepCheck" ${isCorrect ? 'disabled' : ''}>Проверить</button>
+            <button class="btn btn-sm btn-ghost" id="hwStepRetry">Повторить</button>
+          </div>
+          <div class="feedback-slot"></div>
+          <div class="step-nav"></div>
+        `;
+
+        const fbSlot = card.querySelector('.feedback-slot');
+        if (status === 'correct') {
+          fbSlot.innerHTML = '<div class="rxn-feedback ok">Верно!</div>';
+        } else if (status === 'wrong') {
+          fbSlot.innerHTML = '<div class="rxn-feedback bad">Неверно. Попробуй ещё раз.</div>';
+        }
+
+        content.appendChild(card);
+        attachImageZoomHandlers(content);
+
+        const input = card.querySelector('.rxn-input');
+        card.querySelector('#hwStepCheck').onclick = () => {
+          const val = input.value.trim();
+          if (!val) { alert('Введите ответ'); return; }
+          const isCorrectAnswer = val.toLowerCase() === (task.answer || '').toLowerCase().trim();
+          statuses[currentIndex] = isCorrectAnswer ? 'correct' : 'wrong';
+          answers[currentIndex] = val;
+          if (isCorrectAnswer) {
+            if (isRealStudent) clearErrorIfAny(progress, CURRENT_USER.key, true, 'homework', homework.id, currentIndex);
+          } else {
+            if (isRealStudent) {
+              recordError(progress, CURRENT_USER.key, true, {
+                sourceType: 'homework', sourceId: homework.id, sourceTitle: homework.title,
+                topicId: homework.topicId, taskIdx: currentIndex,
+                question: task.question, correctAnswer: task.answer,
+                explanation: task.explanation || '', images: getTaskImages(task),
+                taskType: 'text', options: []
+              });
+            }
+          }
+          saveState();
+          renderStep();
+        };
+        card.querySelector('#hwStepRetry').onclick = () => {
+          statuses[currentIndex] = 'unanswered';
+          saveState();
+          renderStep();
+        };
+
+        const navRow = card.querySelector('.step-nav');
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'flank-btn';
+        prevBtn.textContent = '◀';
+        prevBtn.disabled = currentIndex === 0;
+        prevBtn.onclick = () => {
+          if (currentIndex > 0) { currentIndex--; saveState(); renderStep(); }
+        };
+        const navInfo = document.createElement('span');
+        navInfo.className = 'nav-info';
+        navInfo.textContent = `${currentIndex + 1} / ${total}`;
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'flank-btn';
+        nextBtn.textContent = '▶';
+        nextBtn.disabled = currentIndex === total - 1;
+        nextBtn.onclick = () => {
+          if (currentIndex < total - 1) { currentIndex++; saveState(); renderStep(); }
+        };
+        navRow.appendChild(prevBtn);
+        navRow.appendChild(navInfo);
+        navRow.appendChild(nextBtn);
+
+        if (isAllCorrect()) {
+          const finishBtn = document.createElement('button');
+          finishBtn.className = 'btn btn-accent';
+          finishBtn.textContent = 'Закончить домашку';
+          finishBtn.onclick = () => {
+            hwProgress.__finished = true;
+            if (isRealStudent) {
+              persistFullProgress(CURRENT_USER.key, progress);
+            }
+            showFinishedScreen();
+          };
+          footer.appendChild(finishBtn);
+        }
+      }
+
+      renderStep();
+    }
+
+    function renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress, reviewMode) {
+      const tasks = homework.tasks || [];
+      if (tasks.length === 0) {
+        content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`;
+        return;
+      }
+
+      if (hwProgress.__finished && !reviewMode) {
+        showSimpleCardsCompletion(content, footer, homework, hwProgress, isRealStudent, progress, () => {
+          renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress);
+        }, () => {
+          renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress, true);
+        });
+        return;
+      }
+
+      let currentIndex = hwProgress.cardsIndex || 0;
+      if (currentIndex >= tasks.length || currentIndex < 0) currentIndex = 0;
+      let showAnswer = false;
+
+      function saveState() {
+        if (isRealStudent) {
+          hwProgress.cardsIndex = currentIndex;
+          persistFullProgress(CURRENT_USER.key, progress);
+        }
+      }
+
+      function renderCard() {
+        content.innerHTML = '';
+
+        const task = tasks[currentIndex];
+        const question = task.question || '';
+        const answer = task.answer || 'Нет ответа';
+
+        const card = document.createElement('div');
+        card.className = 'flash-card';
+
+        card.innerHTML = `
+          <div class="card-number">${currentIndex + 1} / ${tasks.length}</div>
+          <div class="card-question">${escapeHtml(question)}</div>
+          ${renderTaskImagesHtml(task, true)}
+          ${showAnswer ? `<div class="card-answer-block">${escapeHtml(answer)}</div>` : ''}
+          ${showAnswer && task.explanation ? `<div style="margin-top:12px;font-size:13px;color:var(--ink-soft);text-align:center;padding:0 16px;">${escapeHtml(task.explanation)}</div>` : ''}
+          <div class="card-actions">
+            <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
+          </div>
+          <div class="card-nav">
+            <button class="nav-btn" id="prevCardBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+            <span class="nav-info">${currentIndex + 1} / ${tasks.length}</span>
+            <button class="nav-btn" id="nextCardBtn" ${currentIndex === tasks.length - 1 ? 'disabled' : ''}>Вперёд ▶</button>
+          </div>
+        `;
+
+        content.appendChild(card);
+        attachImageZoomHandlers(content);
+
+        card.querySelector('#showAnswerBtn').onclick = () => {
+          showAnswer = !showAnswer;
+          renderCard();
+        };
+        card.querySelector('#prevCardBtn').onclick = () => {
+          if (currentIndex > 0) { currentIndex--; showAnswer = false; saveState(); renderCard(); }
+        };
+        card.querySelector('#nextCardBtn').onclick = () => {
+          if (currentIndex < tasks.length - 1) { currentIndex++; showAnswer = false; saveState(); renderCard(); }
+        };
+      }
+
+      const backToHome = document.createElement('button');
+      backToHome.className = 'btn btn-ghost';
+      backToHome.textContent = reviewMode ? '← Назад к результату' : '← К содержанию';
+      backToHome.onclick = reviewMode
+        ? () => { renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress); }
+        : window.goHome;
+      footer.appendChild(backToHome);
+
+      if (!reviewMode) {
+        const finishBtn = document.createElement('button');
+        finishBtn.className = 'btn btn-accent';
+        finishBtn.textContent = 'Закончить';
+        finishBtn.onclick = () => {
+          hwProgress.__finished = true;
+          if (isRealStudent) {
+            persistFullProgress(CURRENT_USER.key, progress);
+          }
+          renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress);
+        };
+        footer.appendChild(finishBtn);
+      }
+
+      renderCard();
     }
 
     // ============================================================
@@ -3815,7 +4783,7 @@
       const sortedKeys = Object.keys(reg).sort((a, b) => (reg[a].createdAt || 0) - (reg[b].createdAt || 0));
 
       const wrap = document.createElement('div');
-      wrap.innerHTML = `<h1 class="page-title">Статистика учеников</h1><p class="page-sub">Имя, пароль и прогресс по платформе</p>`;
+      wrap.innerHTML = `<h1 class="page-title">Статистика учеников</h1><p class="page-sub">Имя, пароль и прогресс по платформе. Нажмите на имя, чтобы увидеть детали и ошибки.</p>`;
 
       const tabs = document.createElement('div');
       tabs.className = 'maintabs';
@@ -3830,14 +4798,15 @@
 
       const addBox = document.createElement('div');
       addBox.className = 'add-student-box';
+      addBox.className = 'builder-box';
       addBox.innerHTML = `
         <h3>Добавить ученика</h3>
-        <div class="add-student-row">
+        <div class="field-row">
           <input type="text" id="newStudentName" placeholder="Имя ученика" style="flex:1;">
           <input type="text" id="newStudentPassword" placeholder="Пароль" style="flex:1;">
           <button class="btn btn-accent" id="addStudentBtn">Добавить</button>
         </div>
-        <div id="addStudentMsg" class="add-err"></div>
+        <div id="addStudentMsg" style="font-size:12.5px;margin-top:6px;"></div>
       `;
       wrap.appendChild(addBox);
 
@@ -3852,6 +4821,7 @@
             <th>Ученик</th>
             <th>Пароль</th>
             <th style="min-width:150px;">Прогресс</th>
+            <th>Ошибки</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -3866,7 +4836,7 @@
       tbody.innerHTML = '';
 
       if (sortedKeys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Учеников пока нет. Добавьте первого!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-note">Учеников пока нет. Добавьте первого!</td></tr>`;
       } else {
         for (const key of sortedKeys) {
           const student = reg[key];
@@ -3875,7 +4845,12 @@
           let correctCount = 0;
           let totalCount = 0;
 
+          function isVisibleTo(item) {
+            return !item.assignedTo || item.assignedTo.length === 0 || item.assignedTo.includes(key);
+          }
+
           for (const trainer of (TRAINERS || [])) {
+            if (!isVisibleTo(trainer)) continue;
             const trainerData = progress[trainer.id] || {};
             const statuses = trainerData.statuses || [];
             const reactions = trainer.reactions || [];
@@ -3884,6 +4859,7 @@
           }
 
           for (const homework of (HOMEWORKS || [])) {
+            if (!isVisibleTo(homework)) continue;
             const hwData = progress[homework.id] || {};
             const statuses = hwData.statuses || [];
             const tasks = homework.tasks || [];
@@ -3892,6 +4868,7 @@
           }
 
           for (const lesson of (LESSONS || [])) {
+            if (!isVisibleTo(lesson)) continue;
             totalCount++;
             if (progress['lesson:' + lesson.id] === true) {
               correctCount++;
@@ -3899,10 +4876,11 @@
           }
 
           const percent = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+          const errCount = countErrors(progress);
 
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td><span class="student-name">${escapeHtml(student.name)}</span></td>
+            <td><span class="student-name" data-key="${key}">${escapeHtml(student.name)}</span></td>
             <td><span style="font-family:monospace;font-size:13px;">${escapeHtml(student.password)}</span></td>
             <td>
               <div style="display:flex;align-items:center;gap:12px;">
@@ -3910,9 +4888,9 @@
                   <div class="fill" style="width:${percent}%;${percent === 100 ? 'background:var(--ok);' : ''}"></div>
                 </div>
                 <span style="font-weight:600;font-size:14px;min-width:44px;">${percent}%</span>
-                <span style="font-size:11px;color:var(--ink-soft);">${correctCount}/${totalCount}</span>
               </div>
             </td>
+            <td>${errCount > 0 ? `<span style="color:var(--bad);font-weight:700;">${errCount}</span>` : '<span style="color:var(--ink-soft);">0</span>'}</td>
             <td>
               <div class="stats-actions">
                 <button class="btn btn-sm btn-ghost change-pass-btn" data-key="${key}">Сменить пароль</button>
@@ -3920,6 +4898,11 @@
               </div>
             </td>
           `;
+          row.querySelector('.student-name').onclick = (e) => {
+            e.stopPropagation();
+            VIEW = { name: 'studentDetail', studentKey: key };
+            render();
+          };
           row.querySelector('.change-pass-btn').onclick = (e) => {
             e.stopPropagation();
             showChangePasswordModal(key);
@@ -4015,57 +4998,132 @@
       title.textContent = `${student.name}`;
       wrap.appendChild(title);
 
+      // Блок ошибок ученика
+      const errCount = countErrors(progress);
+      const errBlock = document.createElement('div');
+      errBlock.style.cssText = 'background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px 0 24px;';
+      errBlock.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+          <h3 style="margin:0;font-size:16px;">Ошибки ученика ${errCount > 0 ? `<span style="color:var(--bad);">(${errCount})</span>` : ''}</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            ${errCount > 0 ? `<button class="btn btn-sm btn-accent" id="teacherPracticeAllErrors">Отработать все</button>` : ''}
+          </div>
+        </div>
+        <div id="teacherErrorsList"></div>
+      `;
+      wrap.appendChild(errBlock);
+
+      const errListEl = errBlock.querySelector('#teacherErrorsList');
+      const errors = getErrorList(progress);
+      if (errors.length === 0) {
+        errListEl.innerHTML = `<div class="empty-note">У этого ученика нет неотработанных ошибок.</div>`;
+      } else {
+        errListEl.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
+        for (const err of errors) {
+          const card = document.createElement('div');
+          card.className = 'error-card';
+          const masteryDots = Array.from({ length: ERROR_MASTERY_TARGET }, (_, i) =>
+            `<span class="dot ${i < (err.mastery || 0) ? 'filled' : ''}"></span>`
+          ).join('');
+          card.innerHTML = `
+            <div class="error-card__top">
+              <div class="error-card__source">
+                ${escapeHtml(err.topicName || '')} <span class="sep">·</span>
+                ${err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка'} <span class="sep">·</span>
+                ${escapeHtml(err.sourceTitle || '')} <span class="sep">·</span> № ${err.taskNum}
+              </div>
+              <div class="errors-progress-round" title="Отработано ${err.mastery || 0} из ${ERROR_MASTERY_TARGET}">${masteryDots}</div>
+            </div>
+            <div class="error-card__question">${escapeHtml(err.question)}</div>
+            ${renderTaskImagesHtml(err, false)}
+            ${err.taskType === 'radio' || err.taskType === 'checkbox' ? renderOptionsHtml(err) : ''}
+            <div class="error-card__correct">Правильный ответ: ${escapeHtml(err.correctAnswer)}</div>
+            ${err.explanation ? `<div class="error-card__explain">${escapeHtml(err.explanation)}</div>` : ''}
+          `;
+          errListEl.appendChild(card);
+        }
+        const practiceAllBtn = errBlock.querySelector('#teacherPracticeAllErrors');
+        if (practiceAllBtn) {
+          practiceAllBtn.onclick = () => {
+            openErrorsPracticeModal(errors, progress, true, studentKey);
+          };
+        }
+      }
+      attachImageZoomHandlers(errBlock);
+
+      // Список материалов
       const detailDiv = document.createElement('div');
       detailDiv.className = 'student-detail';
 
       const allItems = [];
 
+      function isVisibleTo(item) {
+        return !item.assignedTo || item.assignedTo.length === 0 || item.assignedTo.includes(studentKey);
+      }
+
       for (const trainer of (TRAINERS || [])) {
         if (!(trainer.reactions || []).length) continue;
+        if (!isVisibleTo(trainer)) continue;
         const trainerData = progress[trainer.id] || {};
+        const total = (trainer.reactions || []).length;
+        const done = (trainerData.statuses || []).filter(s => s === 'correct').length;
         allItems.push({
           type: 'Тренажёр',
           title: trainer.title,
+          done, total,
           finished: trainerData.__finished === true
         });
       }
 
       for (const homework of (HOMEWORKS || [])) {
         if (!(homework.tasks || []).length) continue;
+        if (!isVisibleTo(homework)) continue;
         const hwData = progress[homework.id] || {};
+        const total = (homework.tasks || []).length;
+        const done = (hwData.statuses || []).filter(s => s === 'correct').length;
         allItems.push({
           type: 'Домашка',
           title: homework.title,
+          done, total,
           finished: hwData.__finished === true
         });
       }
 
       for (const lesson of (LESSONS || [])) {
+        if (!isVisibleTo(lesson)) continue;
         allItems.push({
           type: 'Урок',
           title: lesson.title,
+          done: null,
+          total: null,
           finished: !!progress['lesson:' + lesson.id]
         });
       }
 
+      const list = document.createElement('div');
+      list.className = 'student-detail-list';
+
       if (allItems.length === 0) {
-        detailDiv.innerHTML = `<div class="empty-note">Материалов пока нет.</div>`;
+        list.innerHTML = `<div class="empty-note">Материалов пока нет.</div>`;
       } else {
         for (const item of allItems) {
           const row = document.createElement('div');
-          row.className = 'topic-row';
+          row.className = 'student-detail-row';
+          const pct = (item.done !== null && item.total) ? Math.round(item.done / item.total * 100) : 0;
           row.innerHTML = `
-            <div>
-              <div class="topic-name">${escapeHtml(item.title)}</div>
-              <div style="font-size:12px;color:var(--ink-soft);">${item.type}</div>
+            <div style="flex:1;min-width:180px;">
+              <div class="sdr-title">${escapeHtml(item.title)}</div>
+              <div class="sdr-type">${item.type}</div>
+              ${item.done !== null ? `<div class="sdr-bar"><div class="fill ${item.finished ? 'done' : ''}" style="width:${pct}%"></div></div>` : ''}
             </div>
-            <div class="topic-stats" style="font-weight:600;color:${item.finished ? 'var(--ok)' : 'var(--ink-soft)'};">
-              ${item.finished ? '✅ Выполнено' : 'Не выполнено'}
+            <div class="sdr-progress">
+              ${item.done !== null ? `Выполнено ${item.done} из ${item.total}` : (item.finished ? '✅ Выполнено' : 'Не выполнено')}
             </div>
           `;
-          detailDiv.appendChild(row);
+          list.appendChild(row);
         }
       }
+      detailDiv.appendChild(list);
 
       wrap.appendChild(detailDiv);
       container.appendChild(wrap);
@@ -4131,6 +5189,12 @@
               </select>
             </div>
             <div class="field-row">
+              <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="fAllowModeChoice" style="width:auto;">
+                Разрешить ученику самому выбирать режим (пошагово / список / карты)
+              </label>
+            </div>
+            <div class="field-row">
               <label style="font-size:12px;color:var(--ink-soft);">Примечание для учеников (необязательно)</label>
               <textarea id="fTrainerNote" rows="2" placeholder="Например: округляйте коэффициенты..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
             </div>
@@ -4147,6 +5211,7 @@
           `;
           renderReactionRows();
           fieldsBox.querySelector('#addRxnRowBtn').onclick = () => {
+            syncReactionRowsFromDOM();
             reactionRows.push({});
             renderReactionRows();
           };
@@ -4185,6 +5250,19 @@
           fieldsBox.innerHTML = `
             <div class="field-row"><input type="text" id="fHomeworkTitle" placeholder="Название домашки" style="flex:1;min-width:240px;"></div>
             <div class="field-row">
+              <select id="fHomeworkMode">
+                <option value="step">Пошагово</option>
+                <option value="list">Список</option>
+                <option value="cards">Карты</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="fHomeworkAllowModeChoice" style="width:auto;">
+                Разрешить ученику самому выбирать режим (пошагово / список / карты)
+              </label>
+            </div>
+            <div class="field-row">
               <label style="font-size:12px;color:var(--ink-soft);">Примечание для учеников (необязательно)</label>
               <textarea id="fHomeworkNote" rows="2" placeholder="Например: сдать до пятницы..." style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
             </div>
@@ -4201,6 +5279,7 @@
           `;
           renderHomeworkRows();
           fieldsBox.querySelector('#addHomeworkRowBtn').onclick = () => {
+            syncHomeworkRowsFromDOM();
             homeworkRows.push({});
             renderHomeworkRows();
           };
@@ -4211,23 +5290,97 @@
         }
       }
 
+      function syncReactionRowsFromDOM() {
+        const cont = fieldsBox.querySelector('#rxnRowsContainer');
+        if (!cont) return;
+        const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
+        domRows.forEach((rowEl, i) => {
+          if (!reactionRows[i]) return;
+          reactionRows[i].lhs = rowEl.querySelector('[data-field="lhs"]').value;
+          reactionRows[i].answer = rowEl.querySelector('[data-field="answer"]').value;
+          reactionRows[i].explain = rowEl.querySelector('[data-field="explain"]').value;
+          reactionRows[i].full = rowEl.querySelector('[data-field="full"]').value;
+          reactionRows[i].options = rowEl.querySelector('[data-field="options"]')?.value || '';
+        });
+      }
+
+      function refreshRowImagePreview(cont, i, removeClass) {
+        const rowEl = cont.querySelector(`.rxn-row-builder[data-row="${i}"]`);
+        if (!rowEl) return;
+        const imgRow = rowEl.querySelector('.img-row');
+        if (!imgRow) return;
+        let previewBox = imgRow.querySelector('.task-image-preview-list');
+        if (!previewBox) {
+          previewBox = document.createElement('div');
+          previewBox.className = 'task-image-preview-list';
+          imgRow.querySelector('div').insertBefore(previewBox, imgRow.querySelector('div').firstChild);
+        }
+        previewBox.innerHTML = buildImagePreviewHtml(reactionRows[i].images, i, removeClass);
+        previewBox.querySelectorAll('.' + removeClass).forEach(btn => {
+          btn.onclick = () => {
+            syncReactionRowsFromDOM();
+            const ri = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            reactionRows[ri].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, ri, removeClass);
+          };
+        });
+      }
+
       function renderReactionRows() {
         const cont = fieldsBox.querySelector('#rxnRowsContainer');
-        cont.innerHTML = reactionRows.map((_, i) => `
+        cont.innerHTML = reactionRows.map((row, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Реакция ${i+1}</span>${reactionRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Задание" data-field="lhs" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ответ (варианты через /)" data-field="answer" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">4</div><input type="text" placeholder="Полное уравнение" data-field="full" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">5</div><input type="text" placeholder="Варианты (через запятую)" data-field="options" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Задание" data-field="lhs" data-row="${i}" value="${escapeAttr(row.lhs||'')}"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ответ (варианты через /)" data-field="answer" data-row="${i}" value="${escapeAttr(row.answer||'')}"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}" value="${escapeAttr(row.explain||'')}"></div>
+            <div class="builder-line"><div class="ln-label">4</div><input type="text" placeholder="Полное уравнение" data-field="full" data-row="${i}" value="${escapeAttr(row.full||'')}"></div>
+            <div class="builder-line"><div class="ln-label">5</div><input type="text" placeholder="Варианты (через запятую)" data-field="options" data-row="${i}" value="${escapeAttr(row.options||'')}"></div>
+            <div class="builder-line img-row" data-row="${i}">
+              <div class="ln-label">6</div>
+              <div style="flex:1;">
+                <div class="task-image-preview-list">${buildImagePreviewHtml(row.images, i, 'rxn-image-remove')}</div>
+                <input type="file" accept="image/*" multiple class="rxn-image-input" data-row="${i}">
+                <small class="help" style="margin:4px 0 0;">Можно выбрать сразу несколько картинок или добавлять по одной.</small>
+              </div>
+            </div>
           </div>
         `).join('');
         cont.querySelectorAll('[data-remove]').forEach(btn => {
           btn.onclick = () => {
+            syncReactionRowsFromDOM();
             const i = parseInt(btn.dataset.remove);
             reactionRows.splice(i, 1);
             renderReactionRows();
+          };
+        });
+        cont.querySelectorAll('.rxn-image-input').forEach(inp => {
+          inp.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            const i = parseInt(inp.dataset.row);
+            syncReactionRowsFromDOM();
+            if (!reactionRows[i].images) reactionRows[i].images = [];
+            for (const file of files) {
+              try {
+                const dataUrl = await compressTaskImageToDataUrl(file, 900);
+                reactionRows[i].images.push(dataUrl);
+              } catch (err) {
+                alert('Не удалось загрузить "' + file.name + '": ' + err.message);
+              }
+            }
+            refreshRowImagePreview(cont, i, 'rxn-image-remove');
+            inp.value = '';
+          };
+        });
+        cont.querySelectorAll('.rxn-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncReactionRowsFromDOM();
+            const i = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            reactionRows[i].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, i, 'rxn-image-remove');
           };
         });
       }
@@ -4268,21 +5421,93 @@
         });
       }
 
+      function syncHomeworkRowsFromDOM() {
+        const cont = fieldsBox.querySelector('#homeworkRowsContainer');
+        if (!cont) return;
+        const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
+        domRows.forEach((rowEl, i) => {
+          if (!homeworkRows[i]) return;
+          homeworkRows[i].question = rowEl.querySelector('[data-field="question"]').value;
+          homeworkRows[i].answer = rowEl.querySelector('[data-field="answer"]').value;
+          homeworkRows[i].explain = rowEl.querySelector('[data-field="explain"]').value;
+        });
+      }
+
+      function refreshHwRowImagePreview(cont, i, removeClass) {
+        const rowEl = cont.querySelector(`.rxn-row-builder[data-row="${i}"]`);
+        if (!rowEl) return;
+        const imgRow = rowEl.querySelector('.img-row');
+        if (!imgRow) return;
+        let previewBox = imgRow.querySelector('.task-image-preview-list');
+        if (!previewBox) {
+          previewBox = document.createElement('div');
+          previewBox.className = 'task-image-preview-list';
+          imgRow.querySelector('div').insertBefore(previewBox, imgRow.querySelector('div').firstChild);
+        }
+        previewBox.innerHTML = buildImagePreviewHtml(homeworkRows[i].images, i, removeClass);
+        previewBox.querySelectorAll('.' + removeClass).forEach(btn => {
+          btn.onclick = () => {
+            syncHomeworkRowsFromDOM();
+            const ri = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            homeworkRows[ri].images.splice(imgIdx, 1);
+            refreshHwRowImagePreview(cont, ri, removeClass);
+          };
+        });
+      }
+
       function renderHomeworkRows() {
         const cont = fieldsBox.querySelector('#homeworkRowsContainer');
-        cont.innerHTML = homeworkRows.map((_, i) => `
+        cont.innerHTML = homeworkRows.map((row, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Задание ${i+1}</span>${homeworkRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Вопрос" data-field="question" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Правильный ответ" data-field="answer" data-row="${i}"></div>
-            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}"></div>
+            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Вопрос" data-field="question" data-row="${i}" value="${escapeAttr(row.question||'')}"></div>
+            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Правильный ответ" data-field="answer" data-row="${i}" value="${escapeAttr(row.answer||'')}"></div>
+            <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}" value="${escapeAttr(row.explain||'')}"></div>
+            <div class="builder-line img-row" data-row="${i}">
+              <div class="ln-label">4</div>
+              <div style="flex:1;">
+                <div class="task-image-preview-list">${buildImagePreviewHtml(row.images, i, 'hw-image-remove')}</div>
+                <input type="file" accept="image/*" multiple class="hw-image-input" data-row="${i}">
+                <small class="help" style="margin:4px 0 0;">Можно выбрать сразу несколько картинок.</small>
+              </div>
+            </div>
           </div>
         `).join('');
         cont.querySelectorAll('[data-remove]').forEach(btn => {
           btn.onclick = () => {
+            syncHomeworkRowsFromDOM();
             const i = parseInt(btn.dataset.remove);
             homeworkRows.splice(i, 1);
             renderHomeworkRows();
+          };
+        });
+        cont.querySelectorAll('.hw-image-input').forEach(inp => {
+          inp.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            const i = parseInt(inp.dataset.row);
+            syncHomeworkRowsFromDOM();
+            if (!homeworkRows[i].images) homeworkRows[i].images = [];
+            for (const file of files) {
+              try {
+                const dataUrl = await compressTaskImageToDataUrl(file, 900);
+                homeworkRows[i].images.push(dataUrl);
+              } catch (err) {
+                alert('Не удалось загрузить "' + file.name + '": ' + err.message);
+              }
+            }
+            refreshHwRowImagePreview(cont, i, 'hw-image-remove');
+            inp.value = '';
+          };
+        });
+        cont.querySelectorAll('.hw-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncHomeworkRowsFromDOM();
+            const i = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            homeworkRows[i].images.splice(imgIdx, 1);
+            refreshHwRowImagePreview(cont, i, 'hw-image-remove');
           };
         });
       }
@@ -4310,6 +5535,8 @@
           const title = document.getElementById('fTrainerTitle').value.trim();
           const mode = document.getElementById('fTrainerMode').value;
           const taskType = document.getElementById('fTaskType').value;
+          const allowModeChoice = document.getElementById('fAllowModeChoice').checked;
+          const customNote = document.getElementById('fTrainerNote').value.trim();
           const topicId = topicSel.value;
           const assignSelect = document.getElementById('fAssignTo');
           const assignedTo = Array.from(assignSelect.selectedOptions).map(opt => opt.value).filter(v => v !== '');
@@ -4319,12 +5546,14 @@
           const container2 = fieldsBox.querySelector('#rxnRowsContainer');
           const rows = [...container2.querySelectorAll('.rxn-row-builder')];
           const reactions = [];
-          for (const row of rows) {
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
             const lhs = row.querySelector('[data-field="lhs"]').value.trim();
             const answer = row.querySelector('[data-field="answer"]').value.trim();
             const explain = row.querySelector('[data-field="explain"]').value.trim();
             const full = row.querySelector('[data-field="full"]').value.trim();
             const optionsStr = row.querySelector('[data-field="options"]')?.value.trim() || '';
+            const images = (reactionRows[i] && reactionRows[i].images) || [];
             if (!lhs || !answer) continue;
 
             const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
@@ -4338,7 +5567,8 @@
               correctSetsDisplay,
               explanation: explain || '',
               fullEquation: full || (isInvalid ? 'Реакция не идёт' : ''),
-              options: options || []
+              options: options || [],
+              images
             });
           }
           if (reactions.length === 0) { msg.style.color = 'var(--bad)'; msg.textContent = 'Добавьте хотя бы одну реакцию.'; return; }
@@ -4347,7 +5577,8 @@
           const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
           TRAINERS.push({
             id, topicId, title, order: siblingsMax + 1,
-            mode, taskType,
+            mode, taskType, allowModeChoice,
+            customNote,
             reactions,
             assignedTo: assignedTo && assignedTo.length > 0 ? assignedTo : null,
             isDraft: false, isLocked: false, scheduledRelease: null
@@ -4398,6 +5629,9 @@
           render();
         } else if (type === 'homework') {
           const title = document.getElementById('fHomeworkTitle').value.trim();
+          const mode = document.getElementById('fHomeworkMode').value;
+          const allowModeChoice = document.getElementById('fHomeworkAllowModeChoice').checked;
+          const customNote = document.getElementById('fHomeworkNote').value.trim();
           const topicId = topicSel.value;
           const assignSelect = document.getElementById('fAssignToHomework');
           const assignedTo = Array.from(assignSelect.selectedOptions).map(opt => opt.value).filter(v => v !== '');
@@ -4407,12 +5641,14 @@
           const container2 = fieldsBox.querySelector('#homeworkRowsContainer');
           const rows = [...container2.querySelectorAll('.rxn-row-builder')];
           const tasks = [];
-          for (const row of rows) {
+          for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
             const question = row.querySelector('[data-field="question"]').value.trim();
             const answer = row.querySelector('[data-field="answer"]').value.trim();
             const explain = row.querySelector('[data-field="explain"]').value.trim();
+            const images = (homeworkRows[i] && homeworkRows[i].images) || [];
             if (!question || !answer) continue;
-            tasks.push({ question, answer, explanation: explain || '' });
+            tasks.push({ question, answer, explanation: explain || '', images });
           }
           if (tasks.length === 0) { msg.style.color = 'var(--bad)'; msg.textContent = 'Добавьте хотя бы одно задание.'; return; }
 
@@ -4420,6 +5656,8 @@
           const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
           HOMEWORKS.push({
             id, topicId, title, order: siblingsMax + 1,
+            mode, allowModeChoice,
+            customNote,
             tasks,
             assignedTo: assignedTo && assignedTo.length > 0 ? assignedTo : null,
             isDraft: false, isLocked: false, scheduledRelease: null
@@ -4458,12 +5696,16 @@
             <option value="radio">Один вариант</option>
             <option value="checkbox">Несколько вариантов</option>
           </select>
+          <label style="font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="aiAllowModeChoice">
+            Свободный выбор режима
+          </label>
         </div>
         <div class="field-row">
           <input type="text" id="aiTitle" placeholder="Название материала" style="flex:1;">
         </div>
         <div class="field-row">
-          <textarea id="aiInput" placeholder="Вставьте ваши материалы. Например:&#10;N2O5 + H2O → HNO3 / HNO3 | Кислотный оксид реагирует с водой | N2O5 + H2O = 2HNO3&#10;CaO + CO2 → CaCO3 / CaCO3 | Основный оксид реагирует с кислотным оксидом | CaO + CO2 = CaCO3"></textarea>
+          <textarea id="aiInput" placeholder="Вставьте ваши материалы..."></textarea>
         </div>
         <div class="field-row" id="aiSyntaxHint">
           <span style="font-size:12px;color:var(--ink-soft);">Разделитель: каждая строка — одно задание. Используйте <b>|</b> для разделения полей: задание | ответ | пояснение | полное уравнение.</span>
@@ -4486,6 +5728,7 @@
       const syntaxHint = box.querySelector('#aiSyntaxHint');
       const assignSel = box.querySelector('#aiAssignTo');
       const inputArea = box.querySelector('#aiInput');
+      const allowModeChoiceChk = box.querySelector('#aiAllowModeChoice');
 
       function refreshTopicOptions() {
         const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
@@ -4525,6 +5768,7 @@
         const msgDiv = box.querySelector('#aiMsg');
         const mode = modeSel.value;
         const taskType = taskTypeSel.value;
+        const allowModeChoice = allowModeChoiceChk.checked;
         const assignedTo = Array.from(assignSel.selectedOptions).map(o => o.value).filter(v => v);
 
         msgDiv.textContent = '';
@@ -4566,7 +5810,7 @@
           const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
           TRAINERS.push({
             id, topicId, title, order: siblingsMax + 1,
-            mode, taskType,
+            mode, taskType, allowModeChoice,
             reactions,
             assignedTo: assignedTo.length > 0 ? assignedTo : null,
             isDraft: false, isLocked: false, scheduledRelease: null
@@ -4632,6 +5876,7 @@
           const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
           HOMEWORKS.push({
             id, topicId, title, order: siblingsMax + 1,
+            mode: 'list', allowModeChoice,
             tasks,
             assignedTo: assignedTo.length > 0 ? assignedTo : null,
             isDraft: false, isLocked: false, scheduledRelease: null
@@ -4671,24 +5916,18 @@
           </select>
         </div>
         <div class="field">
+          <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="editTrainerAllowModeChoice" ${trainer.allowModeChoice ? 'checked' : ''}>
+            Разрешить ученику самому выбирать режим
+          </label>
+        </div>
+        <div class="field">
           <label>Тип заданий</label>
           <select id="editTaskType">
             <option value="text" ${trainer.taskType === 'text' ? 'selected' : ''}>Ввод текста</option>
             <option value="radio" ${trainer.taskType === 'radio' ? 'selected' : ''}>Один вариант</option>
             <option value="checkbox" ${trainer.taskType === 'checkbox' ? 'selected' : ''}>Несколько вариантов</option>
           </select>
-        </div>
-        <div class="field">
-          <label>Статус</label>
-          <select id="editTrainerStatus">
-            <option value="published" ${!trainer.isDraft && !trainer.isLocked ? 'selected' : ''}>Опубликован</option>
-            <option value="draft" ${trainer.isDraft ? 'selected' : ''}>Черновик</option>
-            <option value="locked" ${trainer.isLocked ? 'selected' : ''}>Заблокирован</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Отложенный выпуск (самарское время)</label>
-          <input type="datetime-local" id="editTrainerRelease" value="${trainer.scheduledRelease ? getSamaraDateString(trainer.scheduledRelease) : ''}">
         </div>
         <div class="field">
           <label>Примечание для учеников (необязательно)</label>
@@ -4729,7 +5968,8 @@
           answer: answerStr,
           explain: r.explanation || '',
           full: r.fullEquation || '',
-          options: r.options ? r.options.join(',') : ''
+          options: r.options ? r.options.join(',') : '',
+          images: getTaskImages(r)
         };
       });
 
@@ -4739,12 +5979,33 @@
         const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
         domRows.forEach((rowEl, i) => {
           if (!rows[i]) return;
-          rows[i] = {
-            lhs: rowEl.querySelector('[data-field="lhs"]').value,
-            answer: rowEl.querySelector('[data-field="answer"]').value,
-            explain: rowEl.querySelector('[data-field="explain"]').value,
-            full: rowEl.querySelector('[data-field="full"]').value,
-            options: rowEl.querySelector('[data-field="options"]')?.value || ''
+          rows[i].lhs = rowEl.querySelector('[data-field="lhs"]').value;
+          rows[i].answer = rowEl.querySelector('[data-field="answer"]').value;
+          rows[i].explain = rowEl.querySelector('[data-field="explain"]').value;
+          rows[i].full = rowEl.querySelector('[data-field="full"]').value;
+          rows[i].options = rowEl.querySelector('[data-field="options"]')?.value || '';
+        });
+      }
+
+      function refreshRowImagePreview(cont, i) {
+        const rowEl = cont.querySelector(`.rxn-row-builder[data-row="${i}"]`);
+        if (!rowEl) return;
+        const imgRow = rowEl.querySelector('.img-row');
+        if (!imgRow) return;
+        let previewBox = imgRow.querySelector('.task-image-preview-list');
+        if (!previewBox) {
+          previewBox = document.createElement('div');
+          previewBox.className = 'task-image-preview-list';
+          imgRow.querySelector('div').insertBefore(previewBox, imgRow.querySelector('div').firstChild);
+        }
+        previewBox.innerHTML = buildImagePreviewHtml(rows[i].images, i, 'rxn-image-remove');
+        previewBox.querySelectorAll('.rxn-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncRowsFromDOM();
+            const ri = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            rows[ri].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, ri);
           };
         });
       }
@@ -4759,6 +6020,13 @@
             <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explain)}" placeholder="Пояснение"></div>
             <div class="builder-line"><div class="ln-label">4</div><input type="text" data-field="full" data-row="${i}" value="${escapeAttr(r.full)}" placeholder="Полное уравнение"></div>
             <div class="builder-line"><div class="ln-label">5</div><input type="text" data-field="options" data-row="${i}" value="${escapeAttr(r.options)}" placeholder="Варианты (через запятую)"></div>
+            <div class="builder-line img-row" data-row="${i}">
+              <div class="ln-label">6</div>
+              <div style="flex:1;">
+                <div class="task-image-preview-list">${buildImagePreviewHtml(r.images, i, 'rxn-image-remove')}</div>
+                <input type="file" accept="image/*" multiple class="rxn-image-input" data-row="${i}">
+              </div>
+            </div>
           </div>
         `).join('');
         cont.querySelectorAll('[data-remove]').forEach(btn => {
@@ -4769,12 +6037,40 @@
             renderRows();
           };
         });
+        cont.querySelectorAll('.rxn-image-input').forEach(inp => {
+          inp.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            const i = parseInt(inp.dataset.row);
+            syncRowsFromDOM();
+            if (!rows[i].images) rows[i].images = [];
+            for (const file of files) {
+              try {
+                const dataUrl = await compressTaskImageToDataUrl(file, 900);
+                rows[i].images.push(dataUrl);
+              } catch (err) {
+                alert('Не удалось загрузить "' + file.name + '": ' + err.message);
+              }
+            }
+            refreshRowImagePreview(cont, i);
+            inp.value = '';
+          };
+        });
+        cont.querySelectorAll('.rxn-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncRowsFromDOM();
+            const i = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            rows[i].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, i);
+          };
+        });
       }
       renderRows();
 
       modal.querySelector('#editAddRxnBtn').onclick = () => {
         syncRowsFromDOM();
-        rows.push({ lhs: '', answer: '', explain: '', full: '', options: '' });
+        rows.push({ lhs: '', answer: '', explain: '', full: '', options: '', images: [] });
         renderRows();
       };
       modal.querySelector('#cancelEditTrainer').onclick = () => bg.remove();
@@ -4782,9 +6078,8 @@
       modal.querySelector('#saveEditTrainer').onclick = async () => {
         const title = document.getElementById('editTrainerTitle').value.trim();
         const mode = document.getElementById('editTrainerMode').value;
+        const allowModeChoice = document.getElementById('editTrainerAllowModeChoice').checked;
         const taskType = document.getElementById('editTaskType').value;
-        const status = document.getElementById('editTrainerStatus').value;
-        const releaseDate = document.getElementById('editTrainerRelease').value;
         const customNote = document.getElementById('editTrainerNote').value.trim();
         const assignSelect = document.getElementById('editTrainerAssign');
         const assignedTo = Array.from(assignSelect.selectedOptions).map(opt => opt.value).filter(v => v !== '');
@@ -4794,12 +6089,14 @@
         const cont = modal.querySelector('#editRxnRows');
         const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
         const newReactions = [];
-        for (const row of domRows) {
+        for (let i = 0; i < domRows.length; i++) {
+          const row = domRows[i];
           const lhs = row.querySelector('[data-field="lhs"]').value.trim();
           const answer = row.querySelector('[data-field="answer"]').value.trim();
           const explain = row.querySelector('[data-field="explain"]').value.trim();
           const full = row.querySelector('[data-field="full"]').value.trim();
           const optionsStr = row.querySelector('[data-field="options"]')?.value.trim() || '';
+          const images = (rows[i] && rows[i].images) || [];
           if (!lhs || !answer) continue;
 
           const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
@@ -4813,17 +6110,16 @@
             correctSetsDisplay,
             explanation: explain || '',
             fullEquation: full || (isInvalid ? 'Реакция не идёт' : ''),
-            options: options || []
+            options: options || [],
+            images
           });
         }
         if (newReactions.length === 0) { alert('Добавьте хотя бы одну реакцию'); return; }
 
         trainer.title = title;
         trainer.mode = mode;
+        trainer.allowModeChoice = allowModeChoice;
         trainer.taskType = taskType;
-        trainer.isDraft = status === 'draft';
-        trainer.isLocked = status === 'locked';
-        trainer.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
         trainer.customNote = customNote || '';
         trainer.assignedTo = assignedTo && assignedTo.length > 0 ? assignedTo : null;
         trainer.reactions = newReactions;
@@ -4848,18 +6144,6 @@
         <div class="field"><label>Название</label><input type="text" id="editLessonTitle" value="${escapeAttr(lesson.title)}"></div>
         <div class="field"><label>Описание</label><textarea id="editLessonDesc" style="width:100%;min-height:60px;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);">${escapeAttr(lesson.description || '')}</textarea></div>
         <div class="field"><label>Основное видео</label><input type="text" id="editLessonVideo" value="${escapeAttr(lesson.videoUrl || '')}"></div>
-        <div class="field">
-          <label>Статус</label>
-          <select id="editLessonStatus">
-            <option value="published" ${!lesson.isDraft && !lesson.isLocked ? 'selected' : ''}>Опубликован</option>
-            <option value="draft" ${lesson.isDraft ? 'selected' : ''}>Черновик</option>
-            <option value="locked" ${lesson.isLocked ? 'selected' : ''}>Заблокирован</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Отложенный выпуск (самарское время)</label>
-          <input type="datetime-local" id="editLessonRelease" value="${lesson.scheduledRelease ? getSamaraDateString(lesson.scheduledRelease) : ''}">
-        </div>
         <div class="field">
           <label>Доступно для учеников</label>
           <select id="editLessonAssign" multiple style="height:80px;">
@@ -4963,8 +6247,6 @@
         const title = document.getElementById('editLessonTitle').value.trim();
         const description = document.getElementById('editLessonDesc').value.trim();
         const videoUrl = document.getElementById('editLessonVideo').value.trim();
-        const status = document.getElementById('editLessonStatus').value;
-        const releaseDate = document.getElementById('editLessonRelease').value;
         const assignSelect = document.getElementById('editLessonAssign');
         const assignedTo = Array.from(assignSelect.selectedOptions).map(opt => opt.value).filter(v => v !== '');
 
@@ -4993,9 +6275,6 @@
         lesson.title = title;
         lesson.description = description;
         lesson.videoUrl = videoUrl;
-        lesson.isDraft = status === 'draft';
-        lesson.isLocked = status === 'locked';
-        lesson.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
         lesson.assignedTo = assignedTo && assignedTo.length > 0 ? assignedTo : null;
         lesson.links = links;
         lesson.files = files;
@@ -5019,16 +6298,18 @@
         <h3>Редактировать домашку</h3>
         <div class="field"><label>Название</label><input type="text" id="editHomeworkTitle" value="${escapeAttr(homework.title)}"></div>
         <div class="field">
-          <label>Статус</label>
-          <select id="editHomeworkStatus">
-            <option value="published" ${!homework.isDraft && !homework.isLocked ? 'selected' : ''}>Опубликован</option>
-            <option value="draft" ${homework.isDraft ? 'selected' : ''}>Черновик</option>
-            <option value="locked" ${homework.isLocked ? 'selected' : ''}>Заблокирован</option>
+          <label>Режим</label>
+          <select id="editHomeworkMode">
+            <option value="step" ${homework.mode === 'step' ? 'selected' : ''}>Пошагово</option>
+            <option value="list" ${homework.mode === 'list' || !homework.mode ? 'selected' : ''}>Список</option>
+            <option value="cards" ${homework.mode === 'cards' ? 'selected' : ''}>Карты</option>
           </select>
         </div>
         <div class="field">
-          <label>Отложенный выпуск (самарское время)</label>
-          <input type="datetime-local" id="editHomeworkRelease" value="${homework.scheduledRelease ? getSamaraDateString(homework.scheduledRelease) : ''}">
+          <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="editHomeworkAllowModeChoice" ${homework.allowModeChoice ? 'checked' : ''}>
+            Разрешить ученику самому выбирать режим
+          </label>
         </div>
         <div class="field">
           <label>Примечание для учеников (необязательно)</label>
@@ -5052,17 +6333,38 @@
       document.body.appendChild(bg);
       bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
 
-      let rows = homework.tasks ? [...homework.tasks] : [{ question: '', answer: '', explanation: '' }];
+      let rows = homework.tasks ? homework.tasks.map(t => ({ ...t, images: getTaskImages(t) })) : [{ question: '', answer: '', explanation: '', images: [] }];
 
       function syncRowsFromDOM() {
         const cont = modal.querySelector('#editHomeworkRows');
         if (!cont) return;
         [...cont.querySelectorAll('.rxn-row-builder')].forEach((rowEl, i) => {
           if (!rows[i]) return;
-          rows[i] = {
-            question: rowEl.querySelector('[data-field="question"]').value,
-            answer: rowEl.querySelector('[data-field="answer"]').value,
-            explanation: rowEl.querySelector('[data-field="explain"]').value
+          rows[i].question = rowEl.querySelector('[data-field="question"]').value;
+          rows[i].answer = rowEl.querySelector('[data-field="answer"]').value;
+          rows[i].explanation = rowEl.querySelector('[data-field="explain"]').value;
+        });
+      }
+
+      function refreshRowImagePreview(cont, i) {
+        const rowEl = cont.querySelector(`.rxn-row-builder[data-row="${i}"]`);
+        if (!rowEl) return;
+        const imgRow = rowEl.querySelector('.img-row');
+        if (!imgRow) return;
+        let previewBox = imgRow.querySelector('.task-image-preview-list');
+        if (!previewBox) {
+          previewBox = document.createElement('div');
+          previewBox.className = 'task-image-preview-list';
+          imgRow.querySelector('div').insertBefore(previewBox, imgRow.querySelector('div').firstChild);
+        }
+        previewBox.innerHTML = buildImagePreviewHtml(rows[i].images, i, 'hw-image-remove');
+        previewBox.querySelectorAll('.hw-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncRowsFromDOM();
+            const ri = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            rows[ri].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, ri);
           };
         });
       }
@@ -5075,6 +6377,13 @@
             <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="question" data-row="${i}" value="${escapeAttr(r.question||'')}" placeholder="Вопрос"></div>
             <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="answer" data-row="${i}" value="${escapeAttr(r.answer||'')}" placeholder="Правильный ответ"></div>
             <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explanation||'')}" placeholder="Пояснение"></div>
+            <div class="builder-line img-row" data-row="${i}">
+              <div class="ln-label">4</div>
+              <div style="flex:1;">
+                <div class="task-image-preview-list">${buildImagePreviewHtml(r.images, i, 'hw-image-remove')}</div>
+                <input type="file" accept="image/*" multiple class="hw-image-input" data-row="${i}">
+              </div>
+            </div>
           </div>
         `).join('');
         cont.querySelectorAll('[data-remove]').forEach(btn => {
@@ -5085,20 +6394,48 @@
             renderRows();
           };
         });
+        cont.querySelectorAll('.hw-image-input').forEach(inp => {
+          inp.onchange = async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            const i = parseInt(inp.dataset.row);
+            syncRowsFromDOM();
+            if (!rows[i].images) rows[i].images = [];
+            for (const file of files) {
+              try {
+                const dataUrl = await compressTaskImageToDataUrl(file, 900);
+                rows[i].images.push(dataUrl);
+              } catch (err) {
+                alert('Не удалось загрузить "' + file.name + '": ' + err.message);
+              }
+            }
+            refreshRowImagePreview(cont, i);
+            inp.value = '';
+          };
+        });
+        cont.querySelectorAll('.hw-image-remove').forEach(btn => {
+          btn.onclick = () => {
+            syncRowsFromDOM();
+            const i = parseInt(btn.dataset.row);
+            const imgIdx = parseInt(btn.dataset.imgidx);
+            rows[i].images.splice(imgIdx, 1);
+            refreshRowImagePreview(cont, i);
+          };
+        });
       }
       renderRows();
 
       modal.querySelector('#editAddHomeworkBtn').onclick = () => {
         syncRowsFromDOM();
-        rows.push({ question: '', answer: '', explanation: '' });
+        rows.push({ question: '', answer: '', explanation: '', images: [] });
         renderRows();
       };
       modal.querySelector('#cancelEditHomework').onclick = () => bg.remove();
 
       modal.querySelector('#saveEditHomework').onclick = async () => {
         const title = document.getElementById('editHomeworkTitle').value.trim();
-        const status = document.getElementById('editHomeworkStatus').value;
-        const releaseDate = document.getElementById('editHomeworkRelease').value;
+        const mode = document.getElementById('editHomeworkMode').value;
+        const allowModeChoice = document.getElementById('editHomeworkAllowModeChoice').checked;
         const customNote = document.getElementById('editHomeworkNote').value.trim();
         const assignSelect = document.getElementById('editHomeworkAssign');
         const assignedTo = Array.from(assignSelect.selectedOptions).map(opt => opt.value).filter(v => v !== '');
@@ -5108,19 +6445,20 @@
         const cont = modal.querySelector('#editHomeworkRows');
         const domRows = [...cont.querySelectorAll('.rxn-row-builder')];
         const tasks = [];
-        for (const row of domRows) {
+        for (let i = 0; i < domRows.length; i++) {
+          const row = domRows[i];
           const question = row.querySelector('[data-field="question"]').value.trim();
           const answer = row.querySelector('[data-field="answer"]').value.trim();
           const explain = row.querySelector('[data-field="explain"]').value.trim();
+          const images = (rows[i] && rows[i].images) || [];
           if (!question || !answer) continue;
-          tasks.push({ question, answer, explanation: explain || '' });
+          tasks.push({ question, answer, explanation: explain || '', images });
         }
         if (tasks.length === 0) { alert('Добавьте хотя бы одно задание'); return; }
 
         homework.title = title;
-        homework.isDraft = status === 'draft';
-        homework.isLocked = status === 'locked';
-        homework.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
+        homework.mode = mode;
+        homework.allowModeChoice = allowModeChoice;
         homework.customNote = customNote || '';
         homework.assignedTo = assignedTo && assignedTo.length > 0 ? assignedTo : null;
         homework.tasks = tasks;
@@ -5182,7 +6520,6 @@
     console.log(`Тренажёров: ${TRAINERS.length}`);
     console.log(`Уроков: ${LESSONS.length}`);
     console.log(`Домашек: ${HOMEWORKS.length}`);
-
   </script>
 </body>
-  </html>
+</html>
