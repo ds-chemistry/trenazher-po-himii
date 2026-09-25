@@ -1089,22 +1089,23 @@
     }
 
     function renderEquation(str) {
-      if (!str) return '';
-      let out = '';
-      for (let i = 0; i < str.length; i++) {
-        const ch = str[i];
-        if (ch === '\n') { out += '<br>'; continue; }
-        if (/\d/.test(ch)) {
-          const prev = i > 0 ? str[i - 1] : '';
-          if (/[A-Za-zА-Яа-я\)\]]/.test(prev)) {
-            out += '<sub>' + ch + '</sub>';
-            continue;
-          }
-        }
-        out += escapeHtmlChar(ch);
-      }
-      return out;
-    }
+  if (!str) return '';
+  // Оставляем только безопасные теги <sub>...</sub> и <sup>...</sup>.
+  // Автоматического уменьшения цифр больше нет —
+  // если нужен индекс, пишите его вручную тегом <sub> или <sup>.
+  let safe = String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // Возвращаем обратно только <sub> и </sub>, <sup> и </sup>
+  safe = safe
+    .replace(/&lt;sub&gt;/g, '<sub>')
+    .replace(/&lt;\/sub&gt;/g, '</sub>')
+    .replace(/&lt;sup&gt;/g, '<sup>')
+    .replace(/&lt;\/sup&gt;/g, '</sup>');
+  // Переносы строк
+  return safe.replace(/\n/g, '<br>');
+}
 
     function escapeHtmlChar(ch) {
       if (ch === '<') return '&lt;';
@@ -5668,4 +5669,4 @@
     console.log('Платформа успешно загружена!');
   </script>
 </body>
-</html> 
+</html>
