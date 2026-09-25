@@ -255,6 +255,8 @@
     [data-theme="dark"] .card .kind.lesson { color: #e8843f; }
     .card .kind.homework { color: #b3123f; }
     [data-theme="dark"] .card .kind.homework { color: #e2496f; }
+    .card .kind.theory { color: #6b21a8; }
+    [data-theme="dark"] .card .kind.theory { color: #c084fc; }
     .card h3 { font-size: 16px; margin: 0 0 8px; letter-spacing: -.01em; line-height: 1.3; }
     .card .meta { font-size: 12.5px; color: var(--ink-soft); }
     .card .progress-bar { height: 5px; border-radius: 3px; background: var(--line); margin-top: 14px; overflow: hidden; }
@@ -571,6 +573,23 @@
     .task-image-preview-item img { max-height:60px; border-radius:6px; border:1px solid var(--line); display:block; }
     .task-image-preview-item .remove-img-btn { position:absolute; top:-8px; right:-8px; width:22px; height:22px; }
 
+    /* Теория — отображение прикреплённого файла */
+    .theory-file-preview {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px 16px; margin-top: 10px;
+    }
+    .theory-file-preview .icon { font-size: 24px; }
+    .theory-file-preview .name { font-weight: 600; font-size: 14px; }
+    .theory-file-preview .size { font-size: 12px; color: var(--ink-soft); }
+    .theory-file-preview img { max-height: 120px; border-radius: 8px; }
+    .theory-text {
+      background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+      padding: 16px 18px; margin-top: 10px;
+      font-size: 14.5px; line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
     @media (max-width: 600px) {
       .container { padding: 20px 14px 60px; }
       .rxn-eq { font-size: 17px; }
@@ -675,6 +694,7 @@
     let TRAINERS = [];
     let LESSONS = [];
     let HOMEWORKS = [];
+    let THEORIES = [];
     let VIEW = { name: 'home' };
     let isLoading = true;
     let currentPlatform = 'default';
@@ -800,10 +820,6 @@
       if (isRealStudent) persistFullProgress(studentKey, progressObj);
     }
 
-    // По требованию: правильный ответ в исходном тренажёре/домашке
-    // НЕ удаляет ошибку. Удаление только через отработку.
-    function clearErrorIfAny() {}
-
     function applyErrorMastery(progressObj, studentKey, isRealStudent, errKey, correct) {
       if (!progressObj.__errors) return false;
       const err = progressObj.__errors[errKey];
@@ -830,6 +846,12 @@
     function getErrorList(progress) {
       if (!progress || !progress.__errors) return [];
       return Object.values(progress.__errors).sort((a, b) => (b.lastWrongAt || 0) - (a.lastWrongAt || 0));
+    }
+
+    // Проверка: включены ли ошибки у ученика (по умолчанию — да)
+    function isErrorsEnabledForStudent(studentRecord) {
+      if (!studentRecord) return true;
+      return studentRecord.errorsEnabled !== false; // по умолчанию true
     }
 
     // ============================================================
@@ -911,20 +933,24 @@
       TRAINERS = await loadFromFirebase(getPlatformPath(platId, 'trainers'), []);
       LESSONS = await loadFromFirebase(getPlatformPath(platId, 'lessons'), []);
       HOMEWORKS = await loadFromFirebase(getPlatformPath(platId, 'homeworks'), []);
+      THEORIES = await loadFromFirebase(getPlatformPath(platId, 'theories'), []);
       if (!Array.isArray(TOPICS)) TOPICS = [];
       if (!Array.isArray(TRAINERS)) TRAINERS = [];
       if (!Array.isArray(LESSONS)) LESSONS = [];
       if (!Array.isArray(HOMEWORKS)) HOMEWORKS = [];
+      if (!Array.isArray(THEORIES)) THEORIES = [];
       TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       LESSONS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
       HOMEWORKS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
+      THEORIES.forEach((t, i) => { if (t.order === undefined) t.order = i; });
     }
 
     async function persistTopics() { await saveToFirebase(getPlatformPath(currentPlatform, 'topics'), TOPICS); }
     async function persistTrainers() { await saveToFirebase(getPlatformPath(currentPlatform, 'trainers'), TRAINERS); }
     async function persistLessons() { await saveToFirebase(getPlatformPath(currentPlatform, 'lessons'), LESSONS); }
     async function persistHomeworks() { await saveToFirebase(getPlatformPath(currentPlatform, 'homeworks'), HOMEWORKS); }
+    async function persistTheories() { await saveToFirebase(getPlatformPath(currentPlatform, 'theories'), THEORIES); }
 
     // ============================================================
     // 6. АВТОРИЗАЦИЯ
@@ -1015,6 +1041,7 @@
         const reg = await loadRegistry();
         if (!reg[CURRENT_USER.key]) { handleLogout(); return; }
         CURRENT_USER.name = reg[CURRENT_USER.key].name;
+        CURRENT_USER.errorsEnabled = reg[CURRENT_USER.key].errorsEnabled !== false;
       }
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
@@ -1064,11 +1091,15 @@
       return (s || '').replace(/"/g, '&quot;');
     }
 
+    // renderEquation теперь обрабатывает \n → <br>, чтобы варианты
+    // ответа и задания, записанные в столбик, отображались корректно
+    // во всех режимах (тренажёр, домашка, карты, просмотр результата).
     function renderEquation(str) {
       if (!str) return '';
       let out = '';
       for (let i = 0; i < str.length; i++) {
         const ch = str[i];
+        if (ch === '\n') { out += '<br>'; continue; }
         if (/\d/.test(ch)) {
           const prev = i > 0 ? str[i - 1] : '';
           if (/[A-Za-zА-Яа-я\)\]]/.test(prev)) {
@@ -1088,7 +1119,6 @@
       return ch;
     }
 
-    // Самарское время
     function getSamaraTimestamp(dateStr) {
       if (!dateStr) return null;
       const [datePart, timePart] = dateStr.split('T');
@@ -1139,8 +1169,7 @@
           img.onerror = () => reject(new Error('Не удалось загрузить изображение'));
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
+            canvas.width = size; canvas.height = size;
             const ctx = canvas.getContext('2d');
             const srcSize = Math.min(img.width, img.height);
             const srcX = (img.width - srcSize) / 2;
@@ -1158,7 +1187,7 @@
       return new Promise((resolve, reject) => {
         if (!file) { reject(new Error('Файл не выбран')); return; }
         if (!file.type || !file.type.startsWith('image/')) {
-          reject(new Error('Это не картинка. Выберите файл изображения (JPG, PNG и т.п.).'));
+          reject(new Error('Это не картинка. Выберите файл изображения.'));
           return;
         }
         const reader = new FileReader();
@@ -1170,6 +1199,23 @@
           }
           resolve(reader.result);
         };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Универсальное чтение файла (для теории) — как картинки, так и PDF и т.п.
+    // Ограничение по размеру: 900 КБ, чтобы не переполнять Firebase.
+    function readFileAsDataUrl(file, maxBytes) {
+      return new Promise((resolve, reject) => {
+        if (!file) { reject(new Error('Файл не выбран')); return; }
+        const limit = maxBytes || 900 * 1024;
+        if (file.size > limit) {
+          reject(new Error('Файл слишком большой (' + Math.round(file.size/1024) + ' КБ). Максимум — ' + Math.round(limit/1024) + ' КБ.'));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Не удалось прочитать файл.'));
+        reader.onload = () => resolve(reader.result);
         reader.readAsDataURL(file);
       });
     }
@@ -1238,10 +1284,7 @@
       document.body.appendChild(bg);
       bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
       modal.querySelector('#cancelC').onclick = () => bg.remove();
-      modal.querySelector('#confirmC').onclick = async () => {
-        bg.remove();
-        await onConfirm();
-      };
+      modal.querySelector('#confirmC').onclick = async () => { bg.remove(); await onConfirm(); };
     };
 
     window.showPromptModal = function(title, defaultVal, onSave) {
@@ -1338,8 +1381,7 @@
       modal.querySelector('#newPlatBg').addEventListener('input', updatePreview);
       modal.querySelector('#newPlatLetterColor').addEventListener('input', updatePreview);
       modal.querySelector('#newPlatImageInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         try { pendingImageDataUrl = await compressImageToDataUrl(file, 128); updatePreview(); }
         catch (err) { alert('Не удалось загрузить фото: ' + err.message); }
       });
@@ -1433,8 +1475,7 @@
       modal.querySelector('#editPlatBg').addEventListener('input', updatePreview);
       modal.querySelector('#editPlatLetterColor').addEventListener('input', updatePreview);
       modal.querySelector('#editPlatImageInput').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         try { pendingImageDataUrl = await compressImageToDataUrl(file, 128); updatePreview(); }
         catch (err) { alert('Не удалось загрузить фото: ' + err.message); }
       });
@@ -1474,7 +1515,6 @@
         <h3>Настройки платформы</h3>
         <div class="field"><label>Название платформы</label><input type="text" id="platSettingsName" value="${escapeAttr(plat.name)}"></div>
         <div class="field"><label>Пароль учителя</label><input type="text" id="platSettingsPassword" value="${escapeAttr(plat.password)}"></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-top:-8px;margin-bottom:14px;">Используйте этот пароль для входа как учитель на этой платформе.</div>
         <div class="actions">
           <button class="btn btn-ghost" id="cancelSettings">Отмена</button>
           <button class="btn btn-accent" id="saveSettings">Сохранить</button>
@@ -1489,8 +1529,7 @@
         const password = document.getElementById('platSettingsPassword').value.trim();
         if (!name) { alert('Введите название'); return; }
         if (!password) { alert('Введите пароль'); return; }
-        plat.name = name;
-        plat.password = password;
+        plat.name = name; plat.password = password;
         await savePlatforms();
         bg.remove();
         renderPlatformsBar();
@@ -1601,6 +1640,7 @@
       else if (VIEW.name === 'trainer') renderTrainer(c, VIEW.trainerId);
       else if (VIEW.name === 'homework') renderHomework(c, VIEW.homeworkId);
       else if (VIEW.name === 'lesson') renderLessonModal(VIEW.lessonId);
+      else if (VIEW.name === 'theory') renderTheoryModal(VIEW.theoryId);
       else if (VIEW.name === 'stats') renderStats(c);
       else if (VIEW.name === 'studentDetail') renderStudentDetail(c, VIEW.studentKey);
 
@@ -1626,7 +1666,7 @@
     async function renderHome(container) {
       const wrap = document.createElement('div');
       const title = document.createElement('div');
-      title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами.' : 'Выберите тренажёр или видеоурок по теме'}</p>`;
+      title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами.' : 'Выберите тренажёр, теорию или видеоурок по теме'}</p>`;
       wrap.appendChild(title);
 
       let progress = {};
@@ -1635,8 +1675,9 @@
         window.__cachedProgress = progress;
       }
 
-      // Панель «Мои ошибки» — только для настоящих учеников
-      if (CURRENT_USER && !CURRENT_USER.isTeacher) {
+      // Панель «Мои ошибки» — только если ученику включены ошибки
+      const errorsEnabled = !CURRENT_USER.isTeacher && CURRENT_USER.errorsEnabled !== false;
+      if (errorsEnabled) {
         const errCount = countErrors(progress);
         const panel = document.createElement('div');
         panel.className = 'errors-panel';
@@ -1750,21 +1791,24 @@
       }
 
       for (const topic of sortedTopics) {
+        const topicTheories = (THEORIES || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
         const topicTrainers = (TRAINERS || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
         const topicLessons = (LESSONS || []).filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
         const topicHomeworks = (HOMEWORKS || []).filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
 
+        let filteredTheories = topicTheories;
         let filteredTrainers = topicTrainers;
         let filteredLessons = topicLessons;
         let filteredHomeworks = topicHomeworks;
 
         if (!isManaging()) {
+          filteredTheories = topicTheories.filter(t => isItemAvailable(t));
           filteredTrainers = topicTrainers.filter(t => isItemAvailable(t));
           filteredLessons = topicLessons.filter(l => isItemAvailable(l));
           filteredHomeworks = topicHomeworks.filter(h => isItemAvailable(h));
         }
 
-        if (filteredTrainers.length === 0 && filteredLessons.length === 0 && filteredHomeworks.length === 0 && !isManaging()) continue;
+        if (filteredTheories.length === 0 && filteredTrainers.length === 0 && filteredLessons.length === 0 && filteredHomeworks.length === 0 && !isManaging()) continue;
 
         const block = document.createElement('div');
         block.className = 'topic-block';
@@ -1799,6 +1843,7 @@
         grid.className = 'grid';
 
         let allItems = [];
+        for (const t of filteredTheories) allItems.push({ ...t, _type: 'theory' });
         for (const t of filteredTrainers) allItems.push({ ...t, _type: 'trainer' });
         for (const l of filteredLessons) allItems.push({ ...l, _type: 'lesson' });
         for (const h of filteredHomeworks) allItems.push({ ...h, _type: 'homework' });
@@ -1807,7 +1852,40 @@
         for (const item of allItems) {
           const type = item._type;
 
-          if (type === 'trainer') {
+          if (type === 'theory') {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const isClickable = isItemClickable(item);
+            const badge = getItemBadge(item);
+            card.innerHTML = `
+              <span class="kind theory">Теория</span>
+              <h3>${escapeHtml(item.title)}</h3>
+              <div class="meta">${item.file ? '📎 ' + escapeHtml(item.file.name || 'файл') : (item.description ? 'Текст' : 'Материал')}</div>
+              ${badge}
+              ${isManaging() ? `<div class="card-edit-row">
+                <button class="icon-btn" data-act="up">↑</button>
+                <button class="icon-btn" data-act="down">↓</button>
+                <button class="icon-btn" data-act="move">⇄</button>
+                <button class="icon-btn" data-act="edit">✎</button>
+                <button class="icon-btn" data-act="copy">⧉</button>
+                <button class="icon-btn danger" data-act="del">✕</button>
+              </div>` : ''}
+            `;
+            if (isManaging()) {
+              card.querySelector('[data-act="up"]').onclick = (e) => { e.stopPropagation(); moveItem('theory', item.id, -1); };
+              card.querySelector('[data-act="down"]').onclick = (e) => { e.stopPropagation(); moveItem('theory', item.id, 1); };
+              card.querySelector('[data-act="move"]').onclick = (e) => { e.stopPropagation(); moveItemToTopic('theory', item.id); };
+              card.querySelector('[data-act="edit"]').onclick = (e) => { e.stopPropagation(); openEditTheoryModal(item.id); };
+              card.querySelector('[data-act="copy"]').onclick = (e) => { e.stopPropagation(); copyItem('theory', item.id); };
+              card.querySelector('[data-act="del"]').onclick = (e) => { e.stopPropagation(); deleteItemConfirm('theory', item.id); };
+              card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; renderTheoryModal(item.id); };
+            } else if (isClickable) {
+              card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; renderTheoryModal(item.id); };
+            } else {
+              card.style.cursor = 'default'; card.style.opacity = '0.7';
+            }
+            grid.appendChild(card);
+          } else if (type === 'trainer') {
             const card = document.createElement('div');
             card.className = 'card';
             let pct = 0, isFinished = false;
@@ -1973,7 +2051,7 @@
       wrap.appendChild(backRow);
 
       const title = document.createElement('div');
-      title.innerHTML = `<h1 class="page-title">Мои ошибки</h1><p class="page-sub">Введите правильный ответ в каждом задании и нажмите «Проверить». Отработайте каждое ${ERROR_MASTERY_TARGET} раза правильно — и оно исчезнет. Если не знаете ответ, нажмите «Ответ».</p>`;
+      title.innerHTML = `<h1 class="page-title">Мои ошибки</h1><p class="page-sub">Введите правильный ответ и нажмите «Проверить». Отработайте каждое ${ERROR_MASTERY_TARGET} раза правильно — и оно исчезнет. Если не знаете — нажмите «Ответ».</p>`;
       wrap.appendChild(title);
 
       const errors = getErrorList(progress);
@@ -2024,7 +2102,7 @@
             <span class="error-card__source">${sourceBits.map((b, i) => i > 0 ? `<span class="sep">·</span>${b}` : b).join(' ')}</span>
             <span class="errors-progress-round" title="Отработано ${err.mastery || 0} из ${ERROR_MASTERY_TARGET}">${masteryDots}</span>
           </div>
-          <div class="rxn-eq eqx" style="margin-top:10px;">${escapeHtml(err.question)}</div>
+          <div class="rxn-eq eqx" style="margin-top:10px;">${renderEquation(err.question)}</div>
           ${renderTaskImagesHtml(err, false)}
           ${inputHtml}
           <div class="rxn-actions">
@@ -2102,9 +2180,7 @@
             card.style.borderColor = 'var(--bad)';
             const dotsEl = card.querySelector('.errors-progress-round');
             if (dotsEl) {
-              dotsEl.innerHTML = Array.from({ length: ERROR_MASTERY_TARGET }, () =>
-                `<span class="dot"></span>`
-              ).join('');
+              dotsEl.innerHTML = Array.from({ length: ERROR_MASTERY_TARGET }, () => `<span class="dot"></span>`).join('');
             }
           }
         };
@@ -2113,7 +2189,7 @@
           answerSlot.innerHTML = `
             <div style="margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border-left:3px solid var(--ok);">
               <div style="font-size:13px;color:var(--ink-soft);margin-bottom:4px;">Правильный ответ:</div>
-              <div style="font-size:15px;font-weight:600;color:var(--ok);">${escapeHtml(err.correctAnswer || '—')}</div>
+              <div style="font-size:15px;font-weight:600;color:var(--ok);">${renderEquation(err.correctAnswer || '—')}</div>
               ${err.explanation ? `<div style="font-size:13px;color:var(--ink-soft);margin-top:6px;">${escapeHtml(err.explanation)}</div>` : ''}
             </div>
           `;
@@ -2222,7 +2298,7 @@
               <span>${escapeHtml(err.topicName || '')} · ${err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка'} · ${escapeHtml(err.sourceTitle || '')} · № ${err.taskNum}</span>
               <span class="errors-progress-round">${masteryDots}</span>
             </div>
-            <div class="rxn-eq eqx" style="margin-top:10px;">${escapeHtml(err.question)}</div>
+            <div class="rxn-eq eqx" style="margin-top:10px;">${renderEquation(err.question)}</div>
             ${renderTaskImagesHtml(err, false)}
             ${inputHtml}
             <div class="rxn-actions">
@@ -2284,7 +2360,7 @@
             answerSlot.innerHTML = `
               <div style="margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border-left:3px solid var(--ok);">
                 <div style="font-size:13px;color:var(--ink-soft);margin-bottom:4px;">Правильный ответ:</div>
-                <div style="font-size:15px;font-weight:600;color:var(--ok);">${escapeHtml(err.correctAnswer || '—')}</div>
+                <div style="font-size:15px;font-weight:600;color:var(--ok);">${renderEquation(err.correctAnswer || '—')}</div>
                 ${err.explanation ? `<div style="font-size:13px;color:var(--ink-soft);margin-top:6px;">${escapeHtml(err.explanation)}</div>` : ''}
               </div>
             `;
@@ -2327,16 +2403,19 @@
     async function deleteTopicConfirm(topicId) {
       const hasContent = (TRAINERS || []).some(t => t.topicId === topicId) ||
                         (LESSONS || []).some(l => l.topicId === topicId) ||
-                        (HOMEWORKS || []).some(h => h.topicId === topicId);
+                        (HOMEWORKS || []).some(h => h.topicId === topicId) ||
+                        (THEORIES || []).some(t => t.topicId === topicId);
       window.showConfirmModal('Удалить тему?', hasContent ? 'В этой теме есть материалы — они тоже будут удалены.' : 'Тема будет удалена.', async () => {
         TOPICS = TOPICS.filter(t => t.id !== topicId);
         TRAINERS = TRAINERS.filter(t => t.topicId !== topicId);
         LESSONS = LESSONS.filter(l => l.topicId !== topicId);
         HOMEWORKS = HOMEWORKS.filter(h => h.topicId !== topicId);
+        THEORIES = THEORIES.filter(t => t.topicId !== topicId);
         await persistTopics();
         await persistTrainers();
         await persistLessons();
         await persistHomeworks();
+        await persistTheories();
         render();
       });
     }
@@ -2346,10 +2425,12 @@
       if (type === 'trainer') { items = TRAINERS; persistFn = persistTrainers; }
       else if (type === 'lesson') { items = LESSONS; persistFn = persistLessons; }
       else if (type === 'homework') { items = HOMEWORKS; persistFn = persistHomeworks; }
+      else if (type === 'theory') { items = THEORIES; persistFn = persistTheories; }
       else return;
       const item = items.find(t => t.id === id);
       if (!item) return;
       const allInTopic = [];
+      for (const t of THEORIES) if (t.topicId === item.topicId) allInTopic.push({ ...t, _type: 'theory' });
       for (const t of TRAINERS) if (t.topicId === item.topicId) allInTopic.push({ ...t, _type: 'trainer' });
       for (const l of LESSONS) if (l.topicId === item.topicId) allInTopic.push({ ...l, _type: 'lesson' });
       for (const h of HOMEWORKS) if (h.topicId === item.topicId) allInTopic.push({ ...h, _type: 'homework' });
@@ -2361,10 +2442,12 @@
       allInTopic[idx].order = allInTopic[swapIdx].order;
       allInTopic[swapIdx].order = tmp;
       for (const el of allInTopic) {
-        if (el._type === 'trainer') { const f = TRAINERS.find(t => t.id === el.id); if (f) f.order = el.order; }
+        if (el._type === 'theory') { const f = THEORIES.find(t => t.id === el.id); if (f) f.order = el.order; }
+        else if (el._type === 'trainer') { const f = TRAINERS.find(t => t.id === el.id); if (f) f.order = el.order; }
         else if (el._type === 'lesson') { const f = LESSONS.find(l => l.id === el.id); if (f) f.order = el.order; }
         else if (el._type === 'homework') { const f = HOMEWORKS.find(h => h.id === el.id); if (f) f.order = el.order; }
       }
+      await persistTheories();
       await persistTrainers();
       await persistLessons();
       await persistHomeworks();
@@ -2376,6 +2459,7 @@
       if (type === 'trainer') { item = TRAINERS.find(t => t.id === id); items = TRAINERS; persistFn = persistTrainers; }
       else if (type === 'lesson') { item = LESSONS.find(l => l.id === id); items = LESSONS; persistFn = persistLessons; }
       else if (type === 'homework') { item = HOMEWORKS.find(h => h.id === id); items = HOMEWORKS; persistFn = persistHomeworks; }
+      else if (type === 'theory') { item = THEORIES.find(t => t.id === id); items = THEORIES; persistFn = persistTheories; }
       else return;
       if (!item) return;
       const bg = document.createElement('div');
@@ -2401,13 +2485,7 @@
       modal.querySelector('#saveMove').onclick = async () => {
         const targetTopicId = document.getElementById('targetTopic').value;
         if (!targetTopicId) { bg.remove(); return; }
-        const siblings = items.filter(t => t.topicId === item.topicId);
-        const maxOrder = siblings.length ? Math.max(...siblings.map(t => t.order)) : -1;
-        item.order = maxOrder + 1;
         item.topicId = targetTopicId;
-        const newSiblings = items.filter(t => t.topicId === targetTopicId);
-        const newMaxOrder = newSiblings.length ? Math.max(...newSiblings.map(t => t.order)) : -1;
-        item.order = newMaxOrder + 1;
         await persistFn();
         bg.remove();
         render();
@@ -2419,6 +2497,7 @@
       if (type === 'trainer') { items = TRAINERS; persistFn = persistTrainers; name = 'тренажёр'; }
       else if (type === 'lesson') { items = LESSONS; persistFn = persistLessons; name = 'урок'; }
       else if (type === 'homework') { items = HOMEWORKS; persistFn = persistHomeworks; name = 'домашку'; }
+      else if (type === 'theory') { items = THEORIES; persistFn = persistTheories; name = 'теорию'; }
       else return;
       window.showConfirmModal(`Удалить ${name}?`, 'Это действие нельзя отменить.', async () => {
         const idx = items.findIndex(t => t.id === id);
@@ -2431,6 +2510,7 @@
       if (type === 'trainer') { item = TRAINERS.find(t => t.id === id); items = TRAINERS; persistFn = persistTrainers; }
       else if (type === 'lesson') { item = LESSONS.find(l => l.id === id); items = LESSONS; persistFn = persistLessons; }
       else if (type === 'homework') { item = HOMEWORKS.find(h => h.id === id); items = HOMEWORKS; persistFn = persistHomeworks; }
+      else if (type === 'theory') { item = THEORIES.find(t => t.id === id); items = THEORIES; persistFn = persistTheories; }
       else return;
       if (!item) return;
       const newItem = JSON.parse(JSON.stringify(item));
@@ -2445,7 +2525,69 @@
     };
 
     // ============================================================
-    // 16. ТРЕНАЖЁР
+    // 16. ТЕОРИЯ — модалка просмотра
+    // ============================================================
+
+    function renderTheoryModal(theoryId) {
+      const theory = THEORIES.find(t => t.id === theoryId);
+      if (!theory) return;
+      if (theory.assignedTo && theory.assignedTo.length > 0 && !CURRENT_USER.isTeacher && !TEACH_MODE) {
+        if (!theory.assignedTo.includes(CURRENT_USER.key)) { alert('Эта теория доступна только выбранным ученикам.'); return; }
+      }
+
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      bg.id = 'theoryModalBg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.maxWidth = '680px';
+
+      let bodyHtml = '';
+      if (theory.file && theory.file.dataUrl) {
+        const f = theory.file;
+        if (f.type && f.type.startsWith('image/')) {
+          bodyHtml = `<div class="theory-file-preview"><img src="${f.dataUrl}" alt=""></div>`;
+        } else {
+          const sizeKb = Math.round((f.size || 0) / 1024);
+          bodyHtml = `
+            <div class="theory-file-preview">
+              <div class="icon">📎</div>
+              <div style="flex:1;">
+                <div class="name">${escapeHtml(f.name || 'файл')}</div>
+                <div class="size">${sizeKb} КБ</div>
+              </div>
+              <a class="btn btn-sm btn-accent" href="${f.dataUrl}" download="${escapeAttr(f.name || 'file')}">Скачать</a>
+            </div>
+          `;
+        }
+      }
+      if (theory.description) {
+        bodyHtml += `<div class="theory-text">${escapeHtmlMultiline(theory.description)}</div>`;
+      }
+      if (!bodyHtml) bodyHtml = `<div class="empty-note">Материал пока не добавлен.</div>`;
+
+      modal.innerHTML = `
+        <h3>${escapeHtml(theory.title)}</h3>
+        <div class="lesson-body">${bodyHtml}</div>
+        <div class="actions" style="justify-content:space-between;">
+          <button class="btn btn-ghost" id="closeTheoryBtn">Закрыть</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) closeTheoryModal(); };
+      modal.querySelector('#closeTheoryBtn').onclick = closeTheoryModal;
+    }
+
+    function closeTheoryModal() {
+      const bg = document.getElementById('theoryModalBg');
+      if (bg) bg.remove();
+      VIEW = { name: 'home' };
+      render();
+    }
+
+    // ============================================================
+    // 17. ТРЕНАЖЁР
     // ============================================================
 
     async function renderTrainer(container, trainerId) {
@@ -2522,7 +2664,6 @@
       else renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
     }
 
-    // ============ ТРЕНАЖЁР — ПОШАГОВО ============
     function renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
       const reactions = trainer.reactions || [];
       const total = reactions.length;
@@ -2540,7 +2681,6 @@
           persistFullProgress(CURRENT_USER.key, progress);
         }
       }
-
       function getPendingIndices() {
         return statuses.map((s, i) => ({ s, i })).filter(({ s }) => s === 'wrong' || s === 'skipped').map(({ i }) => i);
       }
@@ -2566,7 +2706,6 @@
 
       function renderStep() {
         content.innerHTML = '';
-        // Скрываем примечание после первого задания
         const noteEl = content.parentElement.querySelector('.trainer-note');
         if (noteEl && currentIndex > 0) noteEl.style.display = 'none';
 
@@ -2646,11 +2785,11 @@
           inputHtml = `<div class="rxn-input-row"><input type="text" class="rxn-input ${isCorrect ? 'correct' : isWrong ? 'wrong' : ''}" placeholder="Введите ответ" value="${escapeHtml(entry.answer || '')}" id="stepInput" ${isCorrect ? 'disabled' : ''}></div>`;
         } else if (taskType === 'radio') {
           const options = rxn.options || [];
-          inputHtml = `<div class="options-group" id="stepOptions">${options.map(opt => `<label><input type="radio" name="stepRadio" value="${escapeHtml(opt)}" ${entry.answer === opt && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div>`;
+          inputHtml = `<div class="options-group" id="stepOptions">${options.map(opt => `<label><input type="radio" name="stepRadio" value="${escapeAttr(opt)}" ${entry.answer === opt && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div>`;
         } else if (taskType === 'checkbox') {
           const options = rxn.options || [];
           const selected = entry.answer ? entry.answer.split(',') : [];
-          inputHtml = `<div class="options-group" id="stepOptions">${options.map(opt => `<label><input type="checkbox" name="stepCheckbox" value="${escapeHtml(opt)}" ${selected.includes(opt) && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div>`;
+          inputHtml = `<div class="options-group" id="stepOptions">${options.map(opt => `<label><input type="checkbox" name="stepCheckbox" value="${escapeAttr(opt)}" ${selected.includes(opt) && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div>`;
         }
 
         card.innerHTML = `
@@ -2703,7 +2842,6 @@
           if (isCorrect) return;
           const val = getInputValue();
           if (!val) { alert('Введите ответ'); return; }
-
           if (checkAnswer(rxn, val, taskType)) {
             statuses[currentIndex] = 'correct';
             answers[currentIndex] = val;
@@ -2714,19 +2852,14 @@
             statuses[currentIndex] = 'wrong';
             answers[currentIndex] = val;
             showFeedback(false);
-            if (isRealStudent) {
+            if (isRealStudent && CURRENT_USER.errorsEnabled !== false) {
               recordError(progress, CURRENT_USER.key, true, {
-                sourceType: 'trainer',
-                sourceId: trainer.id,
-                sourceTitle: trainer.title,
-                topicId: trainer.topicId,
-                taskIdx: currentIndex,
+                sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
+                topicId: trainer.topicId, taskIdx: currentIndex,
                 question: rxn.lhs || '',
                 correctAnswer: (rxn.correctSetsDisplay && rxn.correctSetsDisplay[0]) ? rxn.correctSetsDisplay[0].join(taskType === 'checkbox' ? ', ' : ' + ') : (rxn.valid ? '' : '0'),
                 explanation: rxn.explanation || '',
-                images: getTaskImages(rxn),
-                taskType,
-                options: rxn.options || []
+                images: getTaskImages(rxn), taskType, options: rxn.options || []
               });
             }
           }
@@ -2748,7 +2881,7 @@
           if (round === 2) return;
           statuses[currentIndex] = 'skipped';
           answers[currentIndex] = getInputValue() || '';
-          if (isRealStudent) {
+          if (isRealStudent && CURRENT_USER.errorsEnabled !== false) {
             recordError(progress, CURRENT_USER.key, true, {
               sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
               topicId: trainer.topicId, taskIdx: currentIndex,
@@ -2801,7 +2934,7 @@
           reactions.forEach((r, i) => {
             const row = document.createElement('div');
             row.style.cssText = 'padding:8px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;';
-            row.innerHTML = `<span>${i+1}. ${escapeHtml(r.lhs)}</span><span style="font-size:12px;">${statusMap[statuses[i]] || statusMap.unanswered} ${answers[i] ? escapeHtml(answers[i]) : ''}</span>`;
+            row.innerHTML = `<span>${i+1}. ${renderEquation(r.lhs)}</span><span style="font-size:12px;">${statusMap[statuses[i]] || statusMap.unanswered} ${answers[i] ? escapeHtml(answers[i]) : ''}</span>`;
             listEl.appendChild(row);
           });
           modalBg.onclick = (e) => { if (e.target === modalBg) modalBg.remove(); };
@@ -2827,7 +2960,6 @@
       else renderStep();
     }
 
-    // ============ ТРЕНАЖЁР — СПИСОК ============
     function renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
       const reactions = trainer.reactions || [];
       const total = reactions.length;
@@ -2861,11 +2993,11 @@
             inputHtml = `<div class="rxn-input-row"><input type="text" class="rxn-input ${isCorrect ? 'correct' : isWrong ? 'wrong' : ''}" placeholder="Введите ответ" value="${escapeHtml(entry.answer || '')}" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}><button class="btn btn-sm btn-accent check-btn" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>Проверить</button><button class="btn btn-sm btn-ghost retry-btn" data-idx="${idx}">Повторить</button></div>`;
           } else if (taskType === 'radio') {
             const options = rxn.options || [];
-            inputHtml = `<div class="options-group" data-idx="${idx}">${options.map(opt => `<label><input type="radio" name="radio_${idx}" value="${escapeHtml(opt)}" ${entry.answer === opt && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-accent check-btn" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>Проверить</button><button class="btn btn-sm btn-ghost retry-btn" data-idx="${idx}">Повторить</button></div>`;
+            inputHtml = `<div class="options-group" data-idx="${idx}">${options.map(opt => `<label><input type="radio" name="radio_${idx}" value="${escapeAttr(opt)}" ${entry.answer === opt && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-accent check-btn" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>Проверить</button><button class="btn btn-sm btn-ghost retry-btn" data-idx="${idx}">Повторить</button></div>`;
           } else if (taskType === 'checkbox') {
             const options = rxn.options || [];
             const selected = entry.answer ? entry.answer.split(',') : [];
-            inputHtml = `<div class="options-group" data-idx="${idx}">${options.map(opt => `<label><input type="checkbox" name="check_${idx}" value="${escapeHtml(opt)}" ${selected.includes(opt) && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-accent check-btn" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>Проверить</button><button class="btn btn-sm btn-ghost retry-btn" data-idx="${idx}">Повторить</button></div>`;
+            inputHtml = `<div class="options-group" data-idx="${idx}">${options.map(opt => `<label><input type="checkbox" name="check_${idx}" value="${escapeAttr(opt)}" ${selected.includes(opt) && !isCorrect ? 'checked' : ''} ${isCorrect ? 'disabled' : ''}> ${escapeHtml(opt)}</label>`).join('')}</div><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-accent check-btn" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>Проверить</button><button class="btn btn-sm btn-ghost retry-btn" data-idx="${idx}">Повторить</button></div>`;
           }
 
           card.innerHTML = `
@@ -2897,7 +3029,6 @@
                 if (c.length === 0) { alert('Выберите хотя бы один вариант'); return; }
                 val = Array.from(c).map(el => el.value).join(',');
               }
-
               if (checkAnswer(rxn, val, taskType)) {
                 statuses[idx] = 'correct';
                 answers[idx] = val;
@@ -2912,7 +3043,7 @@
                 if (taskType === 'text') card.querySelector('.rxn-input').className = 'rxn-input wrong';
                 fbSlot.innerHTML = '<div class="rxn-feedback bad">Неверно. Попробуй ещё раз.</div>';
                 card.className = 'rxn-card state-wrong';
-                if (isRealStudent) {
+                if (isRealStudent && CURRENT_USER.errorsEnabled !== false) {
                   recordError(progress, CURRENT_USER.key, true, {
                     sourceType: 'trainer', sourceId: trainer.id, sourceTitle: trainer.title,
                     topicId: trainer.topicId, taskIdx: idx,
@@ -3035,7 +3166,7 @@
           ${optionsHtml}
           <div class="rxn-explain" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);">
             ${rxn.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(rxn.explanation)}</div>` : ''}
-            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(correctAnswerText)}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${renderEquation(correctAnswerText)}</div>
             ${rxn.fullEquation ? `<div style="font-size:14px;font-weight:600;margin-top:4px;">${renderEquation(rxn.fullEquation)}</div>` : ''}
           </div>
         `;
@@ -3051,7 +3182,6 @@
       footer.appendChild(backBtn);
     }
 
-    // ============ ТРЕНАЖЁР — КАРТЫ ============
     function showSimpleCardsCompletion(content, footer, item, itemProgress, isRealStudent, progress, reopenFn, reviewFn) {
       content.innerHTML = '';
       footer.innerHTML = '';
@@ -3103,7 +3233,6 @@
 
       function renderCard() {
         content.innerHTML = '';
-        // Скрываем примечание после первой карты
         const noteEl = content.parentElement.querySelector('.trainer-note');
         if (noteEl && currentIndex > 0) noteEl.style.display = 'none';
 
@@ -3119,13 +3248,12 @@
           }
         } else if (!rxn.valid) fullAnswer = '0 (не идёт)';
         else fullAnswer = 'Нет правильного ответа';
-        const fullReaction = lhs + ' ' + fullAnswer;
 
         const card = document.createElement('div');
         card.className = 'flash-card';
         card.innerHTML = `
           <div class="card-number">${currentIndex + 1} / ${total}</div>
-          <div class="card-question eqx">${showAnswer ? renderEquation(fullReaction) : renderEquation(lhs)}</div>
+          <div class="card-question eqx">${showAnswer ? renderEquation(lhs + ' ' + fullAnswer) : renderEquation(lhs)}</div>
           ${renderTaskImagesHtml(rxn, true)}
           <div class="card-actions">
             <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
@@ -3166,7 +3294,6 @@
       renderCard();
     }
 
-    // ============ ПРОСМОТР РЕЗУЛЬТАТА (ПОШАГОВО) ============
     function renderStepReviewMode(content, footer, trainer, trainerProgress, taskType, exitFn) {
       const reactions = trainer.reactions || [];
       const total = reactions.length;
@@ -3195,7 +3322,7 @@
           ${optionsHtml}
           <div class="rxn-explain" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);">
             ${rxn.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(rxn.explanation)}</div>` : ''}
-            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(correctAnswerText)}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${renderEquation(correctAnswerText)}</div>
             ${rxn.fullEquation ? `<div style="font-size:14px;font-weight:600;margin-top:4px;">${renderEquation(rxn.fullEquation)}</div>` : ''}
           </div>
           <div class="step-nav"></div>
@@ -3225,7 +3352,7 @@
     }
 
     // ============================================================
-    // 17. ДОМАШКИ
+    // 18. ДОМАШКИ
     // ============================================================
 
     async function renderHomework(container, homeworkId) {
@@ -3295,7 +3422,6 @@
       else renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress);
     }
 
-    // ============ ДОМАШКА — СПИСОК ============
     function renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress) {
       const tasks = homework.tasks || [];
       let statuses = hwProgress.statuses || Array(tasks.length).fill('unanswered');
@@ -3322,7 +3448,7 @@
           card.className = 'rxn-card' + (isCorrect ? ' state-correct' : status === 'wrong' ? ' state-wrong' : '');
           card.innerHTML = `
             <div class="rxn-num">Задание ${idx+1}</div>
-            <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+            <div class="rxn-eq eqx">${renderEquation(task.question)}</div>
             ${renderTaskImagesHtml(task, false)}
             <div class="rxn-input-row">
               <input type="text" class="rxn-input ${isCorrect ? 'correct' : status === 'wrong' ? 'wrong' : ''}" placeholder="Введите ответ" value="${escapeHtml(answer)}" data-idx="${idx}" ${isCorrect ? 'disabled' : ''}>
@@ -3354,7 +3480,7 @@
               input.className = 'rxn-input wrong';
               fbSlot.innerHTML = '<div class="rxn-feedback bad">Неверно. Попробуй ещё раз.</div>';
               card.className = 'rxn-card state-wrong';
-              if (isRealStudent) {
+              if (isRealStudent && CURRENT_USER.errorsEnabled !== false) {
                 recordError(progress, CURRENT_USER.key, true, {
                   sourceType: 'homework', sourceId: homework.id, sourceTitle: homework.title,
                   topicId: homework.topicId, taskIdx: idx,
@@ -3454,10 +3580,10 @@
         item.className = 'rxn-card';
         item.innerHTML = `
           <div class="rxn-num">Задание ${idx+1}</div>
-          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          <div class="rxn-eq eqx">${renderEquation(task.question)}</div>
           ${renderTaskImagesHtml(task, false)}
           ${task.explanation ? `<div style="font-size:13px;color:var(--ink-soft);margin-top:8px;">${escapeHtml(task.explanation)}</div>` : ''}
-          <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(task.answer)}</div>
+          <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${renderEquation(task.answer)}</div>
         `;
         list.appendChild(item);
       });
@@ -3465,7 +3591,6 @@
       attachImageZoomHandlers(container);
     }
 
-    // ============ ДОМАШКА — ПОШАГОВО ============
     function renderHwStepMode(content, footer, homework, hwProgress, isRealStudent, progress) {
       const tasks = homework.tasks || [];
       const total = tasks.length;
@@ -3489,7 +3614,6 @@
       function renderStep() {
         content.innerHTML = '';
         footer.innerHTML = '';
-        // Скрываем примечание после первого задания
         const noteEl = content.parentElement.querySelector('.trainer-note');
         if (noteEl && currentIndex > 0) noteEl.style.display = 'none';
 
@@ -3501,7 +3625,7 @@
         card.className = 'rxn-step';
         card.innerHTML = `
           <div class="rxn-num">Задание ${currentIndex+1} / ${total}</div>
-          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          <div class="rxn-eq eqx">${renderEquation(task.question)}</div>
           ${renderTaskImagesHtml(task, false)}
           <div class="rxn-input-row"><input type="text" class="rxn-input ${isCorrect ? 'correct' : status === 'wrong' ? 'wrong' : ''}" placeholder="Введите ответ" value="${escapeHtml(answer)}" ${isCorrect ? 'disabled' : ''}></div>
           <div class="rxn-actions">
@@ -3528,7 +3652,7 @@
           } else {
             statuses[currentIndex] = 'wrong';
             answers[currentIndex] = val;
-            if (isRealStudent) {
+            if (isRealStudent && CURRENT_USER.errorsEnabled !== false) {
               recordError(progress, CURRENT_USER.key, true, {
                 sourceType: 'homework', sourceId: homework.id, sourceTitle: homework.title,
                 topicId: homework.topicId, taskIdx: currentIndex,
@@ -3600,11 +3724,11 @@
         card.className = 'rxn-step';
         card.innerHTML = `
           <div class="rxn-num">Задание ${currentIndex+1} / ${total}</div>
-          <div class="rxn-eq eqx">${escapeHtml(task.question)}</div>
+          <div class="rxn-eq eqx">${renderEquation(task.question)}</div>
           ${renderTaskImagesHtml(task, false)}
           <div class="rxn-explain" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);">
             ${task.explanation ? `<div style="font-size:13px;color:var(--ink-soft);">${escapeHtml(task.explanation)}</div>` : ''}
-            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${escapeHtml(task.answer)}</div>
+            <div style="font-size:15px;font-weight:600;color:var(--ok);margin-top:6px;">Правильный ответ: ${renderEquation(task.answer)}</div>
           </div>
           <div class="step-nav"></div>
         `;
@@ -3632,7 +3756,6 @@
       renderCard();
     }
 
-    // ============ ДОМАШКА — КАРТЫ ============
     function renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress, reviewMode) {
       const tasks = homework.tasks || [];
       if (tasks.length === 0) { content.innerHTML = `<div class="empty-note">В этой домашке пока нет заданий.</div>`; return; }
@@ -3652,7 +3775,6 @@
       }
       function renderCard() {
         content.innerHTML = '';
-        // Скрываем примечание после первой карты
         const noteEl = content.parentElement.querySelector('.trainer-note');
         if (noteEl && currentIndex > 0) noteEl.style.display = 'none';
 
@@ -3661,9 +3783,9 @@
         card.className = 'flash-card';
         card.innerHTML = `
           <div class="card-number">${currentIndex + 1} / ${tasks.length}</div>
-          <div class="card-question">${escapeHtml(task.question)}</div>
+          <div class="card-question eqx">${renderEquation(task.question)}</div>
           ${renderTaskImagesHtml(task, true)}
-          ${showAnswer ? `<div class="card-answer-block">${escapeHtml(task.answer || '')}</div>` : ''}
+          ${showAnswer ? `<div class="card-answer-block">${renderEquation(task.answer || '')}</div>` : ''}
           ${showAnswer && task.explanation ? `<div style="margin-top:12px;font-size:13px;color:var(--ink-soft);text-align:center;padding:0 16px;">${escapeHtml(task.explanation)}</div>` : ''}
           <div class="card-actions">
             <button class="btn btn-accent" id="showAnswerBtn">${showAnswer ? 'Скрыть ответ' : 'Показать ответ'}</button>
@@ -3703,7 +3825,7 @@
     }
 
     // ============================================================
-    // 18. УРОКИ
+    // 19. УРОКИ
     // ============================================================
 
     function renderLessonModal(lessonId) {
@@ -3746,7 +3868,14 @@
         linksHtml += `<div class="lesson-video-list">` + links.map(l => `<a class="lesson-link" href="${escapeAttr(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label || 'Смотреть видео')}</a>`).join('') + `</div>`;
       }
       if (files.length > 0) {
-        linksHtml += `<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">` + files.map(f => `<a href="${escapeAttr(f.url)}" target="_blank" class="lesson-link">${escapeHtml(f.label || 'Скачать файл')}</a>`).join('') + `</div>`;
+        linksHtml += `<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">` + files.map(f => {
+          // Если файл — dataUrl, даём кнопку скачивания
+          if (f.dataUrl) {
+            const sizeKb = Math.round((f.size || 0) / 1024);
+            return `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(f.label || f.name || 'Файл')}</div><div class="size">${sizeKb} КБ</div></div><a class="btn btn-sm btn-accent" href="${f.dataUrl}" download="${escapeAttr(f.name || 'file')}">Скачать</a></div>`;
+          }
+          return `<a href="${escapeAttr(f.url)}" target="_blank" class="lesson-link">${escapeHtml(f.label || 'Скачать файл')}</a>`;
+        }).join('') + `</div>`;
       }
       if (!linksHtml) linksHtml = `<div class="empty-note">Материалы пока не добавлены.</div>`;
 
@@ -3758,7 +3887,7 @@
 
       modal.innerHTML = `
         <h3>${escapeHtml(lesson.title)}</h3>
-        ${lesson.description ? `<p style="color:var(--ink-soft);font-size:14px;margin-bottom:16px;">${escapeHtml(lesson.description)}</p>` : ''}
+        ${lesson.description ? `<p style="color:var(--ink-soft);font-size:14px;margin-bottom:16px;">${escapeHtmlMultiline(lesson.description)}</p>` : ''}
         <div class="lesson-body">${linksHtml}</div>
         <div class="actions" style="justify-content:space-between;flex-wrap:wrap;">
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -3794,7 +3923,7 @@
     }
 
     // ============================================================
-    // 19. СТАТИСТИКА
+    // 20. СТАТИСТИКА
     // ============================================================
 
     async function renderStats(container) {
@@ -3823,6 +3952,10 @@
         <div class="field-row">
           <input type="text" id="newStudentName" placeholder="Имя ученика" style="flex:1;">
           <input type="text" id="newStudentPassword" placeholder="Пароль" style="flex:1;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);">
+            <input type="checkbox" id="newStudentErrorsEnabled" checked>
+            Ошибки включены
+          </label>
           <button class="btn btn-accent" id="addStudentBtn">Добавить</button>
         </div>
         <div id="addStudentMsg" style="font-size:12.5px;margin-top:6px;"></div>
@@ -3834,7 +3967,7 @@
       const table = document.createElement('table');
       table.className = 'stats-table';
       table.innerHTML = `
-        <thead><tr><th>Ученик</th><th>Пароль</th><th style="min-width:150px;">Прогресс</th><th>Действия</th></tr></thead>
+        <thead><tr><th>Ученик</th><th>Пароль</th><th style="min-width:150px;">Прогресс</th><th>Ошибки</th><th>Действия</th></tr></thead>
         <tbody id="statsBody"></tbody>
       `;
       tableWrap.appendChild(table);
@@ -3844,7 +3977,7 @@
       const tbody = table.querySelector('#statsBody');
       tbody.innerHTML = '';
       if (sortedKeys.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Учеников пока нет. Добавьте первого!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-note">Учеников пока нет. Добавьте первого!</td></tr>`;
       } else {
         for (const key of sortedKeys) {
           const student = reg[key];
@@ -3872,6 +4005,14 @@
           }
           const percent = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
+          // Столбец «Ошибки» — кнопка «Показать N»
+          const errCount = countErrors(progress);
+          const errorsCell = student.errorsEnabled === false
+            ? '<span style="color:var(--ink-soft);">выключены</span>'
+            : (errCount > 0
+                ? `<button class="btn btn-sm btn-ghost show-errors-btn" data-key="${key}">Показать ${errCount}</button>`
+                : '<span style="color:var(--ok);font-weight:700;">нет</span>');
+
           const row = document.createElement('tr');
           row.innerHTML = `
             <td><span class="student-name" data-key="${key}">${escapeHtml(student.name)}</span></td>
@@ -3882,9 +4023,11 @@
                 <span style="font-weight:600;font-size:14px;min-width:44px;">${percent}%</span>
               </div>
             </td>
+            <td>${errorsCell}</td>
             <td>
               <div class="stats-actions">
                 <button class="btn btn-sm btn-ghost change-pass-btn" data-key="${key}">Сменить пароль</button>
+                <button class="btn btn-sm btn-ghost toggle-errors-btn" data-key="${key}">${student.errorsEnabled === false ? 'Включить ошибки' : 'Выключить ошибки'}</button>
                 <button class="btn btn-sm btn-danger delete-student-btn" data-key="${key}">Удалить</button>
               </div>
             </td>
@@ -3894,7 +4037,22 @@
             VIEW = { name: 'studentDetail', studentKey: key };
             render();
           };
+          const showErrorsBtn = row.querySelector('.show-errors-btn');
+          if (showErrorsBtn) {
+            showErrorsBtn.onclick = (e) => {
+              e.stopPropagation();
+              showStudentErrorsModal(key, progress);
+            };
+          }
           row.querySelector('.change-pass-btn').onclick = (e) => { e.stopPropagation(); showChangePasswordModal(key); };
+          row.querySelector('.toggle-errors-btn').onclick = async (e) => {
+            e.stopPropagation();
+            const reg2 = await loadRegistry();
+            const s = reg2[key];
+            s.errorsEnabled = s.errorsEnabled === false ? true : false;
+            await saveRegistry(reg2);
+            renderStats(container);
+          };
           row.querySelector('.delete-student-btn').onclick = (e) => { e.stopPropagation(); showDeleteStudentConfirm(key); };
           tbody.appendChild(row);
         }
@@ -3903,6 +4061,7 @@
       addBox.querySelector('#addStudentBtn').onclick = async () => {
         const nameInput = addBox.querySelector('#newStudentName');
         const passInput = addBox.querySelector('#newStudentPassword');
+        const errChk = addBox.querySelector('#newStudentErrorsEnabled');
         const msgDiv = addBox.querySelector('#addStudentMsg');
         const name = nameInput.value.trim();
         const password = passInput.value.trim();
@@ -3910,12 +4069,72 @@
         const reg = await loadRegistry();
         const key = name.toLowerCase();
         if (reg[key]) { msgDiv.textContent = 'Ученик с таким именем уже существует.'; msgDiv.style.color = 'var(--bad)'; return; }
-        reg[key] = { name, password, createdAt: Date.now(), platform: currentPlatform };
+        reg[key] = { name, password, createdAt: Date.now(), platform: currentPlatform, errorsEnabled: errChk.checked !== false };
         await saveRegistry(reg);
         nameInput.value = ''; passInput.value = '';
         msgDiv.textContent = 'Ученик добавлен!'; msgDiv.style.color = 'var(--ok)';
         renderStats(container);
       };
+    }
+
+    // Модалка со списком всех ошибок ученика
+    function showStudentErrorsModal(studentKey, progress) {
+      const errors = getErrorList(progress);
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.style.maxWidth = '760px';
+
+      modal.innerHTML = `
+        <h3>Ошибки ученика (${errors.length})</h3>
+        <div id="errListBox" style="max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;"></div>
+        <div class="actions" style="justify-content:space-between;">
+          <button class="btn btn-ghost" id="closeErrList">Закрыть</button>
+          ${errors.length > 0 ? `<button class="btn btn-accent" id="practiceAllFromStats">Отработать все</button>` : ''}
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#closeErrList').onclick = () => bg.remove();
+
+      const box = modal.querySelector('#errListBox');
+      if (errors.length === 0) {
+        box.innerHTML = `<div class="empty-note">У этого ученика нет неотработанных ошибок.</div>`;
+      } else {
+        for (const err of errors) {
+          const card = document.createElement('div');
+          card.className = 'error-card';
+          const masteryDots = Array.from({ length: ERROR_MASTERY_TARGET }, (_, i) =>
+            `<span class="dot ${i < (err.mastery || 0) ? 'filled' : ''}"></span>`
+          ).join('');
+          card.innerHTML = `
+            <div class="error-card__top">
+              <div class="error-card__source">
+                ${escapeHtml(err.topicName || '')} <span class="sep">·</span>
+                ${err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка'} <span class="sep">·</span>
+                ${escapeHtml(err.sourceTitle || '')} <span class="sep">·</span> № ${err.taskNum}
+              </div>
+              <div class="errors-progress-round">${masteryDots}</div>
+            </div>
+            <div class="error-card__question">${renderEquation(err.question)}</div>
+            ${renderTaskImagesHtml(err, false)}
+            ${err.taskType === 'radio' || err.taskType === 'checkbox' ? renderOptionsHtml(err) : ''}
+            <div class="error-card__correct">Правильный ответ: ${renderEquation(err.correctAnswer || '—')}</div>
+            ${err.explanation ? `<div class="error-card__explain">${escapeHtml(err.explanation)}</div>` : ''}
+          `;
+          box.appendChild(card);
+        }
+        const practiceBtn = modal.querySelector('#practiceAllFromStats');
+        if (practiceBtn) {
+          practiceBtn.onclick = () => {
+            bg.remove();
+            openErrorsPracticeModal(errors, progress, true, studentKey);
+          };
+        }
+      }
+      attachImageZoomHandlers(modal);
     }
 
     async function showChangePasswordModal(studentKey) {
@@ -3961,53 +4180,26 @@
       title.textContent = student.name;
       wrap.appendChild(title);
 
+      // Кнопка перехода к списку ошибок
       const errCount = countErrors(progress);
       const errBlock = document.createElement('div');
       errBlock.style.cssText = 'background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:16px;padding:22px;margin:18px 0 24px;';
-      errBlock.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
-          <h3 style="margin:0;font-size:16px;">Ошибки ученика ${errCount > 0 ? `<span style="color:var(--bad);">(${errCount})</span>` : ''}</h3>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            ${errCount > 0 ? `<button class="btn btn-sm btn-accent" id="teacherPracticeAllErrors">Отработать все</button>` : ''}
-          </div>
-        </div>
-        <div id="teacherErrorsList"></div>
-      `;
-      wrap.appendChild(errBlock);
-
-      const errListEl = errBlock.querySelector('#teacherErrorsList');
-      const errors = getErrorList(progress);
-      if (errors.length === 0) {
-        errListEl.innerHTML = `<div class="empty-note">У этого ученика нет неотработанных ошибок.</div>`;
+      if (student.errorsEnabled === false) {
+        errBlock.innerHTML = `<div class="empty-note">Ошибки у этого ученика выключены учителем.</div>`;
+      } else if (errCount === 0) {
+        errBlock.innerHTML = `<div class="empty-note">У этого ученика нет неотработанных ошибок.</div>`;
       } else {
-        errListEl.style.cssText = 'display:flex;flex-direction:column;gap:10px;';
-        for (const err of errors) {
-          const card = document.createElement('div');
-          card.className = 'error-card';
-          const masteryDots = Array.from({ length: ERROR_MASTERY_TARGET }, (_, i) =>
-            `<span class="dot ${i < (err.mastery || 0) ? 'filled' : ''}"></span>`
-          ).join('');
-          card.innerHTML = `
-            <div class="error-card__top">
-              <div class="error-card__source">
-                ${escapeHtml(err.topicName || '')} <span class="sep">·</span>
-                ${err.sourceType === 'trainer' ? 'Тренажёр' : 'Домашка'} <span class="sep">·</span>
-                ${escapeHtml(err.sourceTitle || '')} <span class="sep">·</span> № ${err.taskNum}
-              </div>
-              <div class="errors-progress-round">${masteryDots}</div>
-            </div>
-            <div class="error-card__question">${escapeHtml(err.question)}</div>
-            ${renderTaskImagesHtml(err, false)}
-            ${err.taskType === 'radio' || err.taskType === 'checkbox' ? renderOptionsHtml(err) : ''}
-            <div class="error-card__correct">Правильный ответ: ${escapeHtml(err.correctAnswer || '—')}</div>
-            ${err.explanation ? `<div class="error-card__explain">${escapeHtml(err.explanation)}</div>` : ''}
-          `;
-          errListEl.appendChild(card);
-        }
-        const btn = errBlock.querySelector('#teacherPracticeAllErrors');
-        if (btn) btn.onclick = () => openErrorsPracticeModal(errors, progress, true, studentKey);
+        errBlock.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <h3 style="margin:0;font-size:16px;">Ошибки ученика <span style="color:var(--bad);">(${errCount})</span></h3>
+            <button class="btn btn-sm btn-accent" id="openErrorsBtn">Показать все</button>
+          </div>
+        `;
+        errBlock.querySelector('#openErrorsBtn').onclick = () => {
+          showStudentErrorsModal(studentKey, progress);
+        };
       }
-      attachImageZoomHandlers(errBlock);
+      wrap.appendChild(errBlock);
 
       const allItems = [];
       function isVisibleTo(item) {
@@ -4033,6 +4225,10 @@
         if (!isVisibleTo(l)) continue;
         allItems.push({ type: 'Урок', title: l.title, done: null, total: null, finished: !!progress['lesson:' + l.id] });
       }
+      for (const th of (THEORIES || [])) {
+        if (!isVisibleTo(th)) continue;
+        allItems.push({ type: 'Теория', title: th.title, done: null, total: null, finished: null });
+      }
 
       const list = document.createElement('div');
       list.className = 'student-detail-list';
@@ -4049,7 +4245,7 @@
               ${item.done !== null ? `<div class="sdr-bar"><div class="fill ${item.finished ? 'done' : ''}" style="width:${pct}%"></div></div>` : ''}
             </div>
             <div class="sdr-progress">
-              ${item.done !== null ? `Выполнено ${item.done} из ${item.total}` : (item.finished ? '✅ Выполнено' : 'Не выполнено')}
+              ${item.done !== null ? `Выполнено ${item.done} из ${item.total}` : (item.finished === null ? '—' : (item.finished ? '✅ Выполнено' : 'Не выполнено'))}
             </div>
           `;
           list.appendChild(row);
@@ -4060,7 +4256,7 @@
     }
 
     // ============================================================
-    // 20. КОНСТРУКТОР
+    // 21. КОНСТРУКТОР
     // ============================================================
 
     function buildAdminBuilder() {
@@ -4070,6 +4266,7 @@
         <h3>Добавить новый материал</h3>
         <div class="field-row">
           <select id="builderType">
+            <option value="theory">Теория</option>
             <option value="trainer">Тренажёр</option>
             <option value="lesson">Урок</option>
             <option value="homework">Домашка</option>
@@ -4093,11 +4290,68 @@
       refreshTopicOptions();
 
       let reactionRows = [], lessonLinkRows = [], lessonFileRows = [], homeworkRows = [];
+      // Для теории — вложения
+      let theoryFile = null;      // { name, type, size, dataUrl }
+      let theoryDescription = '';
 
       function renderFields() {
         const type = typeSel.value;
         topicSel.style.display = (type === 'topic') ? 'none' : '';
-        if (type === 'trainer') {
+        if (type === 'theory') {
+          theoryFile = null;
+          theoryDescription = '';
+          fieldsBox.innerHTML = `
+            <div class="field-row"><input type="text" id="fTheoryTitle" placeholder="Название теории" style="flex:1;min-width:240px;"></div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Статус</label>
+              <select id="fTheoryStatus"><option value="published">Опубликован</option><option value="draft">Черновик</option><option value="locked">Заблокирован</option></select>
+            </div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Отложенный выпуск (самарское время, необязательно)</label>
+              <input type="datetime-local" id="fTheoryRelease" style="flex:1;">
+            </div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Доступно для учеников</label>
+              <select id="fAssignToTheory" multiple style="height:80px;">
+                <option value="">Все ученики</option>
+                ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Прикрепить файл (необязательно, до 900 КБ)</label>
+              <input type="file" id="fTheoryFile" style="flex:1;">
+            </div>
+            <div id="fTheoryFilePreview"></div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Текст теории (необязательно)</label>
+              <textarea id="fTheoryDesc" rows="4" placeholder="Можно вставить текст с переносами строк" style="width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);resize:vertical;"></textarea>
+            </div>
+          `;
+          const fileInput = fieldsBox.querySelector('#fTheoryFile');
+          const preview = fieldsBox.querySelector('#fTheoryFilePreview');
+          fileInput.onchange = async (e) => {
+            const f = e.target.files[0];
+            if (!f) { theoryFile = null; preview.innerHTML = ''; return; }
+            try {
+              const dataUrl = await readFileAsDataUrl(f, 900 * 1024);
+              theoryFile = { name: f.name, type: f.type, size: f.size, dataUrl };
+              if (f.type && f.type.startsWith('image/')) {
+                preview.innerHTML = `<div class="theory-file-preview"><img src="${dataUrl}" alt=""></div>`;
+              } else {
+                const sizeKb = Math.round(f.size / 1024);
+                preview.innerHTML = `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(f.name)}</div><div class="size">${sizeKb} КБ</div></div><button type="button" class="btn btn-sm btn-ghost" id="removeTheoryFile">Убрать</button></div>`;
+                preview.querySelector('#removeTheoryFile').onclick = () => {
+                  theoryFile = null;
+                  fileInput.value = '';
+                  preview.innerHTML = '';
+                };
+              }
+            } catch (err) {
+              alert(err.message);
+              fileInput.value = '';
+            }
+          };
+        } else if (type === 'trainer') {
           reactionRows = [{}];
           fieldsBox.innerHTML = `
             <div class="field-row"><input type="text" id="fTrainerTitle" placeholder="Название тренажёра" style="flex:1;min-width:240px;"></div>
@@ -4108,7 +4362,7 @@
             <div class="field-row">
               <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
                 <input type="checkbox" id="fAllowModeChoice" style="width:auto;">
-                Разрешить ученику самому выбирать режим (пошагово / список / карты)
+                Разрешить ученику самому выбирать режим
               </label>
             </div>
             <div class="field-row">
@@ -4130,7 +4384,7 @@
                 ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
               </select>
             </div>
-            <small class="help"><b>Ответ:</b> варианты через <b>/</b>. Продукты внутри варианта через <b>+</b>. Для чекбоксов — через <b>,</b>.</small>
+            <small class="help"><b>Ответ:</b> варианты через <b>/</b>. Продукты внутри варианта через <b>+</b>. Для чекбоксов — через <b>,</b>. <b>Перенос строки</b> в заданиях и ответах работает через Enter.</small>
             <div id="rxnRowsContainer"></div>
             <button type="button" class="add-line-btn" id="addRxnRowBtn">+ Добавить реакцию</button>
           `;
@@ -4159,10 +4413,43 @@
             <div class="field-row"><input type="text" id="fLessonVideo" placeholder="Основное видео (ссылка для вставки)" style="flex:1;min-width:240px;"></div>
             <div id="lessonLinkRowsContainer"></div>
             <button type="button" class="add-line-btn" id="addLessonLinkBtn">+ Добавить видео</button>
-            <div id="lessonFileRowsContainer" style="margin-top:8px;"></div>
-            <button type="button" class="add-line-btn" id="addLessonFileBtn">+ Добавить файл</button>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+              <small class="help">Файлы конспектов — можно прикрепить файл прямо (до 900 КБ) или указать ссылку.</small>
+              <div id="lessonFileRowsContainer"></div>
+              <button type="button" class="add-line-btn" id="addLessonFileBtn">+ Добавить файл (ссылка)</button>
+              <div style="margin-top:10px;">
+                <label style="font-size:12px;color:var(--ink-soft);">Прикрепить файл (до 900 КБ)</label>
+                <input type="file" id="fLessonAttachFile" style="display:block;margin-top:4px;">
+                <div id="fLessonAttachFilePreview"></div>
+              </div>
+            </div>
           `;
           renderLessonLinkRows(); renderLessonFileRows();
+
+          // локальная переменная для вложения
+          let attachedLessonFile = null;
+          const fileInput = fieldsBox.querySelector('#fLessonAttachFile');
+          const preview = fieldsBox.querySelector('#fLessonAttachFilePreview');
+          fileInput.onchange = async (e) => {
+            const f = e.target.files[0];
+            if (!f) { attachedLessonFile = null; preview.innerHTML = ''; return; }
+            try {
+              const dataUrl = await readFileAsDataUrl(f, 900 * 1024);
+              attachedLessonFile = { name: f.name, type: f.type, size: f.size, dataUrl };
+              const sizeKb = Math.round(f.size / 1024);
+              preview.innerHTML = `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(f.name)}</div><div class="size">${sizeKb} КБ</div></div><button type="button" class="btn btn-sm btn-ghost" id="removeAttachedFile">Убрать</button></div>`;
+              preview.querySelector('#removeAttachedFile').onclick = () => {
+                attachedLessonFile = null;
+                fileInput.value = '';
+                preview.innerHTML = '';
+              };
+            } catch (err) {
+              alert(err.message);
+              fileInput.value = '';
+            }
+          };
+          fieldsBox._getAttachedLessonFile = () => attachedLessonFile;
+
           fieldsBox.querySelector('#addLessonLinkBtn').onclick = () => { lessonLinkRows.push({}); renderLessonLinkRows(); };
           fieldsBox.querySelector('#addLessonFileBtn').onclick = () => { lessonFileRows.push({}); renderLessonFileRows(); };
         } else if (type === 'homework') {
@@ -4175,7 +4462,7 @@
             <div class="field-row">
               <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
                 <input type="checkbox" id="fHomeworkAllowModeChoice" style="width:auto;">
-                Разрешить ученику самому выбирать режим (пошагово / список / карты)
+                Разрешить ученику самому выбирать режим
               </label>
             </div>
             <div class="field-row">
@@ -4197,6 +4484,7 @@
                 ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
               </select>
             </div>
+            <small class="help">Для каждого задания: вопрос, ответ, пояснение. <b>Перенос строки</b> работает через Enter.</small>
             <div id="homeworkRowsContainer"></div>
             <button type="button" class="add-line-btn" id="addHomeworkRowBtn">+ Добавить задание</button>
           `;
@@ -4207,6 +4495,7 @@
         }
       }
 
+      // --- синхронизация и рендер строк тренажёра ---
       function syncReactionRowsFromDOM() {
         const cont = fieldsBox.querySelector('#rxnRowsContainer');
         if (!cont) return;
@@ -4240,8 +4529,8 @@
         cont.innerHTML = reactionRows.map((row, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Реакция ${i+1}</span>${reactionRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Задание" data-field="lhs" data-row="${i}" value="${escapeAttr(row.lhs||'')}"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ответ" data-field="answer" data-row="${i}" value="${escapeAttr(row.answer||'')}"></div>
+            <div class="builder-line"><div class="ln-label">1</div><textarea placeholder="Задание (Enter — перенос строки)" data-field="lhs" data-row="${i}" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(row.lhs||'')}</textarea></div>
+            <div class="builder-line"><div class="ln-label">2</div><textarea placeholder="Ответ (Enter — перенос строки)" data-field="answer" data-row="${i}" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(row.answer||'')}</textarea></div>
             <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}" value="${escapeAttr(row.explain||'')}"></div>
             <div class="builder-line"><div class="ln-label">4</div><input type="text" placeholder="Полное уравнение" data-field="full" data-row="${i}" value="${escapeAttr(row.full||'')}"></div>
             <div class="builder-line"><div class="ln-label">5</div><input type="text" placeholder="Варианты (через запятую)" data-field="options" data-row="${i}" value="${escapeAttr(row.options||'')}"></div>
@@ -4278,6 +4567,7 @@
         });
       }
 
+      // --- урок ---
       function renderLessonLinkRows() {
         const cont = fieldsBox.querySelector('#lessonLinkRowsContainer');
         cont.innerHTML = lessonLinkRows.map((_, i) => `
@@ -4293,7 +4583,7 @@
         const cont = fieldsBox.querySelector('#lessonFileRowsContainer');
         cont.innerHTML = lessonFileRows.map((_, i) => `
           <div class="rxn-row-builder" data-row="${i}">
-            <div class="rrb-head"><span>Файл ${i+1}</span>${lessonFileRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="rrb-head"><span>Файл (ссылка) ${i+1}</span>${lessonFileRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
             <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Название" data-field="label" data-row="${i}"></div>
             <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Ссылка" data-field="url" data-row="${i}"></div>
           </div>
@@ -4301,6 +4591,7 @@
         cont.querySelectorAll('[data-remove]').forEach(btn => { btn.onclick = () => { lessonFileRows.splice(parseInt(btn.dataset.remove), 1); renderLessonFileRows(); }; });
       }
 
+      // --- домашка ---
       function syncHomeworkRowsFromDOM() {
         const cont = fieldsBox.querySelector('#homeworkRowsContainer');
         if (!cont) return;
@@ -4332,8 +4623,8 @@
         cont.innerHTML = homeworkRows.map((row, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Задание ${i+1}</span>${homeworkRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" placeholder="Вопрос" data-field="question" data-row="${i}" value="${escapeAttr(row.question||'')}"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" placeholder="Правильный ответ" data-field="answer" data-row="${i}" value="${escapeAttr(row.answer||'')}"></div>
+            <div class="builder-line"><div class="ln-label">1</div><textarea placeholder="Вопрос (Enter — перенос строки)" data-field="question" data-row="${i}" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(row.question||'')}</textarea></div>
+            <div class="builder-line"><div class="ln-label">2</div><textarea placeholder="Правильный ответ (Enter — перенос строки)" data-field="answer" data-row="${i}" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(row.answer||'')}</textarea></div>
             <div class="builder-line"><div class="ln-label">3</div><input type="text" placeholder="Пояснение" data-field="explain" data-row="${i}" value="${escapeAttr(row.explain||'')}"></div>
             <div class="builder-line img-row" data-row="${i}">
               <div class="ln-label">4</div>
@@ -4386,6 +4677,30 @@
           msg.textContent = 'Тема добавлена!';
           refreshTopicOptions();
           render();
+        } else if (type === 'theory') {
+          const title = document.getElementById('fTheoryTitle').value.trim();
+          const status = document.getElementById('fTheoryStatus').value;
+          const releaseDate = document.getElementById('fTheoryRelease').value;
+          const desc = document.getElementById('fTheoryDesc').value;
+          const topicId = topicSel.value;
+          const assignedTo = Array.from(document.getElementById('fAssignToTheory').selectedOptions).map(o => o.value).filter(v => v !== '');
+          if (!title) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название.'; return; }
+          if (!theoryFile && !desc.trim()) { msg.style.color = 'var(--bad)'; msg.textContent = 'Прикрепите файл или введите текст.'; return; }
+
+          const id = 'theory_' + Date.now();
+          const siblingsMax = THEORIES.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
+          THEORIES.push({
+            id, topicId, title, order: siblingsMax + 1,
+            description: desc,
+            file: theoryFile,
+            assignedTo: assignedTo.length > 0 ? assignedTo : null,
+            isDraft: status === 'draft',
+            isLocked: status === 'locked',
+            scheduledRelease: releaseDate ? getSamaraTimestamp(releaseDate) : null
+          });
+          await persistTheories();
+          msg.textContent = 'Теория добавлена!';
+          render();
         } else if (type === 'trainer') {
           const title = document.getElementById('fTrainerTitle').value.trim();
           const mode = document.getElementById('fTrainerMode').value;
@@ -4403,13 +4718,13 @@
           const reactions = [];
           for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            const lhs = row.querySelector('[data-field="lhs"]').value.trim();
-            const answer = row.querySelector('[data-field="answer"]').value.trim();
-            const explain = row.querySelector('[data-field="explain"]').value.trim();
-            const full = row.querySelector('[data-field="full"]').value.trim();
+            const lhs = row.querySelector('[data-field="lhs"]').value;
+            const answer = row.querySelector('[data-field="answer"]').value;
+            const explain = row.querySelector('[data-field="explain"]').value;
+            const full = row.querySelector('[data-field="full"]').value;
             const optionsStr = row.querySelector('[data-field="options"]')?.value.trim() || '';
             const images = (reactionRows[i] && reactionRows[i].images) || [];
-            if (!lhs || !answer) continue;
+            if (!lhs.trim() || !answer.trim()) continue;
             const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
             const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
             reactions.push({
@@ -4437,7 +4752,7 @@
           render();
         } else if (type === 'lesson') {
           const title = document.getElementById('fLessonTitle').value.trim();
-          const description = document.getElementById('fLessonDesc').value.trim();
+          const description = document.getElementById('fLessonDesc').value;
           const videoUrl = document.getElementById('fLessonVideo').value.trim();
           const status = document.getElementById('fLessonStatus').value;
           const releaseDate = document.getElementById('fLessonRelease').value;
@@ -4453,6 +4768,17 @@
             label: row.querySelector('[data-field="label"]').value.trim() || 'Файл',
             url: row.querySelector('[data-field="url"]').value.trim()
           })).filter(f => f.url);
+          // прикреплённый файл
+          const attached = (typeof fieldsBox._getAttachedLessonFile === 'function') ? fieldsBox._getAttachedLessonFile() : null;
+          if (attached) {
+            files.push({
+              label: attached.name,
+              name: attached.name,
+              type: attached.type,
+              size: attached.size,
+              dataUrl: attached.dataUrl
+            });
+          }
 
           const id = 'lesson_' + Date.now();
           const siblingsMax = LESSONS.filter(l => l.topicId === topicId).reduce((m, l) => Math.max(m, l.order), -1);
@@ -4483,11 +4809,11 @@
           const tasks = [];
           for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            const question = row.querySelector('[data-field="question"]').value.trim();
-            const answer = row.querySelector('[data-field="answer"]').value.trim();
-            const explain = row.querySelector('[data-field="explain"]').value.trim();
+            const question = row.querySelector('[data-field="question"]').value;
+            const answer = row.querySelector('[data-field="answer"]').value;
+            const explain = row.querySelector('[data-field="explain"]').value;
             const images = (homeworkRows[i] && homeworkRows[i].images) || [];
-            if (!question || !answer) continue;
+            if (!question.trim() || !answer.trim()) continue;
             tasks.push({ question, answer, explanation: explain || '', images });
           }
           if (tasks.length === 0) { msg.style.color = 'var(--bad)'; msg.textContent = 'Добавьте хотя бы одно задание.'; return; }
@@ -4512,7 +4838,7 @@
     }
 
     // ============================================================
-    // 21. AI-КОНСТРУКТОР
+    // 22. AI-КОНСТРУКТОР
     // ============================================================
 
     function buildAIBuilder() {
@@ -4634,8 +4960,95 @@
     }
 
     // ============================================================
-    // 22. РЕДАКТОРЫ
+    // 23. РЕДАКТОРЫ
     // ============================================================
+
+    function openEditTheoryModal(theoryId) {
+      const theory = THEORIES.find(t => t.id === theoryId);
+      if (!theory) return;
+      const bg = document.createElement('div');
+      bg.className = 'modal-bg';
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+        <h3>Редактировать теорию</h3>
+        <div class="field"><label>Название</label><input type="text" id="editTheoryTitle" value="${escapeAttr(theory.title)}"></div>
+        <div class="field"><label>Статус</label>
+          <select id="editTheoryStatus">
+            <option value="published" ${!theory.isDraft && !theory.isLocked ? 'selected' : ''}>Опубликован</option>
+            <option value="draft" ${theory.isDraft ? 'selected' : ''}>Черновик</option>
+            <option value="locked" ${theory.isLocked ? 'selected' : ''}>Заблокирован</option>
+          </select></div>
+        <div class="field"><label>Отложенный выпуск (самарское время)</label>
+          <input type="datetime-local" id="editTheoryRelease" value="${theory.scheduledRelease ? getSamaraDateString(theory.scheduledRelease) : ''}"></div>
+        <div class="field"><label>Доступно для учеников</label>
+          <select id="editTheoryAssign" multiple style="height:80px;">
+            <option value="">Все ученики</option>
+            ${allStudents.map(s => `<option value="${s}" ${theory.assignedTo && theory.assignedTo.includes(s) ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('')}
+          </select></div>
+        <div class="field"><label>Прикрепить файл (до 900 КБ)</label>
+          <input type="file" id="editTheoryFile"></div>
+        <div id="editTheoryFilePreview"></div>
+        <div class="field"><label>Текст теории</label>
+          <textarea id="editTheoryDesc" rows="4" style="width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);font-family:inherit;font-size:14px;background:var(--bg);color:var(--ink);resize:vertical;">${escapeHtml(theory.description || '')}</textarea></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="cancelEditTheory">Отмена</button>
+          <button class="btn btn-accent" id="saveEditTheory">Сохранить</button>
+        </div>
+      `;
+      bg.appendChild(modal);
+      document.body.appendChild(bg);
+      bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+      modal.querySelector('#cancelEditTheory').onclick = () => bg.remove();
+
+      let newFile = theory.file || null;
+      const fileInput = modal.querySelector('#editTheoryFile');
+      const preview = modal.querySelector('#editTheoryFilePreview');
+
+      function renderPreview() {
+        if (!newFile) { preview.innerHTML = ''; return; }
+        const sizeKb = Math.round((newFile.size || 0) / 1024);
+        if (newFile.type && newFile.type.startsWith('image/')) {
+          preview.innerHTML = `<div class="theory-file-preview"><img src="${newFile.dataUrl}" alt=""></div>`;
+        } else {
+          preview.innerHTML = `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(newFile.name || 'файл')}</div><div class="size">${sizeKb} КБ</div></div><button type="button" class="btn btn-sm btn-ghost" id="rmFile">Убрать</button></div>`;
+          preview.querySelector('#rmFile').onclick = () => { newFile = null; fileInput.value = ''; renderPreview(); };
+        }
+      }
+      renderPreview();
+
+      fileInput.onchange = async (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        try {
+          const dataUrl = await readFileAsDataUrl(f, 900 * 1024);
+          newFile = { name: f.name, type: f.type, size: f.size, dataUrl };
+          renderPreview();
+        } catch (err) {
+          alert(err.message);
+          fileInput.value = '';
+        }
+      };
+
+      modal.querySelector('#saveEditTheory').onclick = async () => {
+        const title = document.getElementById('editTheoryTitle').value.trim();
+        const status = document.getElementById('editTheoryStatus').value;
+        const releaseDate = document.getElementById('editTheoryRelease').value;
+        const desc = document.getElementById('editTheoryDesc').value;
+        const assignedTo = Array.from(document.getElementById('editTheoryAssign').selectedOptions).map(o => o.value).filter(v => v !== '');
+        if (!title) { alert('Введите название'); return; }
+        theory.title = title;
+        theory.description = desc;
+        theory.file = newFile;
+        theory.isDraft = status === 'draft';
+        theory.isLocked = status === 'locked';
+        theory.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
+        theory.assignedTo = assignedTo.length > 0 ? assignedTo : null;
+        await persistTheories();
+        bg.remove();
+        render();
+      };
+    }
 
     function openEditTrainerModal(trainerId) {
       const trainer = TRAINERS.find(t => t.id === trainerId);
@@ -4731,8 +5144,8 @@
         cont.innerHTML = rows.map((r, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Реакция ${i+1}</span>${rows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="lhs" data-row="${i}" value="${escapeAttr(r.lhs)}" placeholder="Задание"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="answer" data-row="${i}" value="${escapeAttr(r.answer)}" placeholder="Ответ"></div>
+            <div class="builder-line"><div class="ln-label">1</div><textarea data-field="lhs" data-row="${i}" placeholder="Задание (Enter — перенос строки)" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(r.lhs)}</textarea></div>
+            <div class="builder-line"><div class="ln-label">2</div><textarea data-field="answer" data-row="${i}" placeholder="Ответ" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(r.answer)}</textarea></div>
             <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explain)}" placeholder="Пояснение"></div>
             <div class="builder-line"><div class="ln-label">4</div><input type="text" data-field="full" data-row="${i}" value="${escapeAttr(r.full)}" placeholder="Полное уравнение"></div>
             <div class="builder-line"><div class="ln-label">5</div><input type="text" data-field="options" data-row="${i}" value="${escapeAttr(r.options)}" placeholder="Варианты"></div>
@@ -4785,13 +5198,13 @@
         const newReactions = [];
         for (let i = 0; i < domRows.length; i++) {
           const row = domRows[i];
-          const lhs = row.querySelector('[data-field="lhs"]').value.trim();
-          const answer = row.querySelector('[data-field="answer"]').value.trim();
-          const explain = row.querySelector('[data-field="explain"]').value.trim();
-          const full = row.querySelector('[data-field="full"]').value.trim();
+          const lhs = row.querySelector('[data-field="lhs"]').value;
+          const answer = row.querySelector('[data-field="answer"]').value;
+          const explain = row.querySelector('[data-field="explain"]').value;
+          const full = row.querySelector('[data-field="full"]').value;
           const optionsStr = row.querySelector('[data-field="options"]')?.value.trim() || '';
           const images = (rows[i] && rows[i].images) || [];
-          if (!lhs || !answer) continue;
+          if (!lhs.trim() || !answer.trim()) continue;
           const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
           const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
           newReactions.push({
@@ -4828,7 +5241,7 @@
       modal.innerHTML = `
         <h3>Редактировать урок</h3>
         <div class="field"><label>Название</label><input type="text" id="editLessonTitle" value="${escapeAttr(lesson.title)}"></div>
-        <div class="field"><label>Описание</label><textarea id="editLessonDesc" style="width:100%;min-height:60px;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);">${escapeAttr(lesson.description || '')}</textarea></div>
+        <div class="field"><label>Описание</label><textarea id="editLessonDesc" style="width:100%;min-height:60px;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);">${escapeHtml(lesson.description || '')}</textarea></div>
         <div class="field"><label>Основное видео</label><input type="text" id="editLessonVideo" value="${escapeAttr(lesson.videoUrl || '')}"></div>
         <div class="field"><label>Статус</label>
           <select id="editLessonStatus">
@@ -4846,7 +5259,12 @@
         <div id="editLessonLinks"></div>
         <button type="button" class="add-line-btn" id="editAddLessonLink">+ Добавить видео</button>
         <div id="editLessonFiles" style="margin-top:8px;"></div>
-        <button type="button" class="add-line-btn" id="editAddLessonFile">+ Добавить файл</button>
+        <button type="button" class="add-line-btn" id="editAddLessonFile">+ Добавить файл (ссылка)</button>
+        <div style="margin-top:10px;">
+          <label style="font-size:12px;color:var(--ink-soft);">Прикрепить файл (до 900 КБ)</label>
+          <input type="file" id="editLessonAttachFile" style="display:block;margin-top:4px;">
+          <div id="editLessonAttachFilePreview"></div>
+        </div>
         <div class="actions">
           <button class="btn btn-ghost" id="cancelEditLesson">Отмена</button>
           <button class="btn btn-accent" id="saveEditLesson">Сохранить</button>
@@ -4857,7 +5275,10 @@
       bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
 
       let linkRows = lesson.links && lesson.links.length ? [...lesson.links] : [{ label: '', url: '' }];
-      let fileRows = lesson.files && lesson.files.length ? [...lesson.files] : [{ label: '', url: '' }];
+      // Только файлы-ссылки (без dataUrl)
+      let fileRows = (lesson.files || []).filter(f => !f.dataUrl).length > 0 ? (lesson.files || []).filter(f => !f.dataUrl).map(f => ({ label: f.label, url: f.url })) : [{ label: '', url: '' }];
+      // Существующий прикреплённый файл (dataUrl)
+      let attachedFile = (lesson.files || []).find(f => f.dataUrl) || null;
 
       function syncLinkRowsFromDOM() {
         const cont = modal.querySelector('#editLessonLinks');
@@ -4890,21 +5311,47 @@
         const cont = modal.querySelector('#editLessonFiles');
         cont.innerHTML = fileRows.map((r, i) => `
           <div class="rxn-row-builder" data-row="${i}">
-            <div class="rrb-head"><span>Файл ${i+1}</span>${fileRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
+            <div class="rrb-head"><span>Файл (ссылка) ${i+1}</span>${fileRows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
             <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="label" data-row="${i}" value="${escapeAttr(r.label||'')}" placeholder="Название"></div>
             <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="url" data-row="${i}" value="${escapeAttr(r.url||'')}" placeholder="Ссылка"></div>
           </div>
         `).join('');
         cont.querySelectorAll('[data-remove]').forEach(btn => { btn.onclick = () => { syncFileRowsFromDOM(); fileRows.splice(parseInt(btn.dataset.remove), 1); renderFileRows(); }; });
       }
-      renderLinkRows(); renderFileRows();
+      function renderAttachedPreview() {
+        const preview = modal.querySelector('#editLessonAttachFilePreview');
+        if (!attachedFile) { preview.innerHTML = ''; return; }
+        const sizeKb = Math.round((attachedFile.size || 0) / 1024);
+        preview.innerHTML = `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(attachedFile.name || attachedFile.label || 'Файл')}</div><div class="size">${sizeKb} КБ</div></div><button type="button" class="btn btn-sm btn-ghost" id="rmAttachedFile">Убрать</button></div>`;
+        preview.querySelector('#rmAttachedFile').onclick = () => {
+          attachedFile = null;
+          modal.querySelector('#editLessonAttachFile').value = '';
+          renderAttachedPreview();
+        };
+      }
+
+      renderLinkRows(); renderFileRows(); renderAttachedPreview();
       modal.querySelector('#editAddLessonLink').onclick = () => { syncLinkRowsFromDOM(); linkRows.push({ label: '', url: '' }); renderLinkRows(); };
       modal.querySelector('#editAddLessonFile').onclick = () => { syncFileRowsFromDOM(); fileRows.push({ label: '', url: '' }); renderFileRows(); };
       modal.querySelector('#cancelEditLesson').onclick = () => bg.remove();
 
+      const fileInput = modal.querySelector('#editLessonAttachFile');
+      fileInput.onchange = async (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        try {
+          const dataUrl = await readFileAsDataUrl(f, 900 * 1024);
+          attachedFile = { label: f.name, name: f.name, type: f.type, size: f.size, dataUrl };
+          renderAttachedPreview();
+        } catch (err) {
+          alert(err.message);
+          fileInput.value = '';
+        }
+      };
+
       modal.querySelector('#saveEditLesson').onclick = async () => {
         const title = document.getElementById('editLessonTitle').value.trim();
-        const description = document.getElementById('editLessonDesc').value.trim();
+        const description = document.getElementById('editLessonDesc').value;
         const videoUrl = document.getElementById('editLessonVideo').value.trim();
         const status = document.getElementById('editLessonStatus').value;
         const releaseDate = document.getElementById('editLessonRelease').value;
@@ -4918,6 +5365,8 @@
           label: row.querySelector('[data-field="label"]').value.trim() || 'Файл',
           url: row.querySelector('[data-field="url"]').value.trim()
         })).filter(f => f.url);
+        if (attachedFile) files.push(attachedFile);
+
         lesson.title = title;
         lesson.description = description;
         lesson.videoUrl = videoUrl;
@@ -5010,8 +5459,8 @@
         cont.innerHTML = rows.map((r, i) => `
           <div class="rxn-row-builder" data-row="${i}">
             <div class="rrb-head"><span>Задание ${i+1}</span>${rows.length>1?`<button type="button" class="icon-btn danger" data-remove="${i}">✕</button>`:''}</div>
-            <div class="builder-line"><div class="ln-label">1</div><input type="text" data-field="question" data-row="${i}" value="${escapeAttr(r.question||'')}" placeholder="Вопрос"></div>
-            <div class="builder-line"><div class="ln-label">2</div><input type="text" data-field="answer" data-row="${i}" value="${escapeAttr(r.answer||'')}" placeholder="Правильный ответ"></div>
+            <div class="builder-line"><div class="ln-label">1</div><textarea data-field="question" data-row="${i}" placeholder="Вопрос (Enter — перенос строки)" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(r.question||'')}</textarea></div>
+            <div class="builder-line"><div class="ln-label">2</div><textarea data-field="answer" data-row="${i}" placeholder="Правильный ответ (Enter — перенос строки)" style="flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:13.5px;background:var(--bg);color:var(--ink);resize:vertical;min-height:50px;">${escapeHtml(r.answer||'')}</textarea></div>
             <div class="builder-line"><div class="ln-label">3</div><input type="text" data-field="explain" data-row="${i}" value="${escapeAttr(r.explanation||'')}" placeholder="Пояснение"></div>
             <div class="builder-line img-row" data-row="${i}">
               <div class="ln-label">4</div>
@@ -5060,11 +5509,11 @@
         const tasks = [];
         for (let i = 0; i < domRows.length; i++) {
           const row = domRows[i];
-          const question = row.querySelector('[data-field="question"]').value.trim();
-          const answer = row.querySelector('[data-field="answer"]').value.trim();
-          const explain = row.querySelector('[data-field="explain"]').value.trim();
+          const question = row.querySelector('[data-field="question"]').value;
+          const answer = row.querySelector('[data-field="answer"]').value;
+          const explain = row.querySelector('[data-field="explain"]').value;
           const images = (rows[i] && rows[i].images) || [];
-          if (!question || !answer) continue;
+          if (!question.trim() || !answer.trim()) continue;
           tasks.push({ question, answer, explanation: explain || '', images });
         }
         if (tasks.length === 0) { alert('Добавьте хотя бы одно задание'); return; }
@@ -5084,7 +5533,7 @@
     }
 
     // ============================================================
-    // 23. ИНИЦИАЛИЗАЦИЯ
+    // 24. ИНИЦИАЛИЗАЦИЯ
     // ============================================================
 
     document.getElementById('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') window.handleLogin(); });
