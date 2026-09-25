@@ -295,12 +295,13 @@
     .trainer-mode-selector .btn { flex: 1; text-align: center; }
     .trainer-mode-selector .btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    /* ===== Задание в тренажёре — жирнее ===== */
     .rxn-step {
       background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
       padding: 24px 26px; margin-bottom: 16px;
     }
     .rxn-step .rxn-num { font-size: 12px; color: var(--ink-soft); font-weight: 600; margin-bottom: 8px; }
-    .rxn-step .rxn-eq { font-size: 25px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 20px; line-height: 1.6; }
+    .rxn-step .rxn-eq { font-size: 24px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 20px; line-height: 1.6; white-space: normal; }
     .task-image {
       max-width: 100%; max-height: 320px; border-radius: 12px; border: 1px solid var(--line);
       display: block; margin: 4px 0 16px; cursor: zoom-in;
@@ -344,10 +345,10 @@
       position: relative;
     }
     .flash-card .card-number { position: absolute; top: 16px; left: 20px; font-size: 12px; color: var(--ink-soft); font-weight: 600; }
-    .flash-card .card-question { font-size: 32px; font-weight: 600; text-align: center; padding: 20px 0; line-height: 1.6; }
+    .flash-card .card-question { font-size: 28px; font-weight: 700; text-align: center; padding: 20px 0; line-height: 1.6; white-space: normal; }
     .flash-card .card-answer-block {
       margin-top: 4px; padding-top: 20px; border-top: 1px solid var(--line);
-      width: 100%; text-align: center; font-size: 22px; font-weight: 700; color: var(--ok);
+      width: 100%; text-align: center; font-size: 22px; font-weight: 700; color: var(--ok); line-height: 1.6;
     }
     .flash-card .card-actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
     .flash-card .card-nav {
@@ -371,7 +372,7 @@
     .rxn-card.state-correct { border-color: #bfe8d5; }
     .rxn-card.state-wrong { border-color: #f3c6c1; }
     .rxn-card .rxn-num { font-size: 11.5px; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; }
-    .rxn-card .rxn-eq { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 12px; line-height: 1.6; }
+    .rxn-card .rxn-eq { font-size: 19px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 12px; line-height: 1.6; white-space: normal; }
     .rxn-card .rxn-input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .rxn-card .rxn-input {
       flex: 1; min-width: 180px; padding: 12px 16px; border-radius: 10px; border: 1.5px solid var(--line);
@@ -454,7 +455,7 @@
       display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
     }
     .error-card__source .sep { opacity: .4; }
-    .error-card__question { font-size: 18px; font-weight: 600; margin: 4px 0 10px; line-height: 1.5; }
+    .error-card__question { font-size: 18px; font-weight: 600; margin: 4px 0 10px; line-height: 1.6; }
     .error-card__correct { font-size: 13.5px; color: var(--ok); font-weight: 600; margin-top: 6px; }
     .error-card__explain {
       font-size: 13px; color: var(--ink-soft); margin-top: 6px;
@@ -502,7 +503,7 @@
       background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; margin-bottom: 24px;
     }
     .builder-box h3 { margin: 0 0 14px; font-size: 15px; }
-    .builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
     .builder-box .field-row input, .builder-box .field-row select {
       padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
       font-family: inherit; font-size: 13.5px; background: var(--bg); color: var(--ink);
@@ -517,7 +518,7 @@
       background: var(--surface); border: 2px solid var(--accent); border-radius: 16px; padding: 22px; margin-bottom: 24px;
     }
     .ai-builder-box h3 { margin: 0 0 14px; font-size: 15px; color: var(--accent); }
-    .ai-builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .ai-builder-box .field-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
     .ai-builder-box .field-row input, .ai-builder-box .field-row select {
       padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
       font-family: inherit; font-size: 13.5px; background: var(--bg); color: var(--ink);
@@ -537,6 +538,11 @@
     .builder-line input {
       flex: 1; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
       font-family: inherit; font-size: 13.5px; min-width: 0;
+      background: var(--bg); color: var(--ink);
+    }
+    .builder-line textarea {
+      flex: 1; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+      font-family: inherit; font-size: 13.5px; min-width: 0; resize: vertical; min-height: 50px;
       background: var(--bg); color: var(--ink);
     }
     .rxn-row-builder {
@@ -573,14 +579,13 @@
     .task-image-preview-item img { max-height:60px; border-radius:6px; border:1px solid var(--line); display:block; }
     .task-image-preview-item .remove-img-btn { position:absolute; top:-8px; right:-8px; width:22px; height:22px; }
 
-    /* Теория — отображение прикреплённого файла */
     .theory-file-preview {
       display: flex; align-items: center; gap: 10px;
       background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
       padding: 12px 16px; margin-top: 10px;
     }
     .theory-file-preview .icon { font-size: 24px; }
-    .theory-file-preview .name { font-weight: 600; font-size: 14px; }
+    .theory-file-preview .name { font-weight: 600; font-size: 14px; word-break: break-word; }
     .theory-file-preview .size { font-size: 12px; color: var(--ink-soft); }
     .theory-file-preview img { max-height: 120px; border-radius: 8px; }
     .theory-text {
@@ -600,7 +605,7 @@
       .rxn-step .rxn-actions { flex-direction: column; }
       .stats-table { font-size: 12px; }
       .stats-table th, .stats-table td { padding: 8px 6px; }
-      .flash-card .card-question { font-size: 23px; }
+      .flash-card .card-question { font-size: 20px; }
       .flash-card .card-answer-block { font-size: 17px; }
       .errors-panel { flex-direction: column; align-items: stretch; }
     }
@@ -608,7 +613,6 @@
 </head>
 <body>
 
-  <!-- ===== ЭКРАН ВХОДА ===== -->
   <div id="loginScreen" class="login-wrap">
     <div class="login-card">
       <div class="mark-lg">Х</div>
@@ -627,7 +631,6 @@
     </div>
   </div>
 
-  <!-- ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ ===== -->
   <div id="app" class="hidden">
     <div class="topbar">
       <div class="brand" onclick="goHome()">
@@ -846,12 +849,6 @@
     function getErrorList(progress) {
       if (!progress || !progress.__errors) return [];
       return Object.values(progress.__errors).sort((a, b) => (b.lastWrongAt || 0) - (a.lastWrongAt || 0));
-    }
-
-    // Проверка: включены ли ошибки у ученика (по умолчанию — да)
-    function isErrorsEnabledForStudent(studentRecord) {
-      if (!studentRecord) return true;
-      return studentRecord.errorsEnabled !== false; // по умолчанию true
     }
 
     // ============================================================
@@ -1091,9 +1088,6 @@
       return (s || '').replace(/"/g, '&quot;');
     }
 
-    // renderEquation теперь обрабатывает \n → <br>, чтобы варианты
-    // ответа и задания, записанные в столбик, отображались корректно
-    // во всех режимах (тренажёр, домашка, карты, просмотр результата).
     function renderEquation(str) {
       if (!str) return '';
       let out = '';
@@ -1203,8 +1197,6 @@
       });
     }
 
-    // Универсальное чтение файла (для теории) — как картинки, так и PDF и т.п.
-    // Ограничение по размеру: 900 КБ, чтобы не переполнять Firebase.
     function readFileAsDataUrl(file, maxBytes) {
       return new Promise((resolve, reject) => {
         if (!file) { reject(new Error('Файл не выбран')); return; }
@@ -1261,6 +1253,16 @@
           <button type="button" class="icon-btn danger ${removeClass}" data-row="${rowIdx}" data-imgidx="${imgIdx}" title="Убрать">✕</button>
         </div>
       `).join('');
+    }
+
+    // Перемешать массив (Фишер-Йетс)
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
     }
 
     // ============================================================
@@ -1675,7 +1677,6 @@
         window.__cachedProgress = progress;
       }
 
-      // Панель «Мои ошибки» — только если ученику включены ошибки
       const errorsEnabled = !CURRENT_USER.isTeacher && CURRENT_USER.errorsEnabled !== false;
       if (errorsEnabled) {
         const errCount = countErrors(progress);
@@ -1860,7 +1861,7 @@
             card.innerHTML = `
               <span class="kind theory">Теория</span>
               <h3>${escapeHtml(item.title)}</h3>
-              <div class="meta">${item.file ? '📎 ' + escapeHtml(item.file.name || 'файл') : (item.description ? 'Текст' : 'Материал')}</div>
+              <div class="meta">${item.file ? '📎 ' + escapeHtml(item.file.name || 'файл') : (item.linkUrl ? '🔗 Ссылка' : (item.description ? 'Текст' : 'Материал'))}</div>
               ${badge}
               ${isManaging() ? `<div class="card-edit-row">
                 <button class="icon-btn" data-act="up">↑</button>
@@ -1906,7 +1907,7 @@
             card.innerHTML = `
               <div class="card-top-row"><div><span class="kind">Тренажёр</span></div>${badge}</div>
               <h3>${escapeHtml(item.title)}</h3>
-              <div class="meta">${(item.reactions || []).length} реакций${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}` : ''}</div>
+              <div class="meta">${(item.reactions || []).length} реакций${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
               ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${isFinished ? ' finished' : ''}" style="width:${pct}%"></div></div>` : ''}
               ${isManaging() ? `<div class="card-edit-row">
                 <button class="icon-btn" data-act="up">↑</button>
@@ -1991,7 +1992,7 @@
             card.innerHTML = `
               <span class="kind homework">Домашка</span>
               <h3>${escapeHtml(item.title)}</h3>
-              <div class="meta">${(item.tasks || []).length} заданий${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}` : ''}</div>
+              <div class="meta">${(item.tasks || []).length} заданий${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
               ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${hwFinished ? ' finished' : ''}" style="width:${hwPct}%"></div></div>` : ''}
               ${badge}
               ${isManaging() ? `<div class="card-edit-row">
@@ -2030,7 +2031,7 @@
     }
 
     // ============================================================
-    // 13. СТРАНИЦА «МОИ ОШИБКИ» — как список
+    // 13. СТРАНИЦА «МОИ ОШИБКИ»
     // ============================================================
 
     async function renderErrorsPage(container) {
@@ -2233,7 +2234,7 @@
     }
 
     // ============================================================
-    // 14. МОДАЛКА «ОТРАБОТАТЬ ВСЕ» — тоже список
+    // 14. МОДАЛКА «ОТРАБОТАТЬ ВСЕ»
     // ============================================================
 
     function openErrorsPracticeModal(errors, progress, isRealStudent, studentKey) {
@@ -2525,7 +2526,7 @@
     };
 
     // ============================================================
-    // 16. ТЕОРИЯ — модалка просмотра
+    // 16. ТЕОРИЯ
     // ============================================================
 
     function renderTheoryModal(theoryId) {
@@ -2560,6 +2561,17 @@
             </div>
           `;
         }
+      }
+      if (theory.linkUrl) {
+        bodyHtml += `
+          <div class="theory-file-preview">
+            <div class="icon">🔗</div>
+            <div style="flex:1;">
+              <div class="name">${escapeHtml(theory.linkUrl)}</div>
+            </div>
+            <a class="btn btn-sm btn-accent" href="${escapeAttr(theory.linkUrl)}" target="_blank" rel="noopener">Открыть</a>
+          </div>
+        `;
       }
       if (theory.description) {
         bodyHtml += `<div class="theory-text">${escapeHtmlMultiline(theory.description)}</div>`;
@@ -2598,6 +2610,24 @@
       let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
       if (!progress[trainerId]) progress[trainerId] = {};
       const trainerProgress = progress[trainerId];
+
+      // Если включён рандом — перемешиваем один раз и запоминаем порядок,
+      // чтобы индексы ответов и статусов совпадали.
+      let reactions = trainer.reactions || [];
+      if (trainer.randomOrder) {
+        if (trainerProgress.__randomOrder && trainerProgress.__randomOrder.length === reactions.length) {
+          const order = trainerProgress.__randomOrder;
+          reactions = order.map(i => (trainer.reactions || [])[i]).filter(Boolean);
+        } else {
+          const indices = reactions.map((_, i) => i);
+          const shuffled = shuffleArray(indices);
+          reactions = shuffled.map(i => (trainer.reactions || [])[i]);
+          if (isRealStudent) {
+            trainerProgress.__randomOrder = shuffled;
+            persistFullProgress(CURRENT_USER.key, progress);
+          }
+        }
+      }
 
       const mode = trainer.mode || 'step';
       const taskType = trainer.taskType || 'text';
@@ -2658,10 +2688,13 @@
       wrap.appendChild(footer);
       container.appendChild(wrap);
 
-      if (effectiveMode === 'step') renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      else if (effectiveMode === 'list') renderListMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      else if (effectiveMode === 'cards') renderCardsMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
-      else renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType);
+      // передаём локальный массив reactions, а не trainer.reactions
+      const trainerForRender = { ...trainer, reactions };
+
+      if (effectiveMode === 'step') renderStepMode(content, footer, trainerForRender, trainerProgress, isRealStudent, progress, taskType);
+      else if (effectiveMode === 'list') renderListMode(content, footer, trainerForRender, trainerProgress, isRealStudent, progress, taskType);
+      else if (effectiveMode === 'cards') renderCardsMode(content, footer, trainerForRender, trainerProgress, isRealStudent, progress, taskType);
+      else renderStepMode(content, footer, trainerForRender, trainerProgress, isRealStudent, progress, taskType);
     }
 
     function renderStepMode(content, footer, trainer, trainerProgress, isRealStudent, progress, taskType) {
@@ -2748,6 +2781,11 @@
               trainerProgress.currentIndex = 0;
               trainerProgress.round = 1;
               trainerProgress.__finished = false;
+              // Новая случайная последовательность
+              if (trainer.randomOrder) {
+                const indices = (trainer.reactions || []).map((_, i) => i);
+                trainerProgress.__randomOrder = shuffleArray(indices);
+              }
               statuses = trainerProgress.statuses;
               answers = trainerProgress.answers;
               currentIndex = 0;
@@ -3131,6 +3169,10 @@
           trainerProgress.statuses = statuses;
           trainerProgress.answers = answers;
           trainerProgress.__finished = false;
+          if (trainer.randomOrder) {
+            const indices = (trainer.reactions || []).map((_, i) => i);
+            trainerProgress.__randomOrder = shuffleArray(indices);
+          }
           saveState();
           renderList();
           updateStats();
@@ -3362,6 +3404,24 @@
       let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
       if (!progress[homeworkId]) progress[homeworkId] = {};
       const hwProgress = progress[homeworkId];
+
+      // Если включён рандом — перемешиваем один раз и запоминаем
+      let tasks = homework.tasks || [];
+      if (homework.randomOrder) {
+        if (hwProgress.__randomOrder && hwProgress.__randomOrder.length === tasks.length) {
+          const order = hwProgress.__randomOrder;
+          tasks = order.map(i => (homework.tasks || [])[i]).filter(Boolean);
+        } else {
+          const indices = tasks.map((_, i) => i);
+          const shuffled = shuffleArray(indices);
+          tasks = shuffled.map(i => (homework.tasks || [])[i]);
+          if (isRealStudent) {
+            hwProgress.__randomOrder = shuffled;
+            persistFullProgress(CURRENT_USER.key, progress);
+          }
+        }
+      }
+
       const mode = homework.mode || 'list';
       const allowChoice = !!homework.allowModeChoice;
 
@@ -3417,9 +3477,11 @@
       wrap.appendChild(footer);
       container.appendChild(wrap);
 
-      if (effectiveMode === 'step') renderHwStepMode(content, footer, homework, hwProgress, isRealStudent, progress);
-      else if (effectiveMode === 'cards') renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent, progress);
-      else renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress);
+      const homeworkForRender = { ...homework, tasks };
+
+      if (effectiveMode === 'step') renderHwStepMode(content, footer, homeworkForRender, hwProgress, isRealStudent, progress);
+      else if (effectiveMode === 'cards') renderHwCardsMode(content, footer, homeworkForRender, hwProgress, isRealStudent, progress);
+      else renderHwListMode(content, footer, homeworkForRender, hwProgress, isRealStudent, progress);
     }
 
     function renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress) {
@@ -3529,6 +3591,10 @@
           answers = Array(tasks.length).fill('');
           hwProgress.statuses = statuses;
           hwProgress.answers = answers;
+          if (homework.randomOrder) {
+            const indices = (homework.tasks || []).map((_, i) => i);
+            hwProgress.__randomOrder = shuffleArray(indices);
+          }
           if (isRealStudent) await persistFullProgress(CURRENT_USER.key, progress);
           renderHwListMode(content, footer, homework, hwProgress, isRealStudent, progress);
         }, () => {
@@ -3869,7 +3935,6 @@
       }
       if (files.length > 0) {
         linksHtml += `<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">` + files.map(f => {
-          // Если файл — dataUrl, даём кнопку скачивания
           if (f.dataUrl) {
             const sizeKb = Math.round((f.size || 0) / 1024);
             return `<div class="theory-file-preview"><div class="icon">📎</div><div style="flex:1;"><div class="name">${escapeHtml(f.label || f.name || 'Файл')}</div><div class="size">${sizeKb} КБ</div></div><a class="btn btn-sm btn-accent" href="${f.dataUrl}" download="${escapeAttr(f.name || 'file')}">Скачать</a></div>`;
@@ -3932,7 +3997,7 @@
       const sortedKeys = Object.keys(reg).sort((a, b) => (reg[a].createdAt || 0) - (reg[b].createdAt || 0));
 
       const wrap = document.createElement('div');
-      wrap.innerHTML = `<h1 class="page-title">Статистика учеников</h1><p class="page-sub">Имя, пароль и прогресс. Нажмите на имя, чтобы увидеть детали и ошибки.</p>`;
+      wrap.innerHTML = `<h1 class="page-title">Статистика учеников</h1><p class="page-sub">Имя, пароль и прогресс. Нажмите на имя, чтобы увидеть детали. Кнопка «Показать» в столбце «Ошибки» откроет список ошибок ученика.</p>`;
 
       const tabs = document.createElement('div');
       tabs.className = 'maintabs';
@@ -4005,7 +4070,6 @@
           }
           const percent = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
-          // Столбец «Ошибки» — кнопка «Показать N»
           const errCount = countErrors(progress);
           const errorsCell = student.errorsEnabled === false
             ? '<span style="color:var(--ink-soft);">выключены</span>'
@@ -4077,7 +4141,6 @@
       };
     }
 
-    // Модалка со списком всех ошибок ученика
     function showStudentErrorsModal(studentKey, progress) {
       const errors = getErrorList(progress);
       const bg = document.createElement('div');
@@ -4180,7 +4243,6 @@
       title.textContent = student.name;
       wrap.appendChild(title);
 
-      // Кнопка перехода к списку ошибок
       const errCount = countErrors(progress);
       const errBlock = document.createElement('div');
       errBlock.style.cssText = 'background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:16px;padding:22px;margin:18px 0 24px;';
@@ -4266,10 +4328,10 @@
         <h3>Добавить новый материал</h3>
         <div class="field-row">
           <select id="builderType">
-            <option value="theory">Теория</option>
             <option value="trainer">Тренажёр</option>
-            <option value="lesson">Урок</option>
             <option value="homework">Домашка</option>
+            <option value="theory">Теория</option>
+            <option value="lesson">Урок</option>
             <option value="topic">Новая тема</option>
           </select>
           <select id="builderTopic"></select>
@@ -4290,16 +4352,13 @@
       refreshTopicOptions();
 
       let reactionRows = [], lessonLinkRows = [], lessonFileRows = [], homeworkRows = [];
-      // Для теории — вложения
-      let theoryFile = null;      // { name, type, size, dataUrl }
-      let theoryDescription = '';
+      let theoryFile = null;
 
       function renderFields() {
         const type = typeSel.value;
         topicSel.style.display = (type === 'topic') ? 'none' : '';
         if (type === 'theory') {
           theoryFile = null;
-          theoryDescription = '';
           fieldsBox.innerHTML = `
             <div class="field-row"><input type="text" id="fTheoryTitle" placeholder="Название теории" style="flex:1;min-width:240px;"></div>
             <div class="field-row">
@@ -4316,6 +4375,10 @@
                 <option value="">Все ученики</option>
                 ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
               </select>
+            </div>
+            <div class="field-row">
+              <label style="font-size:12px;color:var(--ink-soft);">Ссылка (Google Диск, YouTube и т.п.)</label>
+              <input type="text" id="fTheoryLink" placeholder="https://..." style="flex:1;">
             </div>
             <div class="field-row">
               <label style="font-size:12px;color:var(--ink-soft);">Прикрепить файл (необязательно, до 900 КБ)</label>
@@ -4366,6 +4429,12 @@
               </label>
             </div>
             <div class="field-row">
+              <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="fRandomOrder" style="width:auto;">
+                Перемешать задания в случайном порядке
+              </label>
+            </div>
+            <div class="field-row">
               <label style="font-size:12px;color:var(--ink-soft);">Статус</label>
               <select id="fTrainerStatus"><option value="published">Опубликован</option><option value="draft">Черновик</option><option value="locked">Заблокирован</option></select>
             </div>
@@ -4384,7 +4453,7 @@
                 ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
               </select>
             </div>
-            <small class="help"><b>Ответ:</b> варианты через <b>/</b>. Продукты внутри варианта через <b>+</b>. Для чекбоксов — через <b>,</b>. <b>Перенос строки</b> в заданиях и ответах работает через Enter.</small>
+            <small class="help"><b>Ответ:</b> варианты через <b>/</b>. Продукты внутри варианта через <b>+</b>. Для чекбоксов — через <b>,</b>. В заданиях и ответах можно писать в столбик через Enter.</small>
             <div id="rxnRowsContainer"></div>
             <button type="button" class="add-line-btn" id="addRxnRowBtn">+ Добавить реакцию</button>
           `;
@@ -4426,7 +4495,6 @@
           `;
           renderLessonLinkRows(); renderLessonFileRows();
 
-          // локальная переменная для вложения
           let attachedLessonFile = null;
           const fileInput = fieldsBox.querySelector('#fLessonAttachFile');
           const preview = fieldsBox.querySelector('#fLessonAttachFilePreview');
@@ -4466,6 +4534,12 @@
               </label>
             </div>
             <div class="field-row">
+              <label style="font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="fHomeworkRandomOrder" style="width:auto;">
+                Перемешать задания в случайном порядке
+              </label>
+            </div>
+            <div class="field-row">
               <label style="font-size:12px;color:var(--ink-soft);">Статус</label>
               <select id="fHomeworkStatus"><option value="published">Опубликован</option><option value="draft">Черновик</option><option value="locked">Заблокирован</option></select>
             </div>
@@ -4484,7 +4558,7 @@
                 ${allStudents.map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('')}
               </select>
             </div>
-            <small class="help">Для каждого задания: вопрос, ответ, пояснение. <b>Перенос строки</b> работает через Enter.</small>
+            <small class="help">Для каждого задания: вопрос, ответ, пояснение. Вопрос и ответ можно писать в столбик через Enter.</small>
             <div id="homeworkRowsContainer"></div>
             <button type="button" class="add-line-btn" id="addHomeworkRowBtn">+ Добавить задание</button>
           `;
@@ -4495,7 +4569,6 @@
         }
       }
 
-      // --- синхронизация и рендер строк тренажёра ---
       function syncReactionRowsFromDOM() {
         const cont = fieldsBox.querySelector('#rxnRowsContainer');
         if (!cont) return;
@@ -4567,7 +4640,6 @@
         });
       }
 
-      // --- урок ---
       function renderLessonLinkRows() {
         const cont = fieldsBox.querySelector('#lessonLinkRowsContainer');
         cont.innerHTML = lessonLinkRows.map((_, i) => `
@@ -4591,7 +4663,6 @@
         cont.querySelectorAll('[data-remove]').forEach(btn => { btn.onclick = () => { lessonFileRows.splice(parseInt(btn.dataset.remove), 1); renderLessonFileRows(); }; });
       }
 
-      // --- домашка ---
       function syncHomeworkRowsFromDOM() {
         const cont = fieldsBox.querySelector('#homeworkRowsContainer');
         if (!cont) return;
@@ -4682,10 +4753,11 @@
           const status = document.getElementById('fTheoryStatus').value;
           const releaseDate = document.getElementById('fTheoryRelease').value;
           const desc = document.getElementById('fTheoryDesc').value;
+          const linkUrl = document.getElementById('fTheoryLink').value.trim();
           const topicId = topicSel.value;
           const assignedTo = Array.from(document.getElementById('fAssignToTheory').selectedOptions).map(o => o.value).filter(v => v !== '');
           if (!title) { msg.style.color = 'var(--bad)'; msg.textContent = 'Введите название.'; return; }
-          if (!theoryFile && !desc.trim()) { msg.style.color = 'var(--bad)'; msg.textContent = 'Прикрепите файл или введите текст.'; return; }
+          if (!theoryFile && !desc.trim() && !linkUrl) { msg.style.color = 'var(--bad)'; msg.textContent = 'Прикрепите файл, введите текст или ссылку.'; return; }
 
           const id = 'theory_' + Date.now();
           const siblingsMax = THEORIES.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
@@ -4693,6 +4765,7 @@
             id, topicId, title, order: siblingsMax + 1,
             description: desc,
             file: theoryFile,
+            linkUrl: linkUrl || null,
             assignedTo: assignedTo.length > 0 ? assignedTo : null,
             isDraft: status === 'draft',
             isLocked: status === 'locked',
@@ -4706,6 +4779,7 @@
           const mode = document.getElementById('fTrainerMode').value;
           const taskType = document.getElementById('fTaskType').value;
           const allowModeChoice = document.getElementById('fAllowModeChoice').checked;
+          const randomOrder = document.getElementById('fRandomOrder').checked;
           const status = document.getElementById('fTrainerStatus').value;
           const releaseDate = document.getElementById('fTrainerRelease').value;
           const customNote = document.getElementById('fTrainerNote').value.trim();
@@ -4740,7 +4814,7 @@
           const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
           TRAINERS.push({
             id, topicId, title, order: siblingsMax + 1,
-            mode, taskType, allowModeChoice, customNote,
+            mode, taskType, allowModeChoice, randomOrder, customNote,
             reactions,
             assignedTo: assignedTo.length > 0 ? assignedTo : null,
             isDraft: status === 'draft',
@@ -4768,7 +4842,6 @@
             label: row.querySelector('[data-field="label"]').value.trim() || 'Файл',
             url: row.querySelector('[data-field="url"]').value.trim()
           })).filter(f => f.url);
-          // прикреплённый файл
           const attached = (typeof fieldsBox._getAttachedLessonFile === 'function') ? fieldsBox._getAttachedLessonFile() : null;
           if (attached) {
             files.push({
@@ -4797,6 +4870,7 @@
           const title = document.getElementById('fHomeworkTitle').value.trim();
           const mode = document.getElementById('fHomeworkMode').value;
           const allowModeChoice = document.getElementById('fHomeworkAllowModeChoice').checked;
+          const randomOrder = document.getElementById('fHomeworkRandomOrder').checked;
           const status = document.getElementById('fHomeworkStatus').value;
           const releaseDate = document.getElementById('fHomeworkRelease').value;
           const customNote = document.getElementById('fHomeworkNote').value.trim();
@@ -4822,7 +4896,7 @@
           const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
           HOMEWORKS.push({
             id, topicId, title, order: siblingsMax + 1,
-            mode, allowModeChoice, customNote, tasks,
+            mode, allowModeChoice, randomOrder, customNote, tasks,
             assignedTo: assignedTo.length > 0 ? assignedTo : null,
             isDraft: status === 'draft',
             isLocked: status === 'locked',
@@ -4846,18 +4920,22 @@
       box.className = 'ai-builder-box';
       box.innerHTML = `
         <h3>Быстрое создание с ИИ</h3>
+        <p style="font-size:13px;color:var(--ink-soft);margin-bottom:10px;">Одно задание = один блок. Блоки разделяйте <b>пустой строкой</b>. Внутри одного задания можно писать в столбик через Enter, а поля разделять символом <b>|</b>: задание | ответ | пояснение | полное уравнение.</p>
         <div class="field-row">
-          <select id="aiType"><option value="trainer">Тренажёр</option><option value="lesson">Урок</option><option value="homework">Домашка</option></select>
+          <select id="aiType"><option value="trainer">Тренажёр</option><option value="homework">Домашка</option><option value="lesson">Урок</option></select>
           <select id="aiTopic"></select>
         </div>
         <div class="field-row" id="aiTrainerOptionsRow">
           <select id="aiMode"><option value="step">Пошагово</option><option value="list">Список</option><option value="cards">Карты</option></select>
           <select id="aiTaskType"><option value="text">Ввод текста</option><option value="radio">Один вариант</option><option value="checkbox">Несколько вариантов</option></select>
           <label style="font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="aiAllowModeChoice"> Свободный режим</label>
+          <label style="font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="aiRandomOrder"> Рандом</label>
         </div>
         <div class="field-row"><input type="text" id="aiTitle" placeholder="Название материала" style="flex:1;"></div>
-        <div class="field-row"><textarea id="aiInput" placeholder="Вставьте материалы..."></textarea></div>
-        <div class="field-row"><span style="font-size:12px;color:var(--ink-soft);">Поля через <b>|</b>: задание | ответ | пояснение | полное уравнение.</span></div>
+        <div class="field-row"><textarea id="aiInput" placeholder="Пример (задания разделены пустой строкой):&#10;&#10;Определите, атомы каких из указанных в ряду элементов образуют устойчивый ион, содержащий двадцать три электрона.&#10;1) Fe&#10;2) Ca&#10;3) P&#10;4) Mn&#10;5) As&#10;| 14&#10;&#10;Определите, атомы каких из указанных в ряду элементов в основном состоянии содержат на внешнем энергетическом слое один электрон.&#10;1) Be&#10;2) Cr&#10;3) C&#10;4) K&#10;5) N&#10;| 24"></textarea></div>
+        <div class="field-row" id="aiSyntaxHint">
+          <span style="font-size:12px;color:var(--ink-soft);">Поля через <b>|</b>: задание | ответ | пояснение | полное уравнение.</span>
+        </div>
         <div class="field-row">
           <label style="font-size:12px;color:var(--ink-soft);width:100%;">Доступно для учеников</label>
           <select id="aiAssignTo" multiple style="height:80px;width:100%;"><option value="">Все ученики</option></select>
@@ -4872,6 +4950,7 @@
       const trainerOptionsRow = box.querySelector('#aiTrainerOptionsRow');
       const assignSel = box.querySelector('#aiAssignTo');
       const allowModeChoiceChk = box.querySelector('#aiAllowModeChoice');
+      const randomOrderChk = box.querySelector('#aiRandomOrder');
 
       function refreshTopicOptions() {
         const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
@@ -4895,48 +4974,66 @@
         const mode = modeSel.value;
         const taskType = taskTypeSel.value;
         const allowModeChoice = allowModeChoiceChk.checked;
+        const randomOrder = randomOrderChk.checked;
         const assignedTo = Array.from(assignSel.selectedOptions).map(o => o.value).filter(v => v);
         msgDiv.textContent = ''; msgDiv.style.color = 'var(--bad)';
         if (!title) { msgDiv.textContent = 'Введите название.'; return; }
         if (!rawText) { msgDiv.textContent = 'Вставьте материалы.'; return; }
-        const lines = rawText.split('\n').filter(l => l.trim().length > 0);
+
+        const blocks = rawText
+          .split(/\n\s*\n/)
+          .map(b => b.trim())
+          .filter(b => b.length > 0);
 
         if (type === 'trainer') {
           const reactions = [];
-          for (const line of lines) {
-            const parts = line.split('|').map(p => p.trim());
+          for (const block of blocks) {
+            const parts = block.split('|').map(p => p.trim());
             if (parts.length < 2) continue;
-            if (!parts[0] || !parts[1]) continue;
-            const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(parts[1], taskType);
-            const options = parts[4] ? parts[4].split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
+            const lhs = parts[0] || '';
+            const answer = parts[1] || '';
+            const explain = parts[2] || '';
+            const full = parts[3] || '';
+            const optionsStr = parts[4] || '';
+            if (!lhs.trim() || !answer.trim()) continue;
+            const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
+            const isInvalid = !valid;
+            const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
             reactions.push({
-              lhs: parts[0], valid, correctSets, correctSetsDisplay,
-              explanation: parts[2] || '',
-              fullEquation: parts[3] || (!valid ? 'Реакция не идёт' : ''),
+              lhs,
+              valid: !isInvalid,
+              correctSets,
+              correctSetsDisplay,
+              explanation: explain || '',
+              fullEquation: full || (isInvalid ? 'Реакция не идёт' : ''),
               options
             });
           }
-          if (reactions.length === 0) { msgDiv.textContent = 'Не удалось распознать.'; return; }
+          if (reactions.length === 0) { msgDiv.textContent = 'Не удалось распознать реакции. Проверьте, что между заданиями есть пустая строка, а внутри задания есть |.'; return; }
           const id = 'trainer_' + Date.now();
           const siblingsMax = TRAINERS.filter(t => t.topicId === topicId).reduce((m, t) => Math.max(m, t.order), -1);
-          TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, mode, taskType, allowModeChoice, reactions, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
+          TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, mode, taskType, allowModeChoice, randomOrder, reactions, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
           await persistTrainers();
           msgDiv.textContent = `Тренажёр создан с ${reactions.length} реакциями!`; msgDiv.style.color = 'var(--ok)';
         } else if (type === 'homework') {
           const tasks = [];
-          for (const line of lines) {
-            const parts = line.split('|').map(p => p.trim());
+          for (const block of blocks) {
+            const parts = block.split('|').map(p => p.trim());
             if (parts.length < 2) continue;
-            if (!parts[0] || !parts[1]) continue;
-            tasks.push({ question: parts[0], answer: parts[1], explanation: parts[2] || '' });
+            const question = parts[0] || '';
+            const answer = parts[1] || '';
+            const explain = parts[2] || '';
+            if (!question.trim() || !answer.trim()) continue;
+            tasks.push({ question, answer, explanation: explain || '' });
           }
-          if (tasks.length === 0) { msgDiv.textContent = 'Не удалось распознать.'; return; }
+          if (tasks.length === 0) { msgDiv.textContent = 'Не удалось распознать задания. Разделяйте задания пустой строкой.'; return; }
           const id = 'homework_' + Date.now();
           const siblingsMax = HOMEWORKS.filter(h => h.topicId === topicId).reduce((m, h) => Math.max(m, h.order), -1);
-          HOMEWORKS.push({ id, topicId, title, order: siblingsMax + 1, mode: 'list', allowModeChoice, tasks, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
+          HOMEWORKS.push({ id, topicId, title, order: siblingsMax + 1, mode: 'list', allowModeChoice, randomOrder, tasks, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
           await persistHomeworks();
           msgDiv.textContent = `Домашка создана с ${tasks.length} заданиями!`; msgDiv.style.color = 'var(--ok)';
         } else if (type === 'lesson') {
+          const lines = rawText.split('\n').filter(l => l.trim().length > 0);
           let description = '', videoUrl = '';
           const links = [], files = [];
           for (const line of lines) {
@@ -4986,6 +5083,8 @@
             <option value="">Все ученики</option>
             ${allStudents.map(s => `<option value="${s}" ${theory.assignedTo && theory.assignedTo.includes(s) ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('')}
           </select></div>
+        <div class="field"><label>Ссылка (Google Диск, YouTube и т.п.)</label>
+          <input type="text" id="editTheoryLink" value="${escapeAttr(theory.linkUrl || '')}" placeholder="https://..."></div>
         <div class="field"><label>Прикрепить файл (до 900 КБ)</label>
           <input type="file" id="editTheoryFile"></div>
         <div id="editTheoryFilePreview"></div>
@@ -5035,11 +5134,13 @@
         const status = document.getElementById('editTheoryStatus').value;
         const releaseDate = document.getElementById('editTheoryRelease').value;
         const desc = document.getElementById('editTheoryDesc').value;
+        const linkUrl = document.getElementById('editTheoryLink').value.trim();
         const assignedTo = Array.from(document.getElementById('editTheoryAssign').selectedOptions).map(o => o.value).filter(v => v !== '');
         if (!title) { alert('Введите название'); return; }
         theory.title = title;
         theory.description = desc;
         theory.file = newFile;
+        theory.linkUrl = linkUrl || null;
         theory.isDraft = status === 'draft';
         theory.isLocked = status === 'locked';
         theory.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
@@ -5069,6 +5170,9 @@
           </select></div>
         <div class="field"><label style="font-size:13px;display:flex;gap:8px;align-items:center;cursor:pointer;">
           <input type="checkbox" id="editTrainerAllowModeChoice" ${trainer.allowModeChoice ? 'checked' : ''}> Разрешить ученику выбирать режим
+        </label></div>
+        <div class="field"><label style="font-size:13px;display:flex;gap:8px;align-items:center;cursor:pointer;">
+          <input type="checkbox" id="editTrainerRandomOrder" ${trainer.randomOrder ? 'checked' : ''}> Перемешать задания в случайном порядке
         </label></div>
         <div class="field"><label>Тип заданий</label>
           <select id="editTaskType">
@@ -5187,6 +5291,7 @@
         const title = document.getElementById('editTrainerTitle').value.trim();
         const mode = document.getElementById('editTrainerMode').value;
         const allowModeChoice = document.getElementById('editTrainerAllowModeChoice').checked;
+        const randomOrder = document.getElementById('editTrainerRandomOrder').checked;
         const taskType = document.getElementById('editTaskType').value;
         const status = document.getElementById('editTrainerStatus').value;
         const releaseDate = document.getElementById('editTrainerRelease').value;
@@ -5218,6 +5323,7 @@
         trainer.title = title;
         trainer.mode = mode;
         trainer.allowModeChoice = allowModeChoice;
+        trainer.randomOrder = randomOrder;
         trainer.taskType = taskType;
         trainer.isDraft = status === 'draft';
         trainer.isLocked = status === 'locked';
@@ -5275,9 +5381,7 @@
       bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
 
       let linkRows = lesson.links && lesson.links.length ? [...lesson.links] : [{ label: '', url: '' }];
-      // Только файлы-ссылки (без dataUrl)
       let fileRows = (lesson.files || []).filter(f => !f.dataUrl).length > 0 ? (lesson.files || []).filter(f => !f.dataUrl).map(f => ({ label: f.label, url: f.url })) : [{ label: '', url: '' }];
-      // Существующий прикреплённый файл (dataUrl)
       let attachedFile = (lesson.files || []).find(f => f.dataUrl) || null;
 
       function syncLinkRowsFromDOM() {
@@ -5401,6 +5505,9 @@
         <div class="field"><label style="font-size:13px;display:flex;gap:8px;align-items:center;cursor:pointer;">
           <input type="checkbox" id="editHomeworkAllowModeChoice" ${homework.allowModeChoice ? 'checked' : ''}> Разрешить ученику выбирать режим
         </label></div>
+        <div class="field"><label style="font-size:13px;display:flex;gap:8px;align-items:center;cursor:pointer;">
+          <input type="checkbox" id="editHomeworkRandomOrder" ${homework.randomOrder ? 'checked' : ''}> Перемешать задания в случайном порядке
+        </label></div>
         <div class="field"><label>Статус</label>
           <select id="editHomeworkStatus">
             <option value="published" ${!homework.isDraft && !homework.isLocked ? 'selected' : ''}>Опубликован</option>
@@ -5500,6 +5607,7 @@
         const title = document.getElementById('editHomeworkTitle').value.trim();
         const mode = document.getElementById('editHomeworkMode').value;
         const allowModeChoice = document.getElementById('editHomeworkAllowModeChoice').checked;
+        const randomOrder = document.getElementById('editHomeworkRandomOrder').checked;
         const status = document.getElementById('editHomeworkStatus').value;
         const releaseDate = document.getElementById('editHomeworkRelease').value;
         const customNote = document.getElementById('editHomeworkNote').value.trim();
@@ -5520,6 +5628,7 @@
         homework.title = title;
         homework.mode = mode;
         homework.allowModeChoice = allowModeChoice;
+        homework.randomOrder = randomOrder;
         homework.isDraft = status === 'draft';
         homework.isLocked = status === 'locked';
         homework.scheduledRelease = releaseDate ? getSamaraTimestamp(releaseDate) : null;
