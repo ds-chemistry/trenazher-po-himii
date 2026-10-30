@@ -4856,16 +4856,17 @@ function buildAIBuilder() {
       TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, mode, taskType, allowModeChoice, randomOrder, reactions, randomOrderMap, fontSize, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
       await persistTrainers();
       msgDiv.textContent = `Тренажёр создан с ${reactions.length} реакциями!`; msgDiv.style.color = 'var(--ok)';
-    } else if (type === 'homework') {
-      const tasks = [];
-      for (const block of blocks) {
-        const parts = block.split('|').map(p => p.trim());
-        if (parts.length < 2) continue;
-        const question = parts[0] || '';
-        const answer = parts[1] || '';
-        const explain = parts[2] || '';
-        const optionsStr = parts[3] || '';
-        const htmlContent = parts[4] || '';
+} else if (type === 'homework') {
+  const tasks = [];
+  for (const block of blocks) {
+    const parts = block.split('|').map(p => p.trim());
+    if (parts.length < 2) continue;
+    const question = parts[0] || '';
+    const answer = parts[1] || '';
+    const explain = parts[2] || '';
+    // parts[3] — полное уравнение (в домашке не используется, оставляем пустым для совместимости формата с тренажёром)
+    const optionsStr = parts[4] || '';
+    const htmlContent = parts[5] || '';
         if (!question.trim() || !answer.trim()) continue;
         const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
         tasks.push({ question, answer, explanation: explain || '', options, htmlContent: htmlContent || '' });
@@ -5633,4 +5634,3 @@ function openEditLessonModal(lessonId) {
   </script>
 </body>
 </html>
- 
