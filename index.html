@@ -680,6 +680,74 @@
     }
     .task-html-content p { margin: 8px 0; }
 
+    /* [+GROUP] — визуальные группы материалов */
+    .material-group {
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .material-group-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer;
+      background: var(--bg); border-bottom: 1px solid var(--line);
+      transition: background .15s;
+    }
+    .material-group-head:hover { background: var(--surface); }
+    .material-group.collapsed .material-group-head { border-bottom: none; }
+    .material-group-head .mg-left { display: flex; align-items: center; gap: 10px; }
+    .material-group-head .mg-arrow { transition: transform .15s; font-size: 12px; color: var(--ink-soft); }
+    .material-group.collapsed .mg-arrow { transform: rotate(-90deg); }
+    .material-group-head .mg-name { font-weight: 700; font-size: 15px; }
+    .material-group-head .mg-count { font-size: 12px; color: var(--ink-soft); }
+    .material-group-head .mg-controls { display: flex; gap: 6px; }
+    .material-group .grid { padding: 16px 18px; }
+    .material-group.collapsed .material-group-body { display: none; }
+    .material-group.unassigned { border-left: 3px solid var(--line); }
+
+    /* [+TEACH] — панель выбора видимых материалов */
+    .teach-panel {
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 20px;
+    }
+    .teach-panel h3 { margin: 0 0 12px; font-size: 15px; }
+    .teach-panel .tp-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .teach-panel .tp-label { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); min-width: 90px; padding-top: 4px; }
+    .teach-panel .tp-items { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+    .teach-panel .tp-item {
+      font-size: 12.5px; padding: 5px 12px; border-radius: 20px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--bg); color: var(--ink-soft);
+      transition: all .12s;
+    }
+    .teach-panel .tp-item.visible { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .teach-panel .tp-hint { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+
+    /* [+PDF] печать */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .topbar, .maintabs, .builder-box, .ai-builder-box, .platforms-bar,
+      .teach-panel, .back-row, .mode-banner, .card-edit-row, .scroll-top-btn,
+      .trainer-mode-selector, .btn, .topbar-actions, .errors-panel { display: none !important; }
+      .container { max-width: 100%; padding: 0 !important; }
+      .modal-bg { display: none !important; }
+      .print-doc { display: block !important; }
+      .rxn-step, .rxn-card { border: 1px solid #ccc !important; box-shadow: none !important; break-inside: avoid; }
+      .task-image { max-height: 300px; }
+    }
+
+    .print-doc { display: none; }
+    .print-doc h1 { font-size: 22px; margin: 0 0 4px; }
+    .print-doc .print-sub { font-size: 13px; color: #555; margin-bottom: 18px; }
+    .print-doc .print-task { border: 1px solid #ddd; border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+    .print-doc .print-task .pt-num { font-size: 12px; color: #777; margin-bottom: 6px; }
+    .print-doc .print-task .pt-body { font-size: 15px; line-height: 1.55; }
+    .print-doc .print-task .pt-answer { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #bbb; font-size: 14px; color: #1a7f4b; font-weight: 700; }
+    .print-doc .print-task .pt-options { margin-top: 6px; font-size: 13px; color: #444; }
+
     @media (max-width: 600px) {
       .container { padding: 20px 14px 60px; }
       .rxn-eq { font-size: 17px; }
@@ -788,11 +856,14 @@ let TRAINERS = [];
 let LESSONS = [];
 let HOMEWORKS = [];
 let THEORIES = [];
+let GROUPS = []; // [+GROUP] группы материалов
 let VIEW = { name: 'home' };
 let isLoading = true;
 let currentPlatform = 'default';
 let platforms = {};
 let allStudents = [];
+// [+TEACH] множество id скрытых в режиме «Обучаю» материалов
+let teachHiddenIds = new Set();
 
 window.__cachedProgress = null;
 
@@ -1033,11 +1104,13 @@ async function loadContent() {
   LESSONS = await loadFromFirebase(getPlatformPath(platId, 'lessons'), []);
   HOMEWORKS = await loadFromFirebase(getPlatformPath(platId, 'homeworks'), []);
   THEORIES = await loadFromFirebase(getPlatformPath(platId, 'theories'), []);
+  GROUPS = await loadFromFirebase(getPlatformPath(platId, 'groups'), []);
   if (!Array.isArray(TOPICS)) TOPICS = [];
   if (!Array.isArray(TRAINERS)) TRAINERS = [];
   if (!Array.isArray(LESSONS)) LESSONS = [];
   if (!Array.isArray(HOMEWORKS)) HOMEWORKS = [];
   if (!Array.isArray(THEORIES)) THEORIES = [];
+  if (!Array.isArray(GROUPS)) GROUPS = [];
   TOPICS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
   TRAINERS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
   LESSONS.forEach((t, i) => { if (t.order === undefined) t.order = i; });
@@ -1050,6 +1123,7 @@ async function persistTrainers() { await saveToFirebase(getPlatformPath(currentP
 async function persistLessons() { await saveToFirebase(getPlatformPath(currentPlatform, 'lessons'), LESSONS); }
 async function persistHomeworks() { await saveToFirebase(getPlatformPath(currentPlatform, 'homeworks'), HOMEWORKS); }
 async function persistTheories() { await saveToFirebase(getPlatformPath(currentPlatform, 'theories'), THEORIES); }
+async function persistGroups() { await saveToFirebase(getPlatformPath(currentPlatform, 'groups'), GROUPS); }
 
 // ============================================================
 // 6. АВТОРИЗАЦИЯ
@@ -1120,8 +1194,8 @@ function tryRestoreSession() {
   return true;
 }
 
-window.enterTeachMode = function() { TEACH_MODE = true; VIEW = { name: 'home' }; render(); updateChrome(); };
-window.exitTeachMode = function() { TEACH_MODE = false; VIEW = { name: 'home' }; render(); updateChrome(); };
+window.enterTeachMode = function() { TEACH_MODE = true; teachHiddenIds = new Set(); VIEW = { name: 'home' }; render(); updateChrome(); };
+window.exitTeachMode = function() { TEACH_MODE = false; teachHiddenIds = new Set(); VIEW = { name: 'home' }; render(); updateChrome(); };
 
 function updateChrome() {
   const banner = document.getElementById('teachModeBanner');
@@ -1930,6 +2004,16 @@ window.showImportCodeModal = function() {
   };
 };
 
+// [+TEACH] переключение видимости материала в режиме «Обучаю»
+function isHiddenInTeach(item) {
+  return item && teachHiddenIds.has(item.id);
+}
+function toggleTeachVisibility(id) {
+  if (teachHiddenIds.has(id)) teachHiddenIds.delete(id);
+  else teachHiddenIds.add(id);
+  render();
+}
+
 // ============================================================
 // 12. ГЛАВНАЯ
 // ============================================================
@@ -1937,8 +2021,13 @@ window.showImportCodeModal = function() {
 async function renderHome(container) {
   const wrap = document.createElement('div');
   const title = document.createElement('div');
-  title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами.' : 'Выберите тренажёр, теорию или видеоурок по теме'}</p>`;
+  title.innerHTML = `<h1 class="page-title">Содержание</h1><p class="page-sub">${isManaging() ? 'Управляйте темами и материалами.' : (TEACH_MODE ? 'Выберите материал для решения с учеником' : 'Выберите тренажёр, теорию или видеоурок по теме')}</p>`;
   wrap.appendChild(title);
+
+  // [+TEACH] панель выбора видимых материалов
+  if (TEACH_MODE) {
+    wrap.appendChild(buildTeachPanel());
+  }
 
   let progress = {};
   if (!CURRENT_USER.isTeacher) {
@@ -1947,7 +2036,7 @@ async function renderHome(container) {
   }
 
   const errorsEnabled = !CURRENT_USER.isTeacher && CURRENT_USER.errorsEnabled !== false;
-  if (errorsEnabled) {
+  if (errorsEnabled && !TEACH_MODE) {
     const errCount = countErrors(progress);
     const panel = document.createElement('div');
     panel.className = 'errors-panel';
@@ -2009,18 +2098,19 @@ async function renderHome(container) {
     wrap.appendChild(tabs);
     wrap.appendChild(buildAdminBuilder());
     wrap.appendChild(buildAIBuilder());
+    wrap.appendChild(buildGroupsBuilder());
   }
 
   const sortedTopics = [...TOPICS].sort((a, b) => a.order - b.order);
 
   function isItemAvailable(item) {
     if (!item) return true;
-    if (item.isDraft && !isManaging()) return false;
-    if (item.isLocked && !isManaging()) return true;
-    if (item.scheduledRelease && !isManaging()) {
+    if (item.isDraft && !isManaging() && !TEACH_MODE) return false;
+    if (item.isLocked && !isManaging() && !TEACH_MODE) return true;
+    if (item.scheduledRelease && !isManaging() && !TEACH_MODE) {
       if (Date.now() < item.scheduledRelease) return true;
     }
-    if (item.assignedTo && item.assignedTo.length > 0 && !isManaging()) {
+    if (item.assignedTo && item.assignedTo.length > 0 && !isManaging() && !TEACH_MODE) {
       if (!CURRENT_USER || CURRENT_USER.isTeacher) return true;
       if (!item.assignedTo.includes(CURRENT_USER.key)) return false;
     }
@@ -2029,12 +2119,12 @@ async function renderHome(container) {
 
   function isItemClickable(item) {
     if (!item) return true;
-    if (item.isDraft && !isManaging()) return false;
-    if (item.isLocked && !isManaging()) return false;
-    if (item.scheduledRelease && !isManaging()) {
+    if (item.isDraft && !isManaging() && !TEACH_MODE) return false;
+    if (item.isLocked && !isManaging() && !TEACH_MODE) return false;
+    if (item.scheduledRelease && !isManaging() && !TEACH_MODE) {
       if (Date.now() < item.scheduledRelease) return false;
     }
-    if (item.assignedTo && item.assignedTo.length > 0 && !isManaging()) {
+    if (item.assignedTo && item.assignedTo.length > 0 && !isManaging() && !TEACH_MODE) {
       if (!CURRENT_USER || CURRENT_USER.isTeacher) return true;
       if (!item.assignedTo.includes(CURRENT_USER.key)) return false;
     }
@@ -2043,15 +2133,15 @@ async function renderHome(container) {
 
   function getItemBadge(item) {
     if (!item) return '';
-    if (item.isDraft && isManaging()) return '<span class="card-badge">Черновик</span>';
+    if (item.isDraft && (isManaging() || TEACH_MODE)) return '<span class="card-badge">Черновик</span>';
     if (item.isLocked) return '<span class="card-badge">Заблокировано</span>';
-    if (item.scheduledRelease && !isManaging()) {
+    if (item.scheduledRelease && !isManaging() && !TEACH_MODE) {
       if (Date.now() < item.scheduledRelease) {
         const timeLeft = getTimeUntil(item.scheduledRelease);
         return `<span class="card-badge">Через ${timeLeft}</span>`;
       }
     }
-    if (item.assignedTo && item.assignedTo.length > 0 && isManaging()) {
+    if (item.assignedTo && item.assignedTo.length > 0 && (isManaging() || TEACH_MODE)) {
       const names = item.assignedTo;
       const shortLabel = names.length > 2 ? `${names.slice(0, 2).join(', ')} +${names.length - 2}` : names.join(', ');
       return `<span class="card-badge personal">Личное: ${escapeHtml(shortLabel)}</span>`;
@@ -2063,8 +2153,10 @@ async function renderHome(container) {
     return `<div class="card-edit-row">
       <button class="icon-btn" data-act="up" title="Вверх">↑</button>
       <button class="icon-btn" data-act="down" title="Вниз">↓</button>
-      <button class="icon-btn" data-act="move" title="Переместить">⇄</button>
+      <button class="icon-btn" data-act="move" title="Переместить в тему">⇄</button>
+      <button class="icon-btn" data-act="group" title="В группу">▣</button>
       <button class="icon-btn" data-act="edit" title="Редактировать">✎</button>
+      <button class="icon-btn" data-act="pdf" title="Печать / PDF">🖨</button>
       <button class="icon-btn" data-act="export" title="Код материала (экспорт/копия)">⤓</button>
       <button class="icon-btn" data-act="copy" title="Дублировать внутри платформы">⧉</button>
       <button class="icon-btn danger" data-act="del" title="Удалить">✕</button>
@@ -2072,10 +2164,11 @@ async function renderHome(container) {
   }
   function bindCardControls(cardEl, kind, item) {
     const q = (act) => cardEl.querySelector(`[data-act="${act}"]`);
-    const up = q('up'), down = q('down'), move = q('move'), edit = q('edit'), exp = q('export'), cp = q('copy'), del = q('del');
+    const up = q('up'), down = q('down'), move = q('move'), group = q('group'), edit = q('edit'), pdf = q('pdf'), exp = q('export'), cp = q('copy'), del = q('del');
     if (up) up.onclick = (e) => { e.stopPropagation(); moveItem(kind, item.id, -1); };
     if (down) down.onclick = (e) => { e.stopPropagation(); moveItem(kind, item.id, 1); };
     if (move) move.onclick = (e) => { e.stopPropagation(); moveItemToTopic(kind, item.id); };
+    if (group) group.onclick = (e) => { e.stopPropagation(); assignItemToGroup(kind, item.id); };
     if (edit) {
       edit.onclick = (e) => {
         e.stopPropagation();
@@ -2085,27 +2178,130 @@ async function renderHome(container) {
         else if (kind === 'theory') openEditTheoryModal(item.id);
       };
     }
+    if (pdf) pdf.onclick = (e) => { e.stopPropagation(); openPrintModal(kind, item.id); };
     if (exp) exp.onclick = (e) => { e.stopPropagation(); window.showExportModal(kind, item.id); };
     if (cp) cp.onclick = (e) => { e.stopPropagation(); copyItem(kind, item.id); };
     if (del) del.onclick = (e) => { e.stopPropagation(); deleteItemConfirm(kind, item.id); };
   }
-    for (const topic of sortedTopics) {
+
+  // [+TEACH] построение карточки с учётом скрытия
+  function makeCard(item, type) {
+    if (!item) return null;
+    if (TEACH_MODE && isHiddenInTeach(item)) return null;
+    const isClickable = isItemClickable(item);
+    const badge = getItemBadge(item);
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if (type === 'theory') {
+      card.innerHTML = `
+        <span class="kind theory">Теория</span>
+        <h3>${escapeHtml(item.title)}</h3>
+        <div class="meta">${item.file ? '📎 ' + escapeHtml(item.file.name || 'файл') : (item.linkUrl ? '🔗 Ссылка' : (item.description ? 'Текст' : (item.htmlContent ? 'HTML' : 'Материал')))}</div>
+        ${badge}
+        ${isManaging() ? buildCardControls('theory', item) : ''}
+      `;
+      if (isManaging()) {
+        bindCardControls(card, 'theory', item);
+        card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; render(); };
+      } else if (isClickable) {
+        card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; render(); };
+      } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
+    } else if (type === 'trainer') {
+      let pct = 0, isFinished = false;
+      if (!CURRENT_USER.isTeacher) {
+        const td = progress[item.id] || {};
+        const st = td.statuses || [];
+        const len = (item.reactions || []).length;
+        const done = st.filter(s => s === 'correct').length;
+        pct = len ? Math.round(done / len * 100) : 0;
+        isFinished = !!td.__finished;
+      }
+      if (isFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
+      card.innerHTML = `
+        <div class="card-top-row"><div><span class="kind">Тренажёр</span></div>${badge}</div>
+        <h3>${escapeHtml(item.title)}</h3>
+        <div class="meta">${(item.reactions || []).length} реакций${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
+        ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${isFinished ? ' finished' : ''}" style="width:${pct}%"></div></div>` : ''}
+        ${isManaging() ? buildCardControls('trainer', item) : ''}
+      `;
+      if (isManaging()) {
+        bindCardControls(card, 'trainer', item);
+        card.onclick = () => { VIEW = { name: 'trainer', trainerId: item.id }; render(); };
+      } else if (isClickable) {
+        card.onclick = () => { VIEW = { name: 'trainer', trainerId: item.id }; render(); };
+      } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
+    } else if (type === 'lesson') {
+      let lessonFinished = false;
+      if (!CURRENT_USER.isTeacher) lessonFinished = !!progress['lesson:' + item.id];
+      if (lessonFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
+      card.innerHTML = `
+        <span class="kind lesson">Урок</span>
+        <h3>${escapeHtml(item.title)}</h3>
+        <div class="meta">${(item.links || []).length} видео · ${(item.files || []).length} файлов</div>
+        ${badge}
+        ${isManaging() ? buildCardControls('lesson', item) : ''}
+      `;
+      if (isManaging()) {
+        bindCardControls(card, 'lesson', item);
+        card.onclick = () => { VIEW = { name: 'lesson', lessonId: item.id }; renderLessonModal(item.id); };
+      } else if (isClickable) {
+        card.onclick = () => { VIEW = { name: 'lesson', lessonId: item.id }; renderLessonModal(item.id); };
+      } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
+    } else if (type === 'homework') {
+      let hwPct = 0, hwFinished = false;
+      if (!CURRENT_USER.isTeacher) {
+        const hd = progress[item.id] || {};
+        const st = hd.statuses || [];
+        const done = st.filter(s => s === 'correct').length;
+        const len = (item.tasks || []).length;
+        hwPct = len ? Math.round(done / len * 100) : 0;
+        hwFinished = !!hd.__finished;
+      }
+      if (hwFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
+      card.innerHTML = `
+        <span class="kind homework">Домашка</span>
+        <h3>${escapeHtml(item.title)}</h3>
+        <div class="meta">${(item.tasks || []).length} заданий${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
+        ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${hwFinished ? ' finished' : ''}" style="width:${hwPct}%"></div></div>` : ''}
+        ${badge}
+        ${isManaging() ? buildCardControls('homework', item) : ''}
+      `;
+      if (isManaging()) {
+        bindCardControls(card, 'homework', item);
+        card.onclick = () => { VIEW = { name: 'homework', homeworkId: item.id }; render(); };
+      } else if (isClickable) {
+        card.onclick = () => { VIEW = { name: 'homework', homeworkId: item.id }; render(); };
+      } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
+    }
+    return card;
+  }
+
+  for (const topic of sortedTopics) {
     const topicTheories = (THEORIES || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
     const topicTrainers = (TRAINERS || []).filter(t => t.topicId === topic.id).sort((a, b) => a.order - b.order);
     const topicLessons = (LESSONS || []).filter(l => l.topicId === topic.id).sort((a, b) => a.order - b.order);
     const topicHomeworks = (HOMEWORKS || []).filter(h => h.topicId === topic.id).sort((a, b) => a.order - b.order);
+    const topicGroups = (GROUPS || []).filter(g => g.topicId === topic.id).sort((a, b) => (a.order || 0) - (b.order || 0));
 
     let filteredTheories = topicTheories;
     let filteredTrainers = topicTrainers;
     let filteredLessons = topicLessons;
     let filteredHomeworks = topicHomeworks;
-    if (!isManaging()) {
+    if (!isManaging() && !TEACH_MODE) {
       filteredTheories = topicTheories.filter(t => isItemAvailable(t));
       filteredTrainers = topicTrainers.filter(t => isItemAvailable(t));
       filteredLessons = topicLessons.filter(l => isItemAvailable(l));
       filteredHomeworks = topicHomeworks.filter(h => isItemAvailable(h));
     }
-    if (filteredTheories.length === 0 && filteredTrainers.length === 0 && filteredLessons.length === 0 && filteredHomeworks.length === 0 && !isManaging()) continue;
+    if (TEACH_MODE) {
+      filteredTheories = topicTheories.filter(t => !isHiddenInTeach(t));
+      filteredTrainers = topicTrainers.filter(t => !isHiddenInTeach(t));
+      filteredLessons = topicLessons.filter(l => !isHiddenInTeach(l));
+      filteredHomeworks = topicHomeworks.filter(h => !isHiddenInTeach(h));
+    }
+    const hasGroups = topicGroups.length > 0;
+    if (filteredTheories.length === 0 && filteredTrainers.length === 0 && filteredLessons.length === 0 && filteredHomeworks.length === 0 && !isManaging() && !hasGroups) continue;
 
     const block = document.createElement('div');
     block.className = 'topic-block';
@@ -2126,132 +2322,163 @@ async function renderHome(container) {
         <button class="icon-btn" title="Вверх" data-act="up">↑</button>
         <button class="icon-btn" title="Вниз" data-act="down">↓</button>
         <button class="icon-btn" title="Переименовать" data-act="rename">✎</button>
+        <button class="icon-btn" title="Новая группа в теме" data-act="newgroup">▣</button>
         <button class="icon-btn danger" title="Удалить" data-act="del">✕</button>
       `;
       editControls.querySelector('[data-act="up"]').onclick = () => moveTopic(topic.id, -1);
       editControls.querySelector('[data-act="down"]').onclick = () => moveTopic(topic.id, 1);
       editControls.querySelector('[data-act="rename"]').onclick = () => renameTopicPrompt(topic.id);
+      editControls.querySelector('[data-act="newgroup"]').onclick = () => createGroupPrompt(topic.id);
       editControls.querySelector('[data-act="del"]').onclick = () => deleteTopicConfirm(topic.id);
       head.appendChild(editControls);
     }
     block.appendChild(head);
 
-    const grid = document.createElement('div');
-    grid.className = 'grid';
+    // [+GROUP] распределение материалов по группам
+    const ungrouped = { theories: [], trainers: [], lessons: [], homeworks: [] };
+    const groupedMap = {};
+    topicGroups.forEach(g => groupedMap[g.id] = { theories: [], trainers: [], lessons: [], homeworks: [] });
 
-    let allItems = [];
-    for (const t of filteredTheories) allItems.push({ ...t, _type: 'theory' });
-    for (const t of filteredTrainers) allItems.push({ ...t, _type: 'trainer' });
-    for (const l of filteredLessons) allItems.push({ ...l, _type: 'lesson' });
-    for (const h of filteredHomeworks) allItems.push({ ...h, _type: 'homework' });
-    allItems.sort((a, b) => a.order - b.order);
+    for (const t of filteredTheories) { if (t.groupId && groupedMap[t.groupId]) groupedMap[t.groupId].theories.push(t); else ungrouped.theories.push(t); }
+    for (const t of filteredTrainers) { if (t.groupId && groupedMap[t.groupId]) groupedMap[t.groupId].trainers.push(t); else ungrouped.trainers.push(t); }
+    for (const l of filteredLessons) { if (l.groupId && groupedMap[l.groupId]) groupedMap[l.groupId].lessons.push(l); else ungrouped.lessons.push(l); }
+    for (const h of filteredHomeworks) { if (h.groupId && groupedMap[h.groupId]) groupedMap[h.groupId].homeworks.push(h); else ungrouped.homeworks.push(h); }
 
-    for (const item of allItems) {
-      const type = item._type;
-      const isClickable = isItemClickable(item);
-      const badge = getItemBadge(item);
-      if (type === 'theory') {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <span class="kind theory">Теория</span>
-          <h3>${escapeHtml(item.title)}</h3>
-          <div class="meta">${item.file ? '📎 ' + escapeHtml(item.file.name || 'файл') : (item.linkUrl ? '🔗 Ссылка' : (item.description ? 'Текст' : (item.htmlContent ? 'HTML' : 'Материал')))}</div>
-          ${badge}
-          ${isManaging() ? buildCardControls('theory', item) : ''}
-        `;
-        if (isManaging()) {
-          bindCardControls(card, 'theory', item);
-          card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; render(); };
-        } else if (isClickable) {
-          card.onclick = () => { VIEW = { name: 'theory', theoryId: item.id }; render(); };
-        } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
-        grid.appendChild(card);
-      } else if (type === 'trainer') {
-        const card = document.createElement('div');
-        card.className = 'card';
-        let pct = 0, isFinished = false;
-        if (!CURRENT_USER.isTeacher) {
-          const td = progress[item.id] || {};
-          const st = td.statuses || [];
-          const len = (item.reactions || []).length;
-          const done = st.filter(s => s === 'correct').length;
-          pct = len ? Math.round(done / len * 100) : 0;
-          isFinished = !!td.__finished;
-        }
-        if (isFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
-        card.innerHTML = `
-          <div class="card-top-row"><div><span class="kind">Тренажёр</span></div>${badge}</div>
-          <h3>${escapeHtml(item.title)}</h3>
-          <div class="meta">${(item.reactions || []).length} реакций${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
-          ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${isFinished ? ' finished' : ''}" style="width:${pct}%"></div></div>` : ''}
-          ${isManaging() ? buildCardControls('trainer', item) : ''}
-        `;
-        if (isManaging()) {
-          bindCardControls(card, 'trainer', item);
-          card.onclick = () => { VIEW = { name: 'trainer', trainerId: item.id }; render(); };
-        } else if (isClickable) {
-          card.onclick = () => { VIEW = { name: 'trainer', trainerId: item.id }; render(); };
-        } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
-        grid.appendChild(card);
-      } else if (type === 'lesson') {
-        const card = document.createElement('div');
-        card.className = 'card';
-        let lessonFinished = false;
-        if (!CURRENT_USER.isTeacher) lessonFinished = !!progress['lesson:' + item.id];
-        if (lessonFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
-        card.innerHTML = `
-          <span class="kind lesson">Урок</span>
-          <h3>${escapeHtml(item.title)}</h3>
-          <div class="meta">${(item.links || []).length} видео · ${(item.files || []).length} файлов</div>
-          ${badge}
-          ${isManaging() ? buildCardControls('lesson', item) : ''}
-        `;
-        if (isManaging()) {
-          bindCardControls(card, 'lesson', item);
-          card.onclick = () => { VIEW = { name: 'lesson', lessonId: item.id }; renderLessonModal(item.id); };
-        } else if (isClickable) {
-          card.onclick = () => { VIEW = { name: 'lesson', lessonId: item.id }; renderLessonModal(item.id); };
-        } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
-        grid.appendChild(card);
-      } else if (type === 'homework') {
-        const card = document.createElement('div');
-        card.className = 'card';
-        let hwPct = 0, hwFinished = false;
-        if (!CURRENT_USER.isTeacher) {
-          const hd = progress[item.id] || {};
-          const st = hd.statuses || [];
-          const done = st.filter(s => s === 'correct').length;
-          const len = (item.tasks || []).length;
-          hwPct = len ? Math.round(done / len * 100) : 0;
-          hwFinished = !!hd.__finished;
-        }
-        if (hwFinished) { card.style.borderColor = 'var(--ok)'; card.style.backgroundColor = 'var(--ok-bg)'; }
-        card.innerHTML = `
-          <span class="kind homework">Домашка</span>
-          <h3>${escapeHtml(item.title)}</h3>
-          <div class="meta">${(item.tasks || []).length} заданий${isManaging() ? ` · ${item.mode === 'step' ? 'Пошагово' : item.mode === 'cards' ? 'Карты' : 'Список'}${item.allowModeChoice ? ' · свободный режим' : ''}${item.randomOrder ? ' · рандом' : ''}` : ''}</div>
-          ${(!CURRENT_USER.isTeacher) ? `<div class="progress-bar"><div class="progress-fill${hwFinished ? ' finished' : ''}" style="width:${hwPct}%"></div></div>` : ''}
-          ${badge}
-          ${isManaging() ? buildCardControls('homework', item) : ''}
-        `;
-        if (isManaging()) {
-          bindCardControls(card, 'homework', item);
-          card.onclick = () => { VIEW = { name: 'homework', homeworkId: item.id }; render(); };
-        } else if (isClickable) {
-          card.onclick = () => { VIEW = { name: 'homework', homeworkId: item.id }; render(); };
-        } else { card.style.cursor = 'default'; card.style.opacity = '0.7'; }
-        grid.appendChild(card);
+    function buildGrid(items) {
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      const allItems = [];
+      for (const t of items.theories) allItems.push({ ...t, _type: 'theory' });
+      for (const t of items.trainers) allItems.push({ ...t, _type: 'trainer' });
+      for (const l of items.lessons) allItems.push({ ...l, _type: 'lesson' });
+      for (const h of items.homeworks) allItems.push({ ...h, _type: 'homework' });
+      allItems.sort((a, b) => a.order - b.order);
+      for (const item of allItems) {
+        const card = makeCard(item, item._type);
+        if (card) grid.appendChild(card);
       }
+      if (allItems.length === 0) grid.innerHTML = `<div class="empty-note">В этой группе пока нет материалов.</div>`;
+      return grid;
     }
 
-    if (allItems.length === 0) grid.innerHTML = `<div class="empty-note">В этой теме пока нет материалов.</div>`;
-    block.appendChild(grid);
+    // группы
+    for (const g of topicGroups) {
+      const gData = groupedMap[g.id];
+      const totalInGroup = gData.theories.length + gData.trainers.length + gData.lessons.length + gData.homeworks.length;
+      if (TEACH_MODE && totalInGroup === 0) continue;
+      const groupEl = document.createElement('div');
+      groupEl.className = 'material-group' + (g.collapsed ? ' collapsed' : '');
+      const groupHead = document.createElement('div');
+      groupHead.className = 'material-group-head';
+      groupHead.innerHTML = `
+        <div class="mg-left">
+          <span class="mg-arrow">▼</span>
+          <span class="mg-name">${escapeHtml(g.name)}</span>
+          <span class="mg-count">${totalInGroup} материал(ов)</span>
+        </div>
+        ${isManaging() ? `<div class="mg-controls">
+          <button class="icon-btn" data-gact="rename" title="Переименовать группу">✎</button>
+          <button class="icon-btn" data-gact="up" title="Выше">↑</button>
+          <button class="icon-btn" data-gact="down" title="Ниже">↓</button>
+          <button class="icon-btn danger" data-gact="del" title="Удалить группу">✕</button>
+        </div>` : ''}
+      `;
+      groupHead.onclick = async (e) => {
+        if (e.target.closest('[data-gact]')) return;
+        g.collapsed = !g.collapsed;
+        await persistGroups();
+        render();
+      };
+      if (isManaging()) {
+        groupHead.querySelector('[data-gact="rename"]').onclick = async (e) => {
+          e.stopPropagation();
+          window.showPromptModal('Переименовать группу', g.name, async (val) => {
+            if (!val.trim()) return;
+            g.name = val.trim();
+            await persistGroups();
+            render();
+          });
+        };
+        groupHead.querySelector('[data-gact="up"]').onclick = (e) => { e.stopPropagation(); moveGroup(topic.id, g.id, -1); };
+        groupHead.querySelector('[data-gact="down"]').onclick = (e) => { e.stopPropagation(); moveGroup(topic.id, g.id, 1); };
+        groupHead.querySelector('[data-gact="del"]').onclick = (e) => {
+          e.stopPropagation();
+          window.showConfirmModal('Удалить группу?', 'Материалы останутся, но выйдут из группы.', async () => {
+            [...TRAINERS, ...HOMEWORKS, ...LESSONS, ...THEORIES].forEach(it => { if (it.groupId === g.id) delete it.groupId; });
+            GROUPS = GROUPS.filter(x => x.id !== g.id);
+            await persistGroups();
+            await persistTrainers(); await persistHomeworks(); await persistLessons(); await persistTheories();
+            render();
+          });
+        };
+      }
+      groupEl.appendChild(groupHead);
+      const groupBody = document.createElement('div');
+      groupBody.className = 'material-group-body';
+      groupBody.appendChild(buildGrid(gData));
+      groupEl.appendChild(groupBody);
+      block.appendChild(groupEl);
+    }
+
+    // материалы без группы
+    const ungroupedTotal = ungrouped.theories.length + ungrouped.trainers.length + ungrouped.lessons.length + ungrouped.homeworks.length;
+    if (ungroupedTotal > 0) {
+      if (hasGroups) {
+        const ungroupedWrap = document.createElement('div');
+        ungroupedWrap.className = 'material-group unassigned';
+        const uh = document.createElement('div');
+        uh.className = 'material-group-head';
+        uh.innerHTML = `<div class="mg-left"><span class="mg-name" style="font-weight:600;color:var(--ink-soft);">Без группы</span><span class="mg-count">${ungroupedTotal}</span></div>`;
+        ungroupedWrap.appendChild(uh);
+        const ub = document.createElement('div');
+        ub.className = 'material-group-body';
+        ub.appendChild(buildGrid(ungrouped));
+        ungroupedWrap.appendChild(ub);
+        block.appendChild(ungroupedWrap);
+      } else {
+        block.appendChild(buildGrid(ungrouped));
+      }
+    } else if (!hasGroups) {
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      grid.innerHTML = `<div class="empty-note">В этой теме пока нет материалов.</div>`;
+      block.appendChild(grid);
+    }
+
     wrap.appendChild(block);
   }
 
   container.appendChild(wrap);
 }
+
+// [+TEACH] панель управления видимостью
+function buildTeachPanel() {
+  const panel = document.createElement('div');
+  panel.className = 'teach-panel';
+  const all = [
+    { kind: 'trainer', label: 'Тренажёры', items: TRAINERS },
+    { kind: 'homework', label: 'Домашки', items: HOMEWORKS },
+    { kind: 'lesson', label: 'Уроки', items: LESSONS },
+    { kind: 'theory', label: 'Теории', items: THEORIES }
+  ];
+  let inner = `<h3>Что показывать в режиме «Обучаю»</h3>`;
+  for (const block of all) {
+    if (!block.items || block.items.length === 0) continue;
+    inner += `<div class="tp-row"><div class="tp-label">${block.label}</div><div class="tp-items">`;
+    for (const item of block.items) {
+      const visible = !isHiddenInTeach(item);
+      inner += `<span class="tp-item ${visible ? 'visible' : ''}" data-id="${item.id}">${escapeHtml(item.title)}</span>`;
+    }
+    inner += `</div></div>`;
+  }
+  inner += `<div class="tp-hint">Нажмите на название, чтобы скрыть/показать. Скрытые материалы не отображаются в содержании и не открываются в этом режиме.</div>`;
+  panel.innerHTML = inner;
+  panel.querySelectorAll('.tp-item').forEach(el => {
+    el.onclick = () => toggleTeachVisibility(el.dataset.id);
+  });
+  return panel;
+}
+
 // ============================================================
 // 13. СТРАНИЦА «МОИ ОШИБКИ»
 // ============================================================
@@ -2577,18 +2804,21 @@ async function deleteTopicConfirm(topicId) {
   const hasContent = (TRAINERS || []).some(t => t.topicId === topicId) ||
     (LESSONS || []).some(l => l.topicId === topicId) ||
     (HOMEWORKS || []).some(h => h.topicId === topicId) ||
-    (THEORIES || []).some(t => t.topicId === topicId);
+    (THEORIES || []).some(t => t.topicId === topicId) ||
+    (GROUPS || []).some(g => g.topicId === topicId);
   window.showConfirmModal('Удалить тему?', hasContent ? 'В этой теме есть материалы — они тоже будут удалены.' : 'Тема будет удалена.', async () => {
     TOPICS = TOPICS.filter(t => t.id !== topicId);
     TRAINERS = TRAINERS.filter(t => t.topicId !== topicId);
     LESSONS = LESSONS.filter(l => l.topicId !== topicId);
     HOMEWORKS = HOMEWORKS.filter(h => h.topicId !== topicId);
     THEORIES = THEORIES.filter(t => t.topicId !== topicId);
+    GROUPS = GROUPS.filter(g => g.topicId !== topicId);
     await persistTopics();
     await persistTrainers();
     await persistLessons();
     await persistHomeworks();
     await persistTheories();
+    await persistGroups();
     render();
   });
 }
@@ -2659,6 +2889,7 @@ async function moveItemToTopic(type, id) {
     const targetTopicId = document.getElementById('targetTopic').value;
     if (!targetTopicId) { bg.remove(); return; }
     item.topicId = targetTopicId;
+    delete item.groupId;
     await persistFn();
     bg.remove();
     render();
@@ -2695,6 +2926,85 @@ window.copyItem = function(type, id) {
   newItem.order = maxOrder + 1;
   items.push(newItem);
   persistFn().then(() => render());
+};
+
+// [+GROUP] создание группы и назначение материала
+function buildGroupsBuilder() {
+  const box = document.createElement('div');
+  box.className = 'builder-box';
+  box.innerHTML = `
+    <h3>Группы материалов</h3>
+    <small class="help">Группа объединяет несколько материалов внутри одной темы (например, «Практика по оксидам»). Создать группу можно кнопкой ▣ рядом с названием темы. Назначить материал в группу — кнопкой ▣ на карточке материала.</small>
+    <div id="groupsOverview"></div>
+  `;
+  const overview = box.querySelector('#groupsOverview');
+  if (GROUPS.length === 0) overview.innerHTML = `<div class="empty-note">Групп пока нет.</div>`;
+  else {
+    for (const g of GROUPS) {
+      const topic = TOPICS.find(t => t.id === g.topicId);
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;';
+      row.innerHTML = `<span><b>${escapeHtml(g.name)}</b> <span style="font-size:12px;color:var(--ink-soft);">— ${escapeHtml(topic ? topic.name : '(без темы)')}</span></span>`;
+      overview.appendChild(row);
+    }
+  }
+  return box;
+}
+
+window.createGroupPrompt = function(topicId) {
+  window.showPromptModal('Новая группа', '', async (val) => {
+    if (!val.trim()) return;
+    const maxOrder = GROUPS.filter(g => g.topicId === topicId).reduce((m, g) => Math.max(m, g.order || 0), -1);
+    GROUPS.push({ id: 'group_' + Date.now(), topicId, name: val.trim(), order: maxOrder + 1, collapsed: false });
+    await persistGroups();
+    render();
+  });
+};
+
+window.moveGroup = async function(topicId, groupId, dir) {
+  const siblings = GROUPS.filter(g => g.topicId === topicId).sort((a, b) => (a.order || 0) - (b.order || 0));
+  const idx = siblings.findIndex(g => g.id === groupId);
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= siblings.length) return;
+  const tmp = siblings[idx].order; siblings[idx].order = siblings[swapIdx].order; siblings[swapIdx].order = tmp;
+  await persistGroups();
+  render();
+};
+
+window.assignItemToGroup = async function(kind, itemId) {
+  const coll = KIND_META[kind] ? KIND_META[kind].coll() : null;
+  if (!coll) return;
+  const item = coll.find(x => x.id === itemId);
+  if (!item) return;
+  const topicGroups = GROUPS.filter(g => g.topicId === item.topicId);
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <h3>В группу</h3>
+    <div class="field"><label>Группа (в теме «${escapeHtml(getTopicNameById(item.topicId))}»)</label>
+      <select id="targetGroup">
+        <option value="">— Без группы —</option>
+        ${topicGroups.map(g => `<option value="${g.id}" ${item.groupId === g.id ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="cancelGroup">Отмена</button>
+      <button class="btn btn-accent" id="saveGroup">Сохранить</button>
+    </div>
+  `;
+  bg.appendChild(modal);
+  document.body.appendChild(bg);
+  bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+  modal.querySelector('#cancelGroup').onclick = () => bg.remove();
+  modal.querySelector('#saveGroup').onclick = async () => {
+    const gid = document.getElementById('targetGroup').value;
+    if (gid) item.groupId = gid; else delete item.groupId;
+    await KIND_META[kind].persist();
+    bg.remove();
+    render();
+  };
 };
 // ============================================================
 // 16. ТЕОРИЯ — ПОЛНОЦЕННАЯ СТРАНИЦА
@@ -2780,6 +3090,7 @@ function renderTheoryPage(container, theoryId) {
 async function renderTrainer(container, trainerId) {
   const trainer = TRAINERS.find(t => t.id === trainerId);
   if (!trainer) { VIEW = { name: 'home' }; render(); return; }
+  if (TEACH_MODE && isHiddenInTeach(trainer)) { VIEW = { name: 'home' }; render(); return; }
   const isRealStudent = !CURRENT_USER.isTeacher;
   let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
   if (!progress[trainerId]) progress[trainerId] = {};
@@ -3395,6 +3706,7 @@ function renderStepReviewMode(content, footer, trainer, trainerProgress, taskTyp
 async function renderHomework(container, homeworkId) {
   const homework = HOMEWORKS.find(h => h.id === homeworkId);
   if (!homework) { VIEW = { name: 'home' }; render(); return; }
+  if (TEACH_MODE && isHiddenInTeach(homework)) { VIEW = { name: 'home' }; render(); return; }
   const isRealStudent = !CURRENT_USER.isTeacher;
   let progress = isRealStudent ? await getProgress(CURRENT_USER.key) : {};
   if (!progress[homeworkId]) progress[homeworkId] = {};
@@ -3899,6 +4211,7 @@ function renderHwCardsMode(content, footer, homework, hwProgress, isRealStudent,
 function renderLessonModal(lessonId) {
   const lesson = LESSONS.find(l => l.id === lessonId);
   if (!lesson) return;
+  if (TEACH_MODE && isHiddenInTeach(lesson)) { VIEW = { name: 'home' }; render(); return; }
   if (lesson.assignedTo && lesson.assignedTo.length > 0 && !CURRENT_USER.isTeacher && !TEACH_MODE) {
     if (!lesson.assignedTo.includes(CURRENT_USER.key)) { alert('Этот урок доступен только выбранным ученикам.'); return; }
   }
@@ -4784,6 +5097,12 @@ function buildAIBuilder() {
     <div class="field-row" id="aiSyntaxHint">
       <span style="font-size:12px;color:var(--ink-soft);">Поля через <b>|</b>: задание | ответ | пояснение | полное уравнение | варианты | HTML-код. HTML-код пишется прямо в шестое поле после палочки.</span>
     </div>
+    <div class="field-row" id="aiImagesBlock" style="align-items:flex-start;">
+      <label style="font-size:12px;color:var(--ink-soft);width:100%;">Фото для заданий (по порядку). Сколько блоков — столько и фото. Можно выбрать сразу все.</label>
+      <input type="file" id="aiImagesInput" accept="image/*" multiple style="width:100%;">
+      <div id="aiImagesPreview" class="task-image-preview-list" style="margin-top:8px;"></div>
+      <small class="help" style="margin-top:4px;">Фото разойдутся по заданиям: 1-е фото → 1-е задание, 2-е → 2-е и т.д. Если фото меньше — остальные задания будут без фото.</small>
+    </div>
     <div class="field-row">
       <label style="font-size:12px;color:var(--ink-soft);width:100%;">Доступно для учеников</label>
       <select id="aiAssignTo" multiple style="height:80px;width:100%;"><option value="">Все ученики</option></select>
@@ -4797,9 +5116,12 @@ function buildAIBuilder() {
   const modeSel = box.querySelector('#aiMode');
   const taskTypeSel = box.querySelector('#aiTaskType');
   const trainerOptionsRow = box.querySelector('#aiTrainerOptionsRow');
+  const imagesBlock = box.querySelector('#aiImagesBlock');
   const assignSel = box.querySelector('#aiAssignTo');
   const allowModeChoiceChk = box.querySelector('#aiAllowModeChoice');
   const randomOrderChk = box.querySelector('#aiRandomOrder');
+
+  let aiImages = [];
 
   function refreshTopicOptions() {
     const sorted = [...TOPICS].sort((a, b) => a.order - b.order);
@@ -4809,10 +5131,34 @@ function buildAIBuilder() {
   assignSel.innerHTML = '<option value="">Все ученики</option>' + [...allStudents].sort().map(s => `<option value="${s}">${escapeHtml(s)}</option>`).join('');
 
   function updateFieldsVisibility() {
-    trainerOptionsRow.style.display = (typeSel.value === 'trainer' || typeSel.value === 'homework') ? 'flex' : 'none';
+    const t = typeSel.value;
+    trainerOptionsRow.style.display = (t === 'trainer' || t === 'homework') ? 'flex' : 'none';
+    imagesBlock.style.display = (t === 'trainer' || t === 'homework') ? 'flex' : 'none';
   }
   typeSel.addEventListener('change', updateFieldsVisibility);
   updateFieldsVisibility();
+
+  const aiImagesInput = box.querySelector('#aiImagesInput');
+  const aiImagesPreview = box.querySelector('#aiImagesPreview');
+  function renderAiImagesPreview() {
+    aiImagesPreview.innerHTML = aiImages.map((src, idx) => `
+      <div class="task-image-preview-item">
+        <img src="${src}" alt="" title="Задание ${idx+1}">
+        <button type="button" class="icon-btn danger ai-img-remove" data-idx="${idx}" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;">✕</button>
+      </div>`).join('');
+    aiImagesPreview.querySelectorAll('.ai-img-remove').forEach(btn => {
+      btn.onclick = () => { aiImages.splice(parseInt(btn.dataset.idx), 1); renderAiImagesPreview(); };
+    });
+  }
+  aiImagesInput.onchange = async (e) => {
+    const files = Array.from(e.target.files); if (!files.length) return;
+    for (const f of files) {
+      try { aiImages.push(await compressTaskImageToDataUrl(f)); }
+      catch (err) { alert('Не удалось загрузить "' + f.name + '": ' + err.message); }
+    }
+    aiImagesInput.value = '';
+    renderAiImagesPreview();
+  };
 
   box.querySelector('#aiGenerateBtn').onclick = async () => {
     const type = typeSel.value;
@@ -4831,10 +5177,12 @@ function buildAIBuilder() {
     if (!rawText) { msgDiv.textContent = 'Вставьте материалы.'; return; }
 
     const blocks = rawText.split(/\n\s*#\s*\n/).map(b => b.trim()).filter(b => b.length > 0);
+    const imagesForBlock = (i) => aiImages[i] ? [aiImages[i]] : [];
 
     if (type === 'trainer') {
       const reactions = [];
-      for (const block of blocks) {
+      for (let bi = 0; bi < blocks.length; bi++) {
+        const block = blocks[bi];
         const parts = block.split('|').map(p => p.trim());
         if (parts.length < 2) continue;
         const lhs = parts[0] || '';
@@ -4847,7 +5195,7 @@ function buildAIBuilder() {
         const { correctSets, correctSetsDisplay, valid } = buildCorrectSets(answer, taskType);
         const isInvalid = !valid;
         const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
-        reactions.push({ lhs, valid: !isInvalid, correctSets, correctSetsDisplay, explanation: explain || '', fullEquation: full || (isInvalid ? 'Реакция не идёт' : ''), options, htmlContent: htmlContent || '' });
+        reactions.push({ lhs, valid: !isInvalid, correctSets, correctSetsDisplay, explanation: explain || '', fullEquation: full || (isInvalid ? 'Реакция не идёт' : ''), options, htmlContent: htmlContent || '', images: imagesForBlock(bi) });
       }
       if (reactions.length === 0) { msgDiv.textContent = 'Не удалось распознать реакции.'; return; }
       const id = 'trainer_' + Date.now();
@@ -4856,20 +5204,21 @@ function buildAIBuilder() {
       TRAINERS.push({ id, topicId, title, order: siblingsMax + 1, mode, taskType, allowModeChoice, randomOrder, reactions, randomOrderMap, fontSize, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
       await persistTrainers();
       msgDiv.textContent = `Тренажёр создан с ${reactions.length} реакциями!`; msgDiv.style.color = 'var(--ok)';
-} else if (type === 'homework') {
-  const tasks = [];
-  for (const block of blocks) {
-    const parts = block.split('|').map(p => p.trim());
-    if (parts.length < 2) continue;
-    const question = parts[0] || '';
-    const answer = parts[1] || '';
-    const explain = parts[2] || '';
-    // parts[3] — полное уравнение (в домашке не используется, оставляем пустым для совместимости формата с тренажёром)
-    const optionsStr = parts[4] || '';
-    const htmlContent = parts[5] || '';
+      aiImages = []; renderAiImagesPreview();
+    } else if (type === 'homework') {
+      const tasks = [];
+      for (let bi = 0; bi < blocks.length; bi++) {
+        const block = blocks[bi];
+        const parts = block.split('|').map(p => p.trim());
+        if (parts.length < 2) continue;
+        const question = parts[0] || '';
+        const answer = parts[1] || '';
+        const explain = parts[2] || '';
+        const optionsStr = parts[4] || '';
+        const htmlContent = parts[5] || '';
         if (!question.trim() || !answer.trim()) continue;
         const options = optionsStr ? optionsStr.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
-        tasks.push({ question, answer, explanation: explain || '', options, htmlContent: htmlContent || '' });
+        tasks.push({ question, answer, explanation: explain || '', options, htmlContent: htmlContent || '', images: imagesForBlock(bi) });
       }
       if (tasks.length === 0) { msgDiv.textContent = 'Не удалось распознать задания.'; return; }
       const id = 'homework_' + Date.now();
@@ -4878,6 +5227,7 @@ function buildAIBuilder() {
       HOMEWORKS.push({ id, topicId, title, order: siblingsMax + 1, mode, taskType, allowModeChoice, randomOrder, tasks, randomOrderMap, fontSize, assignedTo: assignedTo.length > 0 ? assignedTo : null, isDraft: false, isLocked: false, scheduledRelease: null });
       await persistHomeworks();
       msgDiv.textContent = `Домашка создана с ${tasks.length} заданиями!`; msgDiv.style.color = 'var(--ok)';
+      aiImages = []; renderAiImagesPreview();
     } else if (type === 'lesson') {
       const lines = rawText.split('\n').filter(l => l.trim().length > 0);
       let description = '', videoUrl = '';
@@ -5004,6 +5354,252 @@ function renderSrcCodeBlock(container, kind, item) {
     window.showExportModal(kind, item.id);
   };
 }
+
+// ============================================================
+// 23b. ПЕЧАТЬ / PDF
+// ============================================================
+
+function getCorrectAnswerText(kind, item, idx) {
+  if (kind === 'trainer') {
+    const r = (item.reactions || [])[idx];
+    if (!r) return '';
+    if (!r.valid) return '0 (реакция не идёт)';
+    const ds = (r.correctSetsDisplay && r.correctSetsDisplay.length > 0) ? r.correctSetsDisplay : (r.correctSets || []);
+    if (item.taskType === 'checkbox') return (ds[0] || []).join(', ');
+    return ds.map(s => s.join(' + ')).join(' / ');
+  }
+  if (kind === 'homework') {
+    const t = (item.tasks || [])[idx];
+    if (!t) return '';
+    const sets = buildCorrectSets(t.answer || '', item.taskType || 'text');
+    if (sets.correctSetsDisplay && sets.correctSetsDisplay[0]) {
+      return sets.correctSetsDisplay[0].join(item.taskType === 'checkbox' ? ', ' : ' + ');
+    }
+    return t.answer || '';
+  }
+  return '';
+}
+
+function buildPrintHtml(kind, item, printMode) {
+  const isTrainer = kind === 'trainer';
+  const isHomework = kind === 'homework';
+  const isTheory = kind === 'theory';
+  const isLesson = kind === 'lesson';
+  const taskType = item.taskType || 'text';
+  const withAnswers = printMode === 'answers' || printMode === 'full';
+  const withExplanation = printMode === 'full';
+
+  if (isTheory) {
+    let bodyHtml = '';
+    if (item.file && item.file.dataUrl && item.file.type && item.file.type.startsWith('image/')) {
+      bodyHtml += `<div style="margin:10px 0;"><img src="${item.file.dataUrl}" alt="" style="max-width:100%;border-radius:8px;"></div>`;
+    }
+    if (item.description) {
+      const fs = theoryFontSize(item);
+      bodyHtml += `<div style="font-size:${fs}px;line-height:1.65;white-space:pre-wrap;margin:10px 0;">${escapeHtml(item.description)}</div>`;
+    }
+    if (item.htmlContent) {
+      bodyHtml += `<div style="margin:12px 0;">${item.htmlContent}</div>`;
+    }
+    if (item.linkUrl) {
+      bodyHtml += `<div style="margin-top:10px;font-size:13px;">🔗 <a href="${escapeAttr(item.linkUrl)}" style="color:#0a58ca;">${escapeHtml(item.linkUrl)}</a></div>`;
+    }
+    if (item.file && item.file.dataUrl && !(item.file.type && item.file.type.startsWith('image/'))) {
+      const sizeKb = Math.round((item.file.size || 0) / 1024);
+      bodyHtml += `<div style="margin-top:10px;font-size:13px;">📎 Файл: ${escapeHtml(item.file.name || 'файл')} (${sizeKb} КБ)</div>`;
+    }
+    if (!bodyHtml.trim()) bodyHtml = '<div style="color:#777;">Материал не заполнен.</div>';
+
+    return `
+      <div class="print-doc" id="printDoc">
+        <h1>${escapeHtml(item.title || '')}</h1>
+        <div class="print-sub">Теория</div>
+        ${bodyHtml}
+      </div>
+    `;
+  }
+
+  if (isLesson) {
+    let bodyHtml = '';
+    if (item.description) {
+      bodyHtml += `<div style="font-size:14.5px;line-height:1.65;white-space:pre-wrap;margin:10px 0;">${escapeHtml(item.description)}</div>`;
+    }
+    const links = item.links || [];
+    const files = item.files || [];
+    if (item.videoUrl) {
+      bodyHtml += `<div style="margin-top:10px;font-size:14px;">🎬 Основное видео: <a href="${escapeAttr(item.videoUrl)}" style="color:#0a58ca;">${escapeHtml(item.videoUrl)}</a></div>`;
+    }
+    if (links.length > 0) {
+      bodyHtml += `<div style="margin-top:10px;"><b>Видео:</b><ul style="margin:6px 0 0 18px;padding:0;">` +
+        links.map(l => `<li style="font-size:14px;">${escapeHtml(l.label || 'Видео')}: <a href="${escapeAttr(l.url)}" style="color:#0a58ca;">${escapeHtml(l.url)}</a></li>`).join('') + `</ul></div>`;
+    }
+    if (files.length > 0) {
+      bodyHtml += `<div style="margin-top:10px;"><b>Файлы:</b><ul style="margin:6px 0 0 18px;padding:0;">` +
+        files.map(f => `<li style="font-size:14px;">${escapeHtml(f.label || f.name || 'Файл')}${f.url ? `: <a href="${escapeAttr(f.url)}" style="color:#0a58ca;">${escapeHtml(f.url)}</a>` : ''}</li>`).join('') + `</ul></div>`;
+    }
+    if (!bodyHtml.trim()) bodyHtml = '<div style="color:#777;">Материалы не добавлены.</div>';
+
+    return `
+      <div class="print-doc" id="printDoc">
+        <h1>${escapeHtml(item.title || '')}</h1>
+        <div class="print-sub">Урок</div>
+        ${bodyHtml}
+      </div>
+    `;
+  }
+
+  let tasks = [];
+  if (isTrainer) {
+    const reactions = item.reactions || [];
+    let source = reactions;
+    if (item.randomOrderMap && item.randomOrderMap.length === reactions.length) {
+      source = item.randomOrderMap.map(i => reactions[i]).filter(Boolean);
+    }
+    tasks = source.map((r, i) => ({
+      question: r.lhs || '',
+      images: getTaskImages(r),
+      htmlContent: r.htmlContent || '',
+      options: r.options || [],
+      answer: getCorrectAnswerText('trainer', { ...item, reactions: source }, i),
+      explanation: r.explanation || '',
+      fullEquation: r.fullEquation || ''
+    }));
+  } else {
+    const src = item.tasks || [];
+    let source = src;
+    if (item.randomOrderMap && item.randomOrderMap.length === src.length) {
+      source = item.randomOrderMap.map(i => src[i]).filter(Boolean);
+    }
+    tasks = source.map((t, i) => ({
+      question: t.question || '',
+      images: getTaskImages(t),
+      htmlContent: t.htmlContent || '',
+      options: t.options || [],
+      answer: getCorrectAnswerText('homework', { ...item, tasks: source }, i),
+      explanation: t.explanation || '',
+      fullEquation: ''
+    }));
+  }
+
+  const typeLabel = isTrainer ? 'Тренажёр' : 'Домашка';
+  const modeLabel = printMode === 'full' ? ' — с ответами и пояснениями'
+    : printMode === 'answers' ? ' — с ответами'
+    : ' — без ответов';
+
+  let tasksHtml = '';
+  tasks.forEach((t, idx) => {
+    let optHtml = '';
+    if ((taskType === 'radio' || taskType === 'checkbox') && t.options.length > 0) {
+      optHtml = '<div class="pt-options">' + t.options.map((o, oi) => `${String.fromCharCode(1040 + oi)}) ${escapeHtml(o)}`).join('&nbsp;&nbsp;&nbsp;') + '</div>';
+    }
+    let imgsHtml = '';
+    if (t.images && t.images.length > 0) {
+      imgsHtml = t.images.map(src => `<div><img src="${src}" alt="" style="max-width:100%;max-height:300px;border-radius:6px;margin:6px 0;"></div>`).join('');
+    }
+    let htmlBlock = '';
+    if (t.htmlContent) htmlBlock = `<div style="margin:6px 0;">${t.htmlContent}</div>`;
+
+    let answersBlock = '';
+    if (withAnswers) {
+      answersBlock += `<div class="pt-answer">Ответ: ${renderEquation(t.answer || '—')}</div>`;
+    }
+    if (withExplanation) {
+      if (t.fullEquation) {
+        answersBlock += `<div class="pt-full-eq" style="margin-top:6px;font-size:13.5px;color:#1a1a1a;"><b>Полное уравнение:</b> ${renderEquation(t.fullEquation)}</div>`;
+      }
+      if (t.explanation) {
+        answersBlock += `<div class="pt-explanation" style="margin-top:6px;font-size:13px;color:#444;"><b>Пояснение:</b> ${escapeHtml(t.explanation)}</div>`;
+      }
+    }
+
+    tasksHtml += `
+      <div class="print-task">
+        <div class="pt-num">Задание ${idx + 1}</div>
+        <div class="pt-body">${renderEquation(t.question)}</div>
+        ${imgsHtml}
+        ${htmlBlock}
+        ${optHtml}
+        ${answersBlock}
+      </div>
+    `;
+  });
+
+  return `
+    <div class="print-doc" id="printDoc">
+      <h1>${escapeHtml(item.title || '')}</h1>
+      <div class="print-sub">${typeLabel}${modeLabel} · ${tasks.length} заданий</div>
+      ${item.customNote ? `<div style="margin-bottom:14px;font-size:13px;color:#444;border-left:3px solid #ccc;padding-left:10px;">${escapeHtmlMultiline(item.customNote)}</div>` : ''}
+      ${tasksHtml || '<div style="color:#777;">Заданий нет.</div>'}
+    </div>
+  `;
+}
+
+window.openPrintModal = function(kind, id) {
+  const coll = KIND_META[kind] ? KIND_META[kind].coll() : null;
+  if (!coll) return;
+  const item = coll.find(x => x.id === id);
+  if (!item) { alert('Материал не найден.'); return; }
+
+  const isTheory = kind === 'theory';
+  const isLesson = kind === 'lesson';
+
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <h3>Печать / PDF: ${escapeHtml(item.title)}</h3>
+    <p class="warn">${isTheory || isLesson
+      ? 'Откроется окно с материалом, затем системное окно печати. Там выберите «Сохранить как PDF».'
+      : 'Выберите вариант печати. Откроется системное окно печати — там можно сохранить в PDF.'}</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+      ${(isTheory || isLesson)
+        ? `<button class="btn btn-accent" id="printFullBtn">🖨 Открыть и сохранить в PDF</button>`
+        : `<button class="btn btn-accent" id="printFullBtn">🖨 С ответами и пояснениями (ответ + пояснение + уравнение)</button>
+           <button class="btn btn-ghost" id="printAnswersBtn">🖨 Только с ответами</button>
+           <button class="btn btn-ghost" id="printNoneBtn">🖨 Без ответов</button>`}
+    </div>
+    <div class="actions"><button class="btn btn-ghost" id="cancelPrint">Отмена</button></div>
+  `;
+  bg.appendChild(modal);
+  document.body.appendChild(bg);
+  bg.onclick = (e) => { if (e.target === bg) bg.remove(); };
+  modal.querySelector('#cancelPrint').onclick = () => bg.remove();
+
+  function doPrint(printMode) {
+    const html = buildPrintHtml(kind, item, printMode);
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) { alert('Браузер заблокировал окно печати. Разрешите всплывающие окна.'); return; }
+    const styles = Array.from(document.querySelectorAll('style')).map(s => s.outerHTML).join('\n');
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>${escapeHtml(item.title)}</title>${styles}
+      <style>
+        body { background:#fff !important; color:#000 !important; font-family:"Manrope",Arial,sans-serif; padding:24px; }
+        .print-doc { display:block !important; max-width:800px; margin:0 auto; }
+        .print-doc h1 { font-size:24px; margin:0 0 4px; }
+        .print-doc .print-sub { font-size:13px; color:#555; margin-bottom:20px; }
+        .print-doc .print-task { border:1px solid #ccc; border-radius:8px; padding:14px 16px; margin-bottom:12px; page-break-inside:avoid; }
+        .print-doc .print-task .pt-num { font-size:12px; color:#777; margin-bottom:6px; }
+        .print-doc .print-task .pt-body { font-size:15px; line-height:1.55; }
+        .print-doc .print-task .pt-answer { margin-top:10px; padding-top:8px; border-top:1px dashed #999; font-size:14px; color:#1a7f4b; font-weight:700; }
+        .print-doc .print-task .pt-options { margin-top:6px; font-size:13px; color:#444; }
+        .print-doc sub { font-size:.65em; }
+        .print-doc table { border-collapse:collapse; }
+        .print-doc td, .print-doc th { border:1px solid #bbb; padding:6px 10px; }
+        @media print { body { padding:0; } .print-doc { max-width:100%; } }
+      </style>
+      </head><body>${html}<script>setTimeout(function(){window.print();},350);<\/script></body></html>`);
+    printWindow.document.close();
+    bg.remove();
+  }
+
+  modal.querySelector('#printFullBtn').onclick = () => doPrint('full');
+  const answersBtn = modal.querySelector('#printAnswersBtn');
+  if (answersBtn) answersBtn.onclick = () => doPrint('answers');
+  const noneBtn = modal.querySelector('#printNoneBtn');
+  if (noneBtn) noneBtn.onclick = () => doPrint('none');
+};
+
 // ============================================================
 // 24. РЕДАКТОРЫ
 // ============================================================
