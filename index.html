@@ -1136,6 +1136,7 @@ window.handleLogin = async function() {
   errBox.textContent = '';
   if (!nameInput || !passInput) { errBox.textContent = 'Введите имя и пароль.'; return; }
 
+  // 1) Вход учителя по паролю платформы
   for (const key of Object.keys(platforms)) {
     if (passInput === platforms[key].password && nameInput.toLowerCase() === 'admin') {
       CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: key };
@@ -1147,6 +1148,7 @@ window.handleLogin = async function() {
     }
   }
 
+  // 2) Глобальный админ
   if (nameInput.toLowerCase() === TEACHER_LOGIN && passInput === TEACHER_PASS) {
     CURRENT_USER = { name: 'Учитель', key: '__teacher__', isTeacher: true, platform: currentPlatform };
     TEACH_MODE = false;
@@ -1156,18 +1158,43 @@ window.handleLogin = async function() {
   }
 
   const key = nameInput.toLowerCase();
-  let foundPlatform = null, foundStudent = null;
-  for (const platId of Object.keys(platforms)) {
-    const platReg = await loadFromFirebase(getPlatformPath(platId, 'registry'), {});
-    if (platReg[key]) { foundPlatform = platId; foundStudent = platReg[key]; break; }
-  }
-  if (!foundStudent) { errBox.textContent = 'Такого ученика нет. Обратитесь к учителю.'; return; }
-  if (foundStudent.password !== passInput) { errBox.textContent = 'Неверный пароль.'; return; }
 
-  saveActivePlatform(foundPlatform);
+  // 3) Сначала ищем на ТЕКУЩЕЙ платформе
+  const orderPlatIds = [currentPlatform, ...Object.keys(platforms).filter(p => p !== currentPlatform)];
+
+  // Собираем все совпадения по имени на всех платформах
+  const matches = [];
+  for (const platId of orderPlatIds) {
+    const platReg = await loadFromFirebase(getPlatformPath(platId, 'registry'), {});
+    if (platReg[key]) {
+      matches.push({ platId, student: platReg[key] });
+    }
+  }
+
+  if (matches.length === 0) {
+    errBox.textContent = 'Такого ученика нет. Обратитесь к учителю.';
+    return;
+  }
+
+  // 4) Проверяем пароль среди всех совпадений. Приоритет — текущая платформа.
+  let found = null;
+  for (const m of matches) {
+    if (m.student.password === passInput) { found = m; break; }
+  }
+
+  if (!found) {
+    if (matches.length > 1) {
+      errBox.textContent = 'Неверный пароль. Ученик с таким именем есть на нескольких платформах — уточните у учителя, на какой вы занимаетесь.';
+    } else {
+      errBox.textContent = 'Неверный пароль.';
+    }
+    return;
+  }
+
+  saveActivePlatform(found.platId);
   allStudents = [];
-  CURRENT_USER = { name: foundStudent.name, key, isTeacher: false, platform: foundPlatform };
-  saveSession({ key, isTeacher: false, name: CURRENT_USER.name, platform: foundPlatform });
+  CURRENT_USER = { name: found.student.name, key, isTeacher: false, platform: found.platId };
+  saveSession({ key, isTeacher: false, name: CURRENT_USER.name, platform: found.platId });
   await startApp();
 };
 
